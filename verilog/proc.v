@@ -25,14 +25,13 @@ module proc (/*AUTOARG*/
    
    
    /* your code here */
-	wire [15:0] Instr,WrD,Rd1,Rd2,PCS,PC2,ALUoutput,RdD,Imm;
-	wire [10:0] Instr_ex;
-	wire [4:0] ALUOp;
+	wire [15:0] instr,writeData,rd1,rd2,pcNext,pc2,exOut,rdD,imm;
+	wire [4:0] aluOp;
 	wire [2:0] flag;
-	wire [1:0] ALUF;
+	wire [1:0] aluF;
 	//control wires
-	wire MemWrite,MemRead,zeroEx,dump,halt,MemtoReg,Jump,Branch,ALUSrc,RegWrite;
-	wire [1:0] RegDst,size;
+	wire MemWrite,MemRead,zeroEx,dump,halt,MemtoReg,jump,branch,aluSrc,regWrite;
+	wire [1:0] regDst,size;
 
 	//error wires
 	wire err_fetch,err_decode,err_execute;
@@ -41,34 +40,34 @@ module proc (/*AUTOARG*/
     assign err = 1'b0;
 
 	//Fetch Stage
-	fetch fetch0(.pcNext(PCS),.halt(halt),.Jump(Jump),.Branch(Branch),.Dump(dump),.PC2(PC2),.instr(Instr)
+	fetch fetch0(.pcNext(pcNext),.halt(halt),.jump(jump),.branch(branch),.dump(dump),.pc2(pc2),.instr(instr)
 	,.err(err_fetch),.clk(clk),.rst(rst));
 
 	//Decode Stage
-	decode decode0(.Instr(Instr),.size(size),.zeroEx(zeroEx),.Imm(Imm),.writeData(WrD),.RegDst(RegDst)
-	,.RegWrite(RegWrite),.Rd1(Rd1),.Rd2(Rd2)
+	decode decode0(.instr(instr),.size(size),.zeroEx(zeroEx),.imm(imm),.writeData(writeData),.regDst(regDst)
+	,.regWrite(regWrite),.rd1(rd1),.rd2(rd2)
 	,.err(err_decode),.clk(clk),.rst(rst));
 
 	//Execute Stage
-	execute ex(.PC2(PC2),.ALUSrc(ALUSrc),.ALUOp(ALUOp),.Rd1(Rd1),.Rd2(Rd2),.Imm(Imm),.ALUF(ALUF), .Jump(Jump), .Branch(Branch)
-		,.PCS(PCS),.flag(flag),.ALUO(ALUoutput),.err(err_execute));
+	execute ex(.pc2(pc2),.aluSrc(aluSrc),.aluOp(aluOp),.rd1(rd1),.rd2(rd2),.imm(imm),.aluF(aluF), .jump(jump), .branch(branch)
+		,.pcNext(pcNext),.flag(flag),.exOut(exOut),.err(err_execute));
 
 	//Mem Stage
     //TODO CHANGED Mem_Access -> memory for testing
-	memory memory0(.aluResult(ALUoutput),.writeData(Rd2),.RdD(RdD)
+	memory memory0(.exOut(exOut),.dataIn(rd2),.rdD(rdD)
 	,.memWrite(MemWrite),.memRead(MemRead),.dump(dump)
 	,.clk(clk),.rst(rst));
 
 	//Write Back Stage
-	writeBack wb(.RdD(RdD),.WrD(WrD),.ALUO(ALUoutput),.MemtoReg(MemtoReg));
+	writeBack wb(.rdD(rdD),.writeData(writeData),.exOut(exOut),.MemtoReg(MemtoReg));
 
 	//Control Module
-	control ctrl(.Inst(Instr),.size(size),.halt(halt),.zeroEx(zeroEx)
-	   ,.RegDst(RegDst),.Jump(Jump)
-		 ,.Branch(Branch),.MemRead(MemRead)
-		,.MemWrite(MemWrite),.ALUOp(ALUOp),.ALUF(ALUF)
-		,.MemtoReg(MemtoReg),.ALUSrc(ALUSrc)
-		,.RegWrite(RegWrite),.Dump(dump),.rst(rst));
+	control ctrl(.instr(instr),.size(size),.halt(halt),.zeroEx(zeroEx)
+	   ,.regDst(regDst),.jump(jump)
+		 ,.branch(branch),.MemRead(MemRead)
+		,.MemWrite(MemWrite),.aluOp(aluOp),.aluF(aluF)
+		,.MemtoReg(MemtoReg),.aluSrc(aluSrc)
+		,.regWrite(regWrite),.dump(dump),.rst(rst));
 
 
    

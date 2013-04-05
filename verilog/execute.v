@@ -1,12 +1,12 @@
-module execute(PC2, ALUSrc, ALUOp, Rd1, Rd2, Imm, ALUF, Jump, Branch,
-            PCS, flag, ALUO, err);
+module execute(pc2, aluSrc, aluOp, rd1, rd2, imm, aluF, jump, branch,
+            pcNext, flag, exOut, err);
 
-    input [15:0] PC2, Rd1, Rd2, Imm;
-    input [4:0] ALUOp;
-    input [1:0] ALUF;
-    input ALUSrc, Branch, Jump;
+    input [15:0] pc2, rd1, rd2, imm;
+    input [4:0] aluOp;
+    input [1:0] aluF;
+    input aluSrc, branch, jump;
 
-    output [15:0] PCS, ALUO;
+    output [15:0] pcNext, exOut;
     output [2:0] flag;
     output err;
 
@@ -14,40 +14,40 @@ module execute(PC2, ALUSrc, ALUOp, Rd1, Rd2, Imm, ALUF, Jump, Branch,
     wire [3:0] opOut;
     wire [15:0] outALU, outCLA, sleOut, seqOut, scoOut, slbiOut, sltOut, btrOut, claIn, addA, addB, addSum;
     
-    reg [15:0] bin, ALUO;
+    reg [15:0] bin, exOut;
     reg exerr;
 
-    branchCtrl BRANCHCTRL(.Branch(Branch), .Jump(Jump), .branchType(ALUOp[1:0]), .flag(flag), .takeBranch(takeBranch));
-    carryLA_16b CLA(.A(claIn), .B(Imm), .SUM(outCLA), .CI(1'b0), .CO(dummy), .Ofl(ofl));
-    assign PCS = (takeBranch) ? outCLA : PC2;
-    assign claIn = ((ALUOp == 5'b00101) | (ALUOp == 5'b00111)) ? Rd1 : PC2;
+    branchCtrl BRANCHCTRL(.branch(branch), .jump(jump), .branchType(aluOp[1:0]), .flag(flag), .takeBranch(takeBranch));
+    carryLA_16b CLA(.A(claIn), .B(imm), .SUM(outCLA), .CI(1'b0), .CO(dummy), .Ofl(ofl));
+    assign pcNext = (takeBranch) ? outCLA : pc2;
+    assign claIn = ((aluOp == 5'b00101) | (aluOp == 5'b00111)) ? rd1 : pc2;
 
-    assign slbiOut = (Rd1 << 4'h8) | Imm;
+    assign slbiOut = (rd1 << 4'h8) | imm;
     assign sltOut = (flag[2]) ? 16'h0001 : 16'h0000;
-    assign btrOut = {Rd1[0],Rd1[1],Rd1[2],Rd1[3],Rd1[4],Rd1[5],Rd1[6],Rd1[7],Rd1[8],Rd1[9],
-                    Rd1[10],Rd1[11],Rd1[12],Rd1[13],Rd1[14],Rd1[15]};
+    assign btrOut = {rd1[0],rd1[1],rd1[2],rd1[3],rd1[4],rd1[5],rd1[6],rd1[7],rd1[8],rd1[9],
+                    rd1[10],rd1[11],rd1[12],rd1[13],rd1[14],rd1[15]};
     assign scoOut = (CO) ? 16'h0001 : 16'h0000;
     assign seqOut = (flag[0]) ? 16'h0001 : 16'h0000;
     assign sleOut = (flag[2] | flag[0]) ? 16'b0001 : 16'b0000;
     
-    alu THEALU(.A(Rd1), .B(bin), .Op(opOut), .invA(1'b0), .invB(invB), .sign(1'b1), 
+    alu THEALU(.A(rd1), .B(bin), .Op(opOut), .invA(1'b0), .invB(invB), .sign(1'b1), 
         .Out(outALU), .Ofl(flag[1]), .Z(flag[0]), .CO(CO), .err(aluerr));
-    aluCtrl ALUCTRL(.ALUOp(ALUOp), .ALUF(ALUF), .opOut(opOut), .invB(invB), 
+    aluCtrl ALUCTRL(.aluOp(aluOp), .aluF(aluF), .opOut(opOut), .invB(invB), 
         .immPass(immPass), .doSLE(doSLE), .doSEQ(doSEQ), .doSCO(doSCO), .doBTR(doBTR), 
         .doSLBI(doSLBI), .doSLT(doSLT));
 
     always @(*) begin
-        casex ({doSLE, doSEQ, doSCO, Jump, doBTR, doSLT, immPass, doSLBI})
-            8'b00000000: ALUO = outALU;
-            8'b00000001: ALUO = slbiOut;
-            8'b00000010: ALUO = Imm;
-            8'b00000100: ALUO = sltOut;
-            8'b00001000: ALUO = btrOut;
-            8'b00010000: ALUO = PC2;
-            8'b00100000: ALUO = scoOut;
-            8'b01000000: ALUO = seqOut;
-            8'b10000000: ALUO = sleOut;
-            default: ALUO = 16'hxxxx;
+        casex ({doSLE, doSEQ, doSCO, jump, doBTR, doSLT, immPass, doSLBI})
+            8'b00000000: exOut = outALU;
+            8'b00000001: exOut = slbiOut;
+            8'b00000010: exOut = imm;
+            8'b00000100: exOut = sltOut;
+            8'b00001000: exOut = btrOut;
+            8'b00010000: exOut = pc2;
+            8'b00100000: exOut = scoOut;
+            8'b01000000: exOut = seqOut;
+            8'b10000000: exOut = sleOut;
+            default: exOut = 16'hxxxx;
         endcase
     end
 
@@ -57,13 +57,13 @@ module execute(PC2, ALUSrc, ALUOp, Rd1, Rd2, Imm, ALUF, Jump, Branch,
 
     // mux leading into B input of the ALU
     always @(*) begin
-        casex({Branch, ALUSrc})
+        casex({branch, aluSrc})
             2'b00: begin
-                bin = Rd2;
+                bin = rd2;
                 exerr = 1'b0;
             end
             2'b01: begin
-                bin = Imm;
+                bin = imm;
                 exerr = 1'b0;
             end
             2'b1x: begin
