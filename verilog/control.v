@@ -1,7 +1,7 @@
 //John Vennard and Nick Ambur
 //Control Module
-module control(instr,size,halt,zeroEx,regDst,jump,branch,MemRead
-		,MemWrite,aluOp,aluF,MemtoReg,
+module control(instr,size,halt,zeroEx,regDst,jump,branch,memRead
+		,memWrite,aluOp,aluF,memToReg,
 		aluSrc,regWrite,dump,rst);
 input [15:0] instr;
 input rst;
@@ -9,7 +9,7 @@ input rst;
 output reg [1:0] size;
 output [4:0] aluOp;
 output reg [1:0] regDst,aluF;
-output reg jump,branch,zeroEx,halt,MemRead,MemWrite,MemtoReg,aluSrc,regWrite,dump;
+output reg jump,branch,zeroEx,halt,memRead,memWrite,memToReg,aluSrc,regWrite,dump;
 
 reg [1:0] aluF_tmp, regDst_tmp, aluF_tmp2, regDst_tmp2;
 reg regWrite_tmp, regWrite_tmp2, zeroEx_tmp;
@@ -125,10 +125,10 @@ always @(*) begin
 	regDst = 2'bxx; 
 	jump = 1'b0;
 	branch = 1'b0;
-	MemRead = 1'b0;
-	MemWrite = 1'b0;
+	memRead = 1'b0;
+	memWrite = 1'b0;
 	aluF = 2'bxx;
-	MemtoReg = 1'b0;
+	memToReg = 1'b0;
 	aluSrc = 1'b0;
 	regWrite = 1'b0;
 	dump = 1'b0;
@@ -205,7 +205,7 @@ always @(*) begin
 
 		ST:  begin
 		size = 2'b00;
-		MemWrite = 1'b1; //writing to mem...
+		memWrite = 1'b1; //writing to mem...
         regDst = 2'b00;
 		aluSrc = 1'b1; 
 		end	 	
@@ -213,8 +213,8 @@ always @(*) begin
 		LD:  begin
 		size = 2'b00;
         regDst = 2'b00;
-		MemRead = 1'b1; //reading from mem...
-		MemtoReg = 1'b1; //memory to register
+		memRead = 1'b1; //reading from mem...
+		memToReg = 1'b1; //memory to register
 		aluSrc = 1'b1; 
 		regWrite = 1'b1; //writing to reg...  
 		end	 		 	
@@ -222,7 +222,7 @@ always @(*) begin
 		STU:   begin
 		size = 2'b00;
 		regDst = 2'b10; //I-format 1 
-		MemWrite = 1'b1; //writing to mem...
+		memWrite = 1'b1; //writing to mem...
 		aluSrc = 1'b1; 
 		regWrite = 1'b1; //also writing to register  
 		end	 	
@@ -233,10 +233,10 @@ always @(*) begin
 		regDst = 2'b01; //R-format 
 		jump = 1'b0;
 		branch = 1'b0;
-		MemRead = 1'b0;
-		MemWrite = 1'b0; 
+		memRead = 1'b0;
+		memWrite = 1'b0; 
 		aluF = 2'b00; 	  //same
-		MemtoReg = 1'b0;
+		memToReg = 1'b0;
 		aluSrc = 1'b0; 
 		regWrite = 1'b1; //writing to reg...  
 		dump = 1'b0; 
@@ -350,9 +350,9 @@ always @(*) begin
 		regDst = 2'bxx; //Ignored 
 		jump = 1'b0;  
 		branch = 1'b0; 
-		MemRead = 1'bx;
-		MemWrite = 1'b0; 
-		MemtoReg = 1'b0;
+		memRead = 1'bx;
+		memWrite = 1'b0; 
+		memToReg = 1'b0;
 		aluSrc = 1'b0;	 
 		regWrite = 1'b0;  
 		end
@@ -363,10 +363,10 @@ always @(*) begin
 		regDst = 2'b00; //Ignored 
 		jump = 1'b0;  
 		branch = 1'b0; 
-		MemRead = 1'b0;
-		MemWrite = 1'b0; 
+		memRead = 1'b0;
+		memWrite = 1'b0; 
 		aluF = 2'b00; 	 
-		MemtoReg = 1'b0;
+		memToReg = 1'b0;
 		aluSrc = 1'b0;	 
 		regWrite = 1'b0;  
 		dump = 1'b0; 

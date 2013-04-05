@@ -30,7 +30,7 @@ module proc (/*AUTOARG*/
 	wire [2:0] flag;
 	wire [1:0] aluF;
 	//control wires
-	wire MemWrite,MemRead,zeroEx,dump,halt,MemtoReg,jump,branch,aluSrc,regWrite;
+	wire memWrite,memRead,zeroEx,dump,halt,memToReg,jump,branch,aluSrc,regWrite;
 	wire [1:0] regDst,size;
 
 	//error wires
@@ -55,18 +55,18 @@ module proc (/*AUTOARG*/
 	//Mem Stage
     //TODO CHANGED Mem_Access -> memory for testing
 	memory memory0(.exOut(exOut),.dataIn(rd2),.rdD(rdD)
-	,.memWrite(MemWrite),.memRead(MemRead),.dump(dump)
+	,.memWrite(memWrite),.memRead(memRead),.dump(dump)
 	,.clk(clk),.rst(rst));
 
 	//Write Back Stage
-	writeBack wb(.rdD(rdD),.writeData(writeData),.exOut(exOut),.MemtoReg(MemtoReg));
+	writeBack wb(.rdD(rdD),.writeData(writeData),.exOut(exOut),.memToReg(memToReg));
 
 	//Control Module
 	control ctrl(.instr(instr),.size(size),.halt(halt),.zeroEx(zeroEx)
 	   ,.regDst(regDst),.jump(jump)
-		 ,.branch(branch),.MemRead(MemRead)
-		,.MemWrite(MemWrite),.aluOp(aluOp),.aluF(aluF)
-		,.MemtoReg(MemtoReg),.aluSrc(aluSrc)
+		 ,.branch(branch),.memRead(memRead)
+		,.memWrite(memWrite),.aluOp(aluOp),.aluF(aluF)
+		,.memToReg(memToReg),.aluSrc(aluSrc)
 		,.regWrite(regWrite),.dump(dump),.rst(rst));
 
 

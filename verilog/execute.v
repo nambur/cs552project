@@ -10,7 +10,7 @@ module execute(pc2, aluSrc, aluOp, rd1, rd2, imm, aluF, jump, branch,
     output [2:0] flag;
     output err;
 
-    wire invB, immPass, doSLE, doSEQ, doSCO, doBTR, doSLBI, doSLT, takeBranch, CO, ofl, aluerr, dummy, dummy2;
+    wire invB, immPass, doSLE, doSEQ, doSCO, doBTR, doSLBI, doSLT, takeBranch, CO, ofl, aluerr, dummy;
     wire [3:0] opOut;
     wire [15:0] outALU, outCLA, sleOut, seqOut, scoOut, slbiOut, sltOut, btrOut, claIn, addA, addB, addSum;
     

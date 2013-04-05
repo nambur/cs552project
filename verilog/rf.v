@@ -43,6 +43,8 @@ module rf (read1data, read2data, err,clk, rst, read1regsel, read2regsel, writere
    b16mux8_1 mux0(.in(muxIn),.s(read1regsel),.out(read1data));
    b16mux8_1 mux1(.in(muxIn),.s(read2regsel),.out(read2data));	
    
+   // tie err to 0, not needed
+   assign err = 1'b0;
 
 endmodule
 // DUMMY LINE FOR REV CONTROL :1:
