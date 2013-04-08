@@ -44,7 +44,7 @@
 # Loading __work.shift_right_log
 # Loading __work.aluCtrl
 # Loading __work.memory
-# Loading __work.writeBack
+# Loading __work.write_back
 # Loading __work.control
 run -all
 # Hello world...simulation starting
