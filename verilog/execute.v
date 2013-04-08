@@ -35,13 +35,10 @@ module execute(PC2, ALUSrc, ALUOp, Rd1, Rd2, Imm, ALUF, Jump, Branch,
     assign sleOut = (Rd1==Rd2) ? 16'h0001 : ((Rd2[15]&(~Rd1[15])) ? 16'h0000 : (((~Rd2[15])&Rd1[15]) ? 
                     16'h0001 : (flag[2] ? 16'h0001 : 16'h0000)));
 
-    //assign sleOut = (flag[2] | flag[0]) ? 16'b0001 : 16'b0000;
     //Added for STU -- change to route through adder
     assign temp = Imm + Rd1;
     assign stuOut = temp;
     //Overflow correction
-    //assign stuOut = ((Rd1[15]&Imm[15])=!temp[15]) ? //overflow low
-     //                   16'hFFFF :                                                                    
 
      alu THEALU(.A(Rd1), .B(bin), .Op(opOut), .invA(1'b0), .invB(invB), .sign(1'b1), 
         .Out(outALU), .Ofl(flag[1]), .Z(flag[0]), .CO(CO), .err(aluerr));
