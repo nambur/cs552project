@@ -30,16 +30,16 @@ module proc (/*AUTOARG*/
 	wire [4:0] ALUOp;
 	wire [2:0] flag;
 	wire [1:0] ALUF;
+
 	//control wires
 	wire MemWrite,MemRead,zeroEx,dump,halt,MemtoReg,Jump,Branch,ALUSrc,RegWrite;
 	wire [1:0] RegDst,size;
 
 	//error wires
 	wire err_fetch,err_decode,err_execute;
-
-    //assign err = err_fetch | err_decode | err_execute;
+//    assign err = err_fetch | err_decode | err_execute;
     assign err = 1'b0;
-
+    
 	//Fetch Stage
 	fetch fetch0(.pcNext(PCS),.halt(halt),.Jump(Jump),.Branch(Branch),.Dump(dump),.PC2(PC2),.instr(Instr)
 	,.err(err_fetch),.clk(clk),.rst(rst));
@@ -54,7 +54,6 @@ module proc (/*AUTOARG*/
 		,.PCS(PCS),.flag(flag),.ALUO(ALUoutput),.err(err_execute));
 
 	//Mem Stage
-    //TODO CHANGED Mem_Access -> memory for testing
 	memory memory0(.aluResult(ALUoutput),.writeData(Rd2),.RdD(RdD)
 	,.memWrite(MemWrite),.memRead(MemRead),.dump(dump)
 	,.clk(clk),.rst(rst));
@@ -71,8 +70,6 @@ module proc (/*AUTOARG*/
 		,.MemtoReg(MemtoReg),.ALUSrc(ALUSrc)
 		,.RegWrite(RegWrite),.Dump(dump),.rst(rst));
 
-
-   
 endmodule // proc
 // DUMMY LINE FOR REV CONTROL :0:
 

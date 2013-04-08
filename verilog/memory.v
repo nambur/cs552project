@@ -1,4 +1,3 @@
-//NEW MEMORY MODULE
 //John Vennard and Nick Ambur
 module memory(aluResult,writeData,
 RdD,memWrite,memRead,dump,clk,rst);
@@ -13,7 +12,7 @@ wire memReadorWrite;
 assign memReadorWrite = (memWrite | memRead);
 
 
-//Instantiate GIVEN MEMORY BLOCK --- NO CHANGES
+//Instantiate memory2c --- NO CHANGES
 memory2c mem(.data_out(RdD),.data_in(writeData),
     .addr(aluResult), .enable(memReadorWrite), .wr(memWrite),
     .createdump(dump), 

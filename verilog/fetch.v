@@ -9,17 +9,17 @@ output err;
 wire [15:0] PC_FF_in, pcCurrent, dummy;
 wire first, first_n,dummy1;
 
-//Create PC FF
-//	--always enabled
+//PC FF
+//	--enabled until halt=1
 reg16bit pcReg0(.clk(clk),.rst(rst),.en(~halt),.in(PC_FF_in),.out(pcCurrent));
 
 //Instantiate Fetch Memory
 //Grounded enable and createdump
-//instrMem imem(.data_out(instr), .addr(pcCurrent),.clk(clk),.rst(rst));
 memory2c imem (.data_out(instr), .data_in(dummy), .addr(pcCurrent), .enable(1'b1), .wr(1'b0),
     .createdump(Dump), .clk(clk), .rst(rst));
 
 //Instantiate 16bit Adder
+//  --adds 2 to calculate PC2
 carryLA_16b adder(.A(pcCurrent),.B(16'h0002),.SUM(PC2),.CI(1'b0),.CO(dummy1),.Ofl(err));
 
 

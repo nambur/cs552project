@@ -47,7 +47,7 @@ module memory2c (data_out, data_in, addr, enable, wr, createdump, clk, rst);
 
    wire [15:0]    data_out;
    
-   reg [7:0]      mem [0:65535];
+   reg [7:0]      mem [0:65535]; //add to memory size
    reg            loaded;
    reg [16:0]     largest;
 
@@ -55,8 +55,6 @@ module memory2c (data_out, data_in, addr, enable, wr, createdump, clk, rst);
    integer        i;
 
 
-   //    assign data_temp_0 = mem[addr];
-   //    assign data_temp_2 = mem[{addr+8'h1];
    assign         data_out = (enable & (~wr))? {mem[addr],mem[addr+8'h1]}: 0;
    initial begin
       loaded = 0;
