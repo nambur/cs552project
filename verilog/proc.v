@@ -60,7 +60,8 @@ module proc (/*AUTOARG*/
 	,.clk(clk),.rst(rst));
 
 	//Write Back Stage
-	writeBack wb(.RdD(RdD),.WrD(WrD),.ALUO(ALUoutput),.MemtoReg(MemtoReg));
+	write_back wb(.RdD(RdD),.WrD(WrD),.ALUO(ALUoutput),.MemtoReg(MemtoReg));
+
 
 	//Control Module
 	control ctrl(.Inst(Instr),.size(size),.halt(halt),.zeroEx(zeroEx)
