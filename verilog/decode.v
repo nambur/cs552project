@@ -19,7 +19,7 @@ always @(*) begin
         3'b101: Imm = {8'h00,Instr[7:0]};
         3'b010: Imm = {{5{Instr[10]}},Instr[10:0]};
         3'b110: Imm = {5'h00,Instr[10:0]};
-        default: Imm = 16'h0000;//TODO should be xxxx
+        default: Imm = 16'hxxxx;
     endcase
 end
 
@@ -51,14 +51,7 @@ rf regFile0(.read1data(out1data),.read2data(out2data),.err(err)//Outputs
 //assign mux2sel = (RegWrite&(WrR==Instr[7:5])) ;
 assign Rd1 = out1data;
 assign Rd2 = out2data;
-//always @(posedge clk or posedge rst) begin
-//if(mux1sel) Rd1 <= writeData;
-//else Rd1 <= out1data;
-//end
-//always @(posedge clk or posedge rst) begin
-//if(mux2sel) Rd2 <= writeData;
-//else Rd2 <= out2data;
-//end
+//Need to add correct logic to above for register bypassing
 endmodule
 
 

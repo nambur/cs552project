@@ -6,7 +6,7 @@ module control(Inst,size,halt,zeroEx,RegDst,Jump,Branch,MemRead
 input [15:0] Inst;
 input rst;
 
-output reg [1:0] size;
+output reg [1:0] size; //holds size of imm value in instruction
 output [4:0] ALUOp;
 output reg [1:0] RegDst,ALUF;
 output reg Jump,Branch,zeroEx,halt,MemRead,MemWrite,MemtoReg,ALUSrc,RegWrite,Dump;
@@ -60,10 +60,7 @@ assign ALUOp = Inst[15:11];
 wire add_r,sub_r,xor_r,andn_r,rol_r,sll_r,ror_r,srl_r;
 
 //R-format instruction select logic
-//
-//
 assign andn_r = (Inst[1]) & (Inst[0]);
-
 assign add_r = (~Inst[1]) & (~Inst[0]);
 assign sub_r = (~Inst[1]) & (Inst[0]);
 assign xor_r = (Inst[1]) & (~Inst[0]);
@@ -77,40 +74,40 @@ assign srl_r = (Inst[1]) & (Inst[0]);
 always @(*) begin
     casex (Inst[1:0])
         2'b00: begin
-            RegDst_tmp = 2'b01; //R-format 
-            ALUF_tmp = 2'b00; 	  //same
-            RegWrite_tmp = 1'b1; //writing to reg...  
+            RegDst_tmp = 2'b01; 
+            ALUF_tmp = 2'b00; 
+            RegWrite_tmp = 1'b1; 
 
             RegDst_tmp2 = 2'b01; //R-format 
-            ALUF_tmp2 = 2'b00; 	  //same
+            ALUF_tmp2 = 2'b00; 	
             RegWrite_tmp2 = 1'b1; //writing to reg...  
         end
         2'b01: begin
             RegDst_tmp = 2'b01; //R-format 
-            ALUF_tmp = 2'b01; 	  //same
-            RegWrite_tmp = 1'b1; //writing to reg...  
+            ALUF_tmp = 2'b01; 
+            RegWrite_tmp = 1'b1; 
 
             RegDst_tmp2 = 2'b01; //R-format 
-            ALUF_tmp2 = 2'b01; 	  //same
+            ALUF_tmp2 = 2'b01; 	 
             RegWrite_tmp2 = 1'b1; //writing to reg...  
         end
         2'b10: begin
             RegDst_tmp = 2'b01; //R-format 
-            ALUF_tmp = 2'b10; 	  //same
+            ALUF_tmp = 2'b10; 	
             RegWrite_tmp = 1'b1; //writing to reg...  
 
             RegDst_tmp2 = 2'b01; //R-format 
-            ALUF_tmp2 = 2'b10; 	  //same
+            ALUF_tmp2 = 2'b10; 
             RegWrite_tmp2 = 1'b1; //writing to reg...  
         end
         2'b11: begin
             RegDst_tmp = 2'b01; //R-format 
-            ALUF_tmp = 2'b11; 	  //same
+            ALUF_tmp = 2'b11; 
             RegWrite_tmp = 1'b1; //writing to reg... 
             zeroEx_tmp = 1'b1;
 
             RegDst_tmp2 = 2'b01; //R-format 
-            ALUF_tmp2 = 2'b11; 	  //same
+            ALUF_tmp2 = 2'b11; 
             RegWrite_tmp2 = 1'b1; //writing to reg...  
         end
     endcase
@@ -147,7 +144,7 @@ always @(*) begin
 
 		ADDI: begin
 		size = 2'b00;
-		RegDst = 2'b00; //correct for I-format 1
+		RegDst = 2'b00; //I-format 1
 		ALUSrc = 1'b1; //1 for sign extended ALU input
 		RegWrite = 1'b1; //writing to register...
 		end
@@ -232,13 +229,12 @@ always @(*) begin
 	 		 
 		//R-format Instructions	
 		BTR:   begin
-//REMOVE --    So yeah I have no fucking idea what this instruction does
 		RegDst = 2'b01; //R-format 
 		Jump = 1'b0;
 		Branch = 1'b0;
 		MemRead = 1'b0;
 		MemWrite = 1'b0; 
-		ALUF = 2'b00; 	  //same
+		ALUF = 2'b00; 
 		MemtoReg = 1'b0;
 		ALUSrc = 1'b0; 
 		RegWrite = 1'b1; //writing to reg...  
@@ -288,32 +284,32 @@ always @(*) begin
 		BNEZ:  begin
 		size = 2'b01;
 		RegDst = 2'b10; //I-format 2 
-		Branch = 1'b1; //CHANGE
+		Branch = 1'b1; 
 		end
 
 		BLTZ:  begin
 		size = 2'b01;
 		RegDst = 2'b10; //I-format 2 
-		Branch = 1'b1; //CHANGE
+		Branch = 1'b1; 
 		end
 
 		BGEZ:  begin
 		size = 2'b01;
 		RegDst = 2'b10; //I-format 2 
-		Branch = 1'b1; //CHANGE
+		Branch = 1'b1; 
 		end
 
 		LBI: begin
 		size = 2'b01;
 		RegDst = 2'b10; //I-format 2 
-		ALUSrc = 1'bx;	//might have to change 
+		ALUSrc = 1'bx;	
 		RegWrite = 1'b1; //writing to reg...  
 		end
 
 		SLBI:  begin
 		size = 2'b01;
 		RegDst = 2'b10; //I-format 2 
-		ALUSrc = 1'b1;	//might have to change 
+		ALUSrc = 1'b1;
 		RegWrite = 1'b1; //writing to reg... 
         zeroEx = 1'b1;
 		end
