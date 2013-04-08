@@ -28,17 +28,21 @@ module proc (/*AUTOARG*/
 	wire [15:0] instr,writeData,rd1,rd2,pcNext,pc2,exOut,rdD,imm;
 	wire [4:0] aluOp;
 	wire [2:0] flag;
+<<<<<<< HEAD
 	wire [1:0] aluF;
+=======
+	wire [1:0] ALUF;
+
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 	//control wires
 	wire memWrite,memRead,zeroEx,dump,halt,memToReg,jump,branch,aluSrc,regWrite;
 	wire [1:0] regDst,size;
 
 	//error wires
 	wire err_fetch,err_decode,err_execute;
-
-    //assign err = err_fetch | err_decode | err_execute;
+//    assign err = err_fetch | err_decode | err_execute;
     assign err = 1'b0;
-
+    
 	//Fetch Stage
 	fetch fetch0(.pcNext(pcNext),.halt(halt),.jump(jump),.branch(branch),.dump(dump),.pc2(pc2),.instr(instr)
 	,.err(err_fetch),.clk(clk),.rst(rst));
@@ -53,6 +57,7 @@ module proc (/*AUTOARG*/
 		,.pcNext(pcNext),.flag(flag),.exOut(exOut),.err(err_execute));
 
 	//Mem Stage
+<<<<<<< HEAD
     //TODO CHANGED Mem_Access -> memory for testing
 	memory memory0(.exOut(exOut),.dataIn(rd2),.rdD(rdD)
 	,.memWrite(memWrite),.memRead(memRead),.dump(dump)
@@ -60,6 +65,15 @@ module proc (/*AUTOARG*/
 
 	//Write Back Stage
 	writeBack wb(.rdD(rdD),.writeData(writeData),.exOut(exOut),.memToReg(memToReg));
+=======
+	memory memory0(.aluResult(ALUoutput),.writeData(Rd2),.RdD(RdD)
+	,.memWrite(MemWrite),.memRead(MemRead),.dump(dump)
+	,.clk(clk),.rst(rst));
+
+	//Write Back Stage
+	write_back wb(.RdD(RdD),.WrD(WrD),.ALUO(ALUoutput),.MemtoReg(MemtoReg));
+
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 
 	//Control Module
 	control ctrl(.instr(instr),.size(size),.halt(halt),.zeroEx(zeroEx)
@@ -69,8 +83,6 @@ module proc (/*AUTOARG*/
 		,.memToReg(memToReg),.aluSrc(aluSrc)
 		,.regWrite(regWrite),.dump(dump),.rst(rst));
 
-
-   
 endmodule // proc
 // DUMMY LINE FOR REV CONTROL :0:
 

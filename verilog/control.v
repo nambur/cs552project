@@ -6,10 +6,17 @@ module control(instr,size,halt,zeroEx,regDst,jump,branch,memRead
 input [15:0] instr;
 input rst;
 
+<<<<<<< HEAD
 output reg [1:0] size;
 output [4:0] aluOp;
 output reg [1:0] regDst,aluF;
 output reg jump,branch,zeroEx,halt,memRead,memWrite,memToReg,aluSrc,regWrite,dump;
+=======
+output reg [1:0] size; //holds size of imm value in instruction
+output [4:0] ALUOp;
+output reg [1:0] RegDst,ALUF;
+output reg Jump,Branch,zeroEx,halt,MemRead,MemWrite,MemtoReg,ALUSrc,RegWrite,Dump;
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 
 reg [1:0] aluF_tmp, regDst_tmp, aluF_tmp2, regDst_tmp2;
 reg regWrite_tmp, regWrite_tmp2, zeroEx_tmp;
@@ -60,6 +67,7 @@ assign aluOp = instr[15:11];
 wire add_r,sub_r,xor_r,andn_r,rol_r,sll_r,ror_r,srl_r;
 
 //R-format instruction select logic
+<<<<<<< HEAD
 //
 //
 assign andn_r = (instr[1]) & (instr[0]);
@@ -72,11 +80,23 @@ assign rol_r = (~instr[1]) & (~instr[0]);
 assign sll_r = (~instr[1]) & (instr[0]);
 assign ror_r = (instr[1]) & (~instr[0]);
 assign srl_r = (instr[1]) & (instr[0]);
+=======
+assign andn_r = (Inst[1]) & (Inst[0]);
+assign add_r = (~Inst[1]) & (~Inst[0]);
+assign sub_r = (~Inst[1]) & (Inst[0]);
+assign xor_r = (Inst[1]) & (~Inst[0]);
+assign andn_r = (Inst[1]) & (Inst[0]);
+assign rol_r = (~Inst[1]) & (~Inst[0]);
+assign sll_r = (~Inst[1]) & (Inst[0]);
+assign ror_r = (Inst[1]) & (~Inst[0]);
+assign srl_r = (Inst[1]) & (Inst[0]);
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 
 // add_thru_andn
 always @(*) begin
     casex (instr[1:0])
         2'b00: begin
+<<<<<<< HEAD
             regDst_tmp = 2'b01; //R-format 
             aluF_tmp = 2'b00; 	  //same
             regWrite_tmp = 1'b1; //writing to reg...  
@@ -112,6 +132,43 @@ always @(*) begin
             regDst_tmp2 = 2'b01; //R-format 
             aluF_tmp2 = 2'b11; 	  //same
             regWrite_tmp2 = 1'b1; //writing to reg...  
+=======
+            RegDst_tmp = 2'b01; 
+            ALUF_tmp = 2'b00; 
+            RegWrite_tmp = 1'b1; 
+
+            RegDst_tmp2 = 2'b01; //R-format 
+            ALUF_tmp2 = 2'b00; 	
+            RegWrite_tmp2 = 1'b1; //writing to reg...  
+        end
+        2'b01: begin
+            RegDst_tmp = 2'b01; //R-format 
+            ALUF_tmp = 2'b01; 
+            RegWrite_tmp = 1'b1; 
+
+            RegDst_tmp2 = 2'b01; //R-format 
+            ALUF_tmp2 = 2'b01; 	 
+            RegWrite_tmp2 = 1'b1; //writing to reg...  
+        end
+        2'b10: begin
+            RegDst_tmp = 2'b01; //R-format 
+            ALUF_tmp = 2'b10; 	
+            RegWrite_tmp = 1'b1; //writing to reg...  
+
+            RegDst_tmp2 = 2'b01; //R-format 
+            ALUF_tmp2 = 2'b10; 
+            RegWrite_tmp2 = 1'b1; //writing to reg...  
+        end
+        2'b11: begin
+            RegDst_tmp = 2'b01; //R-format 
+            ALUF_tmp = 2'b11; 
+            RegWrite_tmp = 1'b1; //writing to reg... 
+            zeroEx_tmp = 1'b1;
+
+            RegDst_tmp2 = 2'b01; //R-format 
+            ALUF_tmp2 = 2'b11; 
+            RegWrite_tmp2 = 1'b1; //writing to reg...  
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
         end
     endcase
 end
@@ -147,9 +204,15 @@ always @(*) begin
 
 		ADDI: begin
 		size = 2'b00;
+<<<<<<< HEAD
 		regDst = 2'b00; //correct for I-format 1
 		aluSrc = 1'b1; //1 for sign extended ALU input
 		regWrite = 1'b1; //writing to register...
+=======
+		RegDst = 2'b00; //I-format 1
+		ALUSrc = 1'b1; //1 for sign extended ALU input
+		RegWrite = 1'b1; //writing to register...
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end
 
 		SUBI: begin
@@ -212,23 +275,42 @@ always @(*) begin
 
 		LD:  begin
 		size = 2'b00;
+<<<<<<< HEAD
         regDst = 2'b00;
 		memRead = 1'b1; //reading from mem...
 		memToReg = 1'b1; //memory to register
 		aluSrc = 1'b1; 
 		regWrite = 1'b1; //writing to reg...  
+=======
+        RegDst = 2'b00;
+        MemWrite = 1'b0;
+		MemRead = 1'b1; //reading from mem...
+		MemtoReg = 1'b1; //memory to register
+		ALUSrc = 1'b1; 
+		RegWrite = 1'b1; //writing to reg...  
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end	 		 	
 
 		STU:   begin
 		size = 2'b00;
+<<<<<<< HEAD
 		regDst = 2'b10; //I-format 1 
 		memWrite = 1'b1; //writing to mem...
 		aluSrc = 1'b1; 
 		regWrite = 1'b1; //also writing to register  
+=======
+		RegDst = 2'b10; //I-format 1 
+		MemWrite = 1'b1; //writing to mem...
+		ALUSrc = 1'b1;
+        //MemtoReg must equal 0 to pass ALUO val through
+        MemtoReg = 1'b0;
+		RegWrite = 1'b1; //also writing to register  
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end	 	
 	 		 
 		//R-format Instructions	
 		BTR:   begin
+<<<<<<< HEAD
 //REMOVE --    So yeah I have no fucking idea what this instruction does
 		regDst = 2'b01; //R-format 
 		jump = 1'b0;
@@ -240,6 +322,18 @@ always @(*) begin
 		aluSrc = 1'b0; 
 		regWrite = 1'b1; //writing to reg...  
 		dump = 1'b0; 
+=======
+		RegDst = 2'b01; //R-format 
+		Jump = 1'b0;
+		Branch = 1'b0;
+		MemRead = 1'b0;
+		MemWrite = 1'b0; 
+		ALUF = 2'b00; 
+		MemtoReg = 1'b0;
+		ALUSrc = 1'b0; 
+		RegWrite = 1'b1; //writing to reg...  
+		Dump = 1'b0; 
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end	 	 	
 
 		ADD_thru_ANDN: begin
@@ -284,34 +378,61 @@ always @(*) begin
 
 		BNEZ:  begin
 		size = 2'b01;
+<<<<<<< HEAD
 		regDst = 2'b10; //I-format 2 
 		branch = 1'b1; //CHANGE
+=======
+		RegDst = 2'b10; //I-format 2 
+		Branch = 1'b1; 
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end
 
 		BLTZ:  begin
 		size = 2'b01;
+<<<<<<< HEAD
 		regDst = 2'b10; //I-format 2 
 		branch = 1'b1; //CHANGE
+=======
+		RegDst = 2'b10; //I-format 2 
+		Branch = 1'b1; 
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end
 
 		BGEZ:  begin
 		size = 2'b01;
+<<<<<<< HEAD
 		regDst = 2'b10; //I-format 2 
 		branch = 1'b1; //CHANGE
+=======
+		RegDst = 2'b10; //I-format 2 
+		Branch = 1'b1; 
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end
 
 		LBI: begin
 		size = 2'b01;
+<<<<<<< HEAD
 		regDst = 2'b10; //I-format 2 
 		aluSrc = 1'bx;	//might have to change 
 		regWrite = 1'b1; //writing to reg...  
+=======
+		RegDst = 2'b10; //I-format 2 
+		ALUSrc = 1'bx;	
+		RegWrite = 1'b1; //writing to reg...  
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end
 
 		SLBI:  begin
 		size = 2'b01;
+<<<<<<< HEAD
 		regDst = 2'b10; //I-format 2 
 		aluSrc = 1'b1;	//might have to change 
 		regWrite = 1'b1; //writing to reg... 
+=======
+		RegDst = 2'b10; //I-format 2 
+		ALUSrc = 1'b1;
+		RegWrite = 1'b1; //writing to reg... 
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
         zeroEx = 1'b1;
 		end
 

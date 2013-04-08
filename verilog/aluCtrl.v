@@ -1,10 +1,18 @@
+<<<<<<< HEAD
 module aluCtrl(aluOp, aluF, opOut, invB, immPass, doSLE, doSEQ, doSCO, doBTR, doSLBI, doSLT);
     input [4:0] aluOp;
     input [1:0] aluF;
+=======
+module aluCtrl(ALUOp, ALUF, opOut, invB, immPass, doSLE, doSEQ, doSCO, doBTR,
+                                                doSLBI, doSLT, doSTU);
+    input [4:0] ALUOp;
+    input [1:0] ALUF;
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 
     output reg [3:0] opOut;
-    output invB, immPass, doSCO, doSLBI, doSLE, doBTR, doSEQ, doSLT;
+    output invB, immPass, doSCO, doSLBI, doSLE, doBTR, doSEQ, doSLT,doSTU;
 
+<<<<<<< HEAD
     assign invB = (aluOp == 5'b01011) | ((aluOp == 5'b11011) & (aluF == 2'b11));
     assign immPass = (aluOp == 5'b11000) ? 1'b1 : 1'b0;
     assign doSLBI = (aluOp == 5'b10010) ? 1'b1 : 1'b0;
@@ -13,6 +21,17 @@ module aluCtrl(aluOp, aluF, opOut, invB, immPass, doSLE, doSEQ, doSCO, doBTR, do
     assign doSCO = (aluOp == 5'b11111) ? 1'b1 : 1'b0;
     assign doSEQ = (aluOp == 5'b11100) ? 1'b1 : 1'b0;
     assign doSLE = (aluOp == 5'b11110) ? 1'b1 : 1'b0;
+=======
+    assign invB = (ALUOp == 5'b01011) | ((ALUOp == 5'b11011) & (ALUF == 2'b11));
+    assign immPass = (ALUOp == 5'b11000) ? 1'b1 : 1'b0;
+    assign doSLBI = (ALUOp == 5'b10010) ? 1'b1 : 1'b0;
+    assign doSLT = (ALUOp == 5'b11101) ? 1'b1 : 1'b0; 
+    assign doBTR = (ALUOp == 5'b11001) ? 1'b1 : 1'b0;
+    assign doSCO = (ALUOp == 5'b11111) ? 1'b1 : 1'b0;
+    assign doSEQ = (ALUOp == 5'b11100) ? 1'b1 : 1'b0;
+    assign doSLE = (ALUOp == 5'b11110) ? 1'b1 : 1'b0;
+    assign doSTU = (ALUOp == 5'b10011) ? 1'b1 :1'b0;
+>>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 
     always @(*) begin
         casex ({aluF, aluOp})
