@@ -6,8 +6,8 @@ input Jump,Branch,clk,halt,rst,Dump;
 output [15:0] instr, PC2;
 output err;
 
-wire [15:0] PC_FF_in, pcCurrent, dummy, dummy1;
-wire first, first_n;
+wire [15:0] PC_FF_in, pcCurrent, dummy;
+wire first, first_n,dummy1;
 
 //Create PC FF
 //	--always enabled
@@ -21,6 +21,7 @@ memory2c imem (.data_out(instr), .data_in(dummy), .addr(pcCurrent), .enable(1'b1
 
 //Instantiate 16bit Adder
 carryLA_16b adder(.A(pcCurrent),.B(16'h0002),.SUM(PC2),.CI(1'b0),.CO(dummy1),.Ofl(err));
+
 
 //PC select mux logic
 assign PC_FF_in = (Jump|Branch) ? pcNext : PC2;

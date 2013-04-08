@@ -213,6 +213,7 @@ always @(*) begin
 		LD:  begin
 		size = 2'b00;
         RegDst = 2'b00;
+        MemWrite = 1'b0;
 		MemRead = 1'b1; //reading from mem...
 		MemtoReg = 1'b1; //memory to register
 		ALUSrc = 1'b1; 
@@ -223,7 +224,9 @@ always @(*) begin
 		size = 2'b00;
 		RegDst = 2'b10; //I-format 1 
 		MemWrite = 1'b1; //writing to mem...
-		ALUSrc = 1'b1; 
+		ALUSrc = 1'b1;
+        //MemtoReg must equal 0 to pass ALUO val through
+        MemtoReg = 1'b0;
 		RegWrite = 1'b1; //also writing to register  
 		end	 	
 	 		 

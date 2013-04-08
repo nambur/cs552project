@@ -12,19 +12,20 @@ module proc_hier_bench();
    
 
    wire [15:0] PC;
-   wire [15:0] Inst;           /* This should be the 15 bits of the FF that
+   wire [15:0] Inst,Inst1;           /* This should be the 15 bits of the FF that
                                   stores instructions fetched from instruction memory
                                */
    wire        RegWrite;       /* Whether register file is being written to */
    wire [2:0]  WriteRegister;  /* What register is written */
-   wire [15:0] WriteData;      /* Data */
+   wire [15:0] WriteData, WrD;      /* Data */
    wire        MemWrite;       /* Similar as above but for memory */
    wire        MemRead;
-   wire [15:0] MemAddress;
-   wire [15:0] MemData;
+   wire [15:0] MemAddress,aluResult;
+   wire [15:0] MemData,memDataIn;
    wire [15:0] Imm;
    wire immpass,doSLBI;
-   wire [2:0] flag;
+   wire [1:0] size;
+   wire [2:0] flag, WrR;
    wire [15:0] Rd1,Rd2, aluOut,memOut, addA, addB, addSum;
     wire [2:0] Op;
    wire        Halt;         /* Halt executed and in Memory or writeback stage */
@@ -75,15 +76,24 @@ module proc_hier_bench();
                         WriteData,
                       MemAddress,
                         MemData);
-                
-                
-           //     $fdisplay(trace_file, "aluResult: 0x%x", aluResult);
-            //    $fdisplay(trace_file, "memRead: 0x%x", MemRead);
-             //   $fdisplay(trace_file, "memRead: 0x%x", MemRead);
-             //   $fdisplay(trace_file, "memReadorWrite: 0x%x", memReadorWrite);        
-             //   $fdisplay(trace_file, "memWrite: 0x%x", MemWrite);
-              // $fdisplay(trace_file, "writeregsel: 0x%x", writeregsel);
-              // $fdisplay(trace_file, "aluOut: 0x%x", aluOut);
+              //  $fdisplay(trace_file, "memDatain memory.v : x%x",memDataIn);
+             //  $fdisplay(trace_file, "WriteData in Decode: 0x%x", WriteData);
+               //$fdisplay(trace_file, "Imm: 0x%x", Imm);
+               // $fdisplay(trace_file, "size from decode: x%b",size);
+               // $fdisplay(trace_file, "aluResult: 0x%x", aluResult);
+              // $fdisplay(trace_file, "memRead: 0x%x", MemRead);
+                //$fdisplay(trace_file, "memWrite: 0x%x", memWrite);
+                //$fdisplay(trace_file, "memReadorWrite: 0x%x", memReadorWrite);        
+                // $fdisplay(trace_file, "addr from aluResult: 0x%x", aluResult);
+              //  $fdisplay(trace_file, "memWrite: 0x%x", MemWrite);
+               //$fdisplay(trace_file, "writeregsel: 0x%x", writeregsel);
+                // $fdisplay(trace_file, "intruction input: 0x%x", Inst1);
+                // $fdisplay(trace_file, "Rd2 (also write data into mem): 0x%x", Rd2);
+                 //$fdisplay(trace_file, "Rd1: 0x%x", Rd1);
+               //  $fdisplay(trace_file, "RdD out of memory.v: 0x%x", RdD);
+             //  $fdisplay(trace_file, "data out of writeback: 0x%x", WrD);
+             //  $fdisplay(trace_file, "WriteData in Decode: 0x%x", WriteData);
+            //   $fdisplay(trace_file, "Decode register write addr: 0x%b", WrR);
               // $fdisplay(trace_file, "ENDING STU IF STATEMENT ----");
             end else if (MemRead) begin
                // ld
@@ -93,16 +103,25 @@ module proc_hier_bench();
                         WriteRegister,
                         WriteData,
                         MemAddress);
-            //     $fdisplay(trace_file, "memWrite: 0x%x", MemWrite);
+                     //   $fdisplay(trace_file, "Rd2: 0x%x", Rd2);
+             //  $fdisplay(trace_file, "Rd1: 0x%x", Rd1);
+
+                // $fdisplay(trace_file, "RdD out of memory.v: 0x%x", RdD);
+                // $fdisplay(trace_file, "addr from aluResult: 0x%x", aluResult);
+              //   $fdisplay(trace_file, "memReadorWrite: 0x%x", memRorW);
+                // $fdisplay(trace_file, "memWrite: 0x%x", memWrite);
+               //$fdisplay(trace_file, "memRead: 0x%x", memRead);
+               // $fdisplay(trace_file, "intruction input: 0x%x", Inst1);
            //     $fdisplay(trace_file, "memReadorWrite: 0x%x", memReadorWrite);        
-            //   $fdisplay(trace_file, "RdD: 0x%x", memOut);
+              // $fdisplay(trace_file, "RdD: 0x%x", memOut);
             end else begin
+                //addi
                $fdisplay(trace_file,"INUM: %8d PC: 0x%04x REG: %d VALUE: 0x%04x",
                          (inst_count-1),
                         PC,
                         WriteRegister,
                         WriteData );
-           //    $fdisplay(trace_file, "Imm: 0x%x", Imm);
+             // $fdisplay(trace_file, "Imm: 0x%x", Imm);
            //    $fdisplay(trace_file, "immpass: 0x%x", immpass);
          //      $fdisplay(trace_file, "inst: 0x%x", Inst);
            //    $fdisplay(trace_file, "slbiOut: 0x%x", slbiOut);
@@ -111,7 +130,7 @@ module proc_hier_bench();
                //$fdisplay(trace_file, "write: 0x%x", write);
             //   $fdisplay(trace_file, "invB: 0x%x", invB);
             //   $fdisplay(trace_file, "Rd1: 0x%x", Rd1);
-             //  $fdisplay(trace_file, "Rd2: 0x%x", Rd2);
+            //  $fdisplay(trace_file, "Rd2: 0x%x", Rd2);
             //   $fdisplay(trace_file, "aluOut: 0x%x", aluOut);
            //    $fdisplay(trace_file, "Op: 0x%x", Op);
                //$fdisplay(trace_file, "flag: 0x%x", flag);
@@ -168,7 +187,7 @@ module proc_hier_bench();
 
    // Edit the example below. You must change the signal
    // names on the right hand side
-    
+    assign WrD = DUT.p0.WrD;
    assign PC = DUT.p0.fetch0.pcCurrent;
    assign Inst = DUT.p0.fetch0.instr;
    
@@ -178,7 +197,7 @@ module proc_hier_bench();
    assign WriteRegister = DUT.p0.decode0.regFile0.writeregsel;
    // The name of the register being written to. (3 bit signal)
 
-   assign WriteData = DUT.p0.decode0.regFile0.writeData;
+   assign WriteData = DUT.p0.decode0.regFile0.writedata;
    // Data being written to the register. (16 bits)
    
    assign MemRead =  DUT.p0.memory0.memRead;
@@ -190,13 +209,23 @@ module proc_hier_bench();
    assign MemAddress = DUT.p0.memory0.aluResult;
    // Address to access memory with (for both reads and writes to memory, 16 bits)
    
+   //added
+   assign size = DUT.p0.size;
+   assign Inst1 = DUT.p0.ctrl.Inst;
+   assign memRorW = DUT.p0.memory0.memReadorWrite;
+   assign memWrite = DUT.p0.memory0.memWrite;
+   assign memRead = DUT.p0.memory0.memRead;
+   assign RdD = DUT.p0.memory0.RdD;
+   assign aluResult = DUT.p0.memory0.aluResult;
    assign MemData = DUT.p0.memory0.writeData;
+   assign memDataIn = DUT.p0.memory0.mem.data_in;
    // Data to be written to memory for memory writes (16 bits)
    
    assign Halt = DUT.p0.ctrl.halt;
    // Is processor halted (1 bit signal)
    
    /* Add anything else you want here */
+   assign WrR = DUT.p0.decode0.WrR;
    assign immpass = DUT.p0.ex.immPass;
    assign doSLBI= DUT.p0.ex.doSLBI;
    assign Imm = DUT.p0.ex.Imm;
@@ -212,7 +241,6 @@ module proc_hier_bench();
    assign takeBranch = DUT.p0.ex.BRANCHCTRL.takeBranch;
    assign pcNext = DUT.p0.fetch0.pcNext;
    assign memReadorWrite = DUT.p0.memory0.memReadorWrite;
-   assign memWrite = DUT.p0.MemRead;
    assign memOut = DUT.p0.memory0.RdD;
    assign CO = DUT.p0.ex.THEALU.CO;
    assign addA = DUT.p0.ex.THEALU.CLA.A;
