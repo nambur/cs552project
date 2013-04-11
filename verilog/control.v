@@ -1,25 +1,18 @@
 //John Vennard and Nick Ambur
 //Control Module
-module control(instr,size,halt,zeroEx,regDst,jump,branch,memRead
-		,memWrite,aluOp,aluF,memToReg,
-		aluSrc,regWrite,dump,rst);
-input [15:0] instr;
+module control(Inst,size,halt,zeroEx,RegDst,Jump,Branch,MemRead
+		,MemWrite,ALUOp,ALUF,MemtoReg,
+		ALUSrc,RegWrite,Dump,rst);
+input [15:0] Inst;
 input rst;
 
-<<<<<<< HEAD
 output reg [1:0] size;
-output [4:0] aluOp;
-output reg [1:0] regDst,aluF;
-output reg jump,branch,zeroEx,halt,memRead,memWrite,memToReg,aluSrc,regWrite,dump;
-=======
-output reg [1:0] size; //holds size of imm value in instruction
 output [4:0] ALUOp;
 output reg [1:0] RegDst,ALUF;
 output reg Jump,Branch,zeroEx,halt,MemRead,MemWrite,MemtoReg,ALUSrc,RegWrite,Dump;
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 
-reg [1:0] aluF_tmp, regDst_tmp, aluF_tmp2, regDst_tmp2;
-reg regWrite_tmp, regWrite_tmp2, zeroEx_tmp;
+reg [1:0] ALUF_tmp, RegDst_tmp, ALUF_tmp2, RegDst_tmp2;
+reg RegWrite_tmp, RegWrite_tmp2, zeroEx_tmp;
 
 //Include constant definitions for opcodes 
 localparam HALT = 5'b00000;
@@ -61,27 +54,16 @@ localparam SIIC = 5'b00010;
 localparam NOP_RTI = 5'b00011;
 
 //ALUControl
-assign aluOp = instr[15:11];
+assign ALUOp = Inst[15:11];
 
 //Internal control registers
 wire add_r,sub_r,xor_r,andn_r,rol_r,sll_r,ror_r,srl_r;
 
 //R-format instruction select logic
-<<<<<<< HEAD
 //
 //
-assign andn_r = (instr[1]) & (instr[0]);
-
-assign add_r = (~instr[1]) & (~instr[0]);
-assign sub_r = (~instr[1]) & (instr[0]);
-assign xor_r = (instr[1]) & (~instr[0]);
-assign andn_r = (instr[1]) & (instr[0]);
-assign rol_r = (~instr[1]) & (~instr[0]);
-assign sll_r = (~instr[1]) & (instr[0]);
-assign ror_r = (instr[1]) & (~instr[0]);
-assign srl_r = (instr[1]) & (instr[0]);
-=======
 assign andn_r = (Inst[1]) & (Inst[0]);
+
 assign add_r = (~Inst[1]) & (~Inst[0]);
 assign sub_r = (~Inst[1]) & (Inst[0]);
 assign xor_r = (Inst[1]) & (~Inst[0]);
@@ -90,85 +72,46 @@ assign rol_r = (~Inst[1]) & (~Inst[0]);
 assign sll_r = (~Inst[1]) & (Inst[0]);
 assign ror_r = (Inst[1]) & (~Inst[0]);
 assign srl_r = (Inst[1]) & (Inst[0]);
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 
 // add_thru_andn
 always @(*) begin
-    casex (instr[1:0])
+    casex (Inst[1:0])
         2'b00: begin
-<<<<<<< HEAD
-            regDst_tmp = 2'b01; //R-format 
-            aluF_tmp = 2'b00; 	  //same
-            regWrite_tmp = 1'b1; //writing to reg...  
-
-            regDst_tmp2 = 2'b01; //R-format 
-            aluF_tmp2 = 2'b00; 	  //same
-            regWrite_tmp2 = 1'b1; //writing to reg...  
-        end
-        2'b01: begin
-            regDst_tmp = 2'b01; //R-format 
-            aluF_tmp = 2'b01; 	  //same
-            regWrite_tmp = 1'b1; //writing to reg...  
-
-            regDst_tmp2 = 2'b01; //R-format 
-            aluF_tmp2 = 2'b01; 	  //same
-            regWrite_tmp2 = 1'b1; //writing to reg...  
-        end
-        2'b10: begin
-            regDst_tmp = 2'b01; //R-format 
-            aluF_tmp = 2'b10; 	  //same
-            regWrite_tmp = 1'b1; //writing to reg...  
-
-            regDst_tmp2 = 2'b01; //R-format 
-            aluF_tmp2 = 2'b10; 	  //same
-            regWrite_tmp2 = 1'b1; //writing to reg...  
-        end
-        2'b11: begin
-            regDst_tmp = 2'b01; //R-format 
-            aluF_tmp = 2'b11; 	  //same
-            regWrite_tmp = 1'b1; //writing to reg... 
-            zeroEx_tmp = 1'b1;
-
-            regDst_tmp2 = 2'b01; //R-format 
-            aluF_tmp2 = 2'b11; 	  //same
-            regWrite_tmp2 = 1'b1; //writing to reg...  
-=======
-            RegDst_tmp = 2'b01; 
-            ALUF_tmp = 2'b00; 
-            RegWrite_tmp = 1'b1; 
-
-            RegDst_tmp2 = 2'b01; //R-format 
-            ALUF_tmp2 = 2'b00; 	
-            RegWrite_tmp2 = 1'b1; //writing to reg...  
-        end
-        2'b01: begin
             RegDst_tmp = 2'b01; //R-format 
-            ALUF_tmp = 2'b01; 
-            RegWrite_tmp = 1'b1; 
-
-            RegDst_tmp2 = 2'b01; //R-format 
-            ALUF_tmp2 = 2'b01; 	 
-            RegWrite_tmp2 = 1'b1; //writing to reg...  
-        end
-        2'b10: begin
-            RegDst_tmp = 2'b01; //R-format 
-            ALUF_tmp = 2'b10; 	
+            ALUF_tmp = 2'b00; 	  //same
             RegWrite_tmp = 1'b1; //writing to reg...  
 
             RegDst_tmp2 = 2'b01; //R-format 
-            ALUF_tmp2 = 2'b10; 
+            ALUF_tmp2 = 2'b00; 	  //same
+            RegWrite_tmp2 = 1'b1; //writing to reg...  
+        end
+        2'b01: begin
+            RegDst_tmp = 2'b01; //R-format 
+            ALUF_tmp = 2'b01; 	  //same
+            RegWrite_tmp = 1'b1; //writing to reg...  
+
+            RegDst_tmp2 = 2'b01; //R-format 
+            ALUF_tmp2 = 2'b01; 	  //same
+            RegWrite_tmp2 = 1'b1; //writing to reg...  
+        end
+        2'b10: begin
+            RegDst_tmp = 2'b01; //R-format 
+            ALUF_tmp = 2'b10; 	  //same
+            RegWrite_tmp = 1'b1; //writing to reg...  
+
+            RegDst_tmp2 = 2'b01; //R-format 
+            ALUF_tmp2 = 2'b10; 	  //same
             RegWrite_tmp2 = 1'b1; //writing to reg...  
         end
         2'b11: begin
             RegDst_tmp = 2'b01; //R-format 
-            ALUF_tmp = 2'b11; 
+            ALUF_tmp = 2'b11; 	  //same
             RegWrite_tmp = 1'b1; //writing to reg... 
             zeroEx_tmp = 1'b1;
 
             RegDst_tmp2 = 2'b01; //R-format 
-            ALUF_tmp2 = 2'b11; 
+            ALUF_tmp2 = 2'b11; 	  //same
             RegWrite_tmp2 = 1'b1; //writing to reg...  
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
         end
     endcase
 end
@@ -179,318 +122,257 @@ always @(*) begin
 	size = 2'bxx;
 	zeroEx = 1'b0;
 	halt = 1'b0;
-	regDst = 2'bxx; 
-	jump = 1'b0;
-	branch = 1'b0;
-	memRead = 1'b0;
-	memWrite = 1'b0;
-	aluF = 2'bxx;
-	memToReg = 1'b0;
-	aluSrc = 1'b0;
-	regWrite = 1'b0;
-	dump = 1'b0;
-	casex(instr[15:11])
+	RegDst = 2'bxx; 
+	Jump = 1'b0;
+	Branch = 1'b0;
+	MemRead = 1'b0;
+	MemWrite = 1'b0;
+	ALUF = 2'bxx;
+	MemtoReg = 1'b0;
+	ALUSrc = 1'b0;
+	RegWrite = 1'b0;
+	Dump = 1'b0;
+	casex(Inst[15:11])
 		HALT: begin
 		halt = 1'b1; //halts execution by disabling PC FF in fetch stage		
-		dump = 1'b1; 	//dump Mem File Data
+		Dump = 1'b1; 	//Dump Mem File Data
 		end
 
 		NOP: begin
 		//Output set to Defaults
-		regDst = 2'bxx; 
-		aluF = 2'bxx;
-		aluSrc = 1'bx;
+		RegDst = 2'bxx; 
+		ALUF = 2'bxx;
+		ALUSrc = 1'bx;
 		end
 
 		ADDI: begin
 		size = 2'b00;
-<<<<<<< HEAD
-		regDst = 2'b00; //correct for I-format 1
-		aluSrc = 1'b1; //1 for sign extended ALU input
-		regWrite = 1'b1; //writing to register...
-=======
-		RegDst = 2'b00; //I-format 1
+		RegDst = 2'b00; //correct for I-format 1
 		ALUSrc = 1'b1; //1 for sign extended ALU input
 		RegWrite = 1'b1; //writing to register...
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end
 
 		SUBI: begin
 		size = 2'b00;
-		regDst = 2'b00; //I-format 1 
-		aluSrc = 1'b1; //sign extended input
-		regWrite = 1'b1; //writing to register... 
+		RegDst = 2'b00; //I-format 1 
+		ALUSrc = 1'b1; //sign extended input
+		RegWrite = 1'b1; //writing to register... 
 		end
 
 		XORI: begin
 		size = 2'b00;
 		zeroEx = 1'b1;
-		regDst = 2'b00; //I-format 1 
-		aluSrc = 1'b1; //sign extended input
-		regWrite = 1'b1; //writing to register... 
+		RegDst = 2'b00; //I-format 1 
+		ALUSrc = 1'b1; //sign extended input
+		RegWrite = 1'b1; //writing to register... 
 		end
 
 		ANDNI: begin
 		size = 2'b00;
 		zeroEx = 1'b1;
-		regDst = 2'b00; //I-format 1 
-		aluSrc = 1'b1; //sign extended input
-		regWrite = 1'b1; //writing to register... 
+		RegDst = 2'b00; //I-format 1 
+		ALUSrc = 1'b1; //sign extended input
+		RegWrite = 1'b1; //writing to register... 
 		end
 
 		ROLI: begin
 		size = 2'b00;
-		regDst = 2'b00; //I-format 1 
-		aluSrc = 1'b1; //sign extended input
-		regWrite = 1'b1; //writing to register... 
+		RegDst = 2'b00; //I-format 1 
+		ALUSrc = 1'b1; //sign extended input
+		RegWrite = 1'b1; //writing to register... 
 		end
 
 		SLLI: begin
 		size = 2'b00;
-		regDst = 2'b00; //I-format 1 
-		aluSrc = 1'b1; //sign extended input
-		regWrite = 1'b1; //writing to register... 
+		RegDst = 2'b00; //I-format 1 
+		ALUSrc = 1'b1; //sign extended input
+		RegWrite = 1'b1; //writing to register... 
 		end
 
 		RORI: begin
 		size = 2'b00;
-		regDst = 2'b00; //I-format 1 
-		aluSrc = 1'b1; //sign extended input
-		regWrite = 1'b1; //writing to register... 
+		RegDst = 2'b00; //I-format 1 
+		ALUSrc = 1'b1; //sign extended input
+		RegWrite = 1'b1; //writing to register... 
 		end
 
 		SRLI:  begin
 		size = 2'b00;
-		regDst = 2'b00; //I-format 1 
-		aluSrc = 1'b1; //sign extended input
-		regWrite = 1'b1; //writing to register... 
+		RegDst = 2'b00; //I-format 1 
+		ALUSrc = 1'b1; //sign extended input
+		RegWrite = 1'b1; //writing to register... 
 		end
 
 		ST:  begin
 		size = 2'b00;
-		memWrite = 1'b1; //writing to mem...
-        regDst = 2'b00;
-		aluSrc = 1'b1; 
+		MemWrite = 1'b1; //writing to mem...
+        RegDst = 2'b00;
+		ALUSrc = 1'b1; 
 		end	 	
 
 		LD:  begin
 		size = 2'b00;
-<<<<<<< HEAD
-        regDst = 2'b00;
-		memRead = 1'b1; //reading from mem...
-		memToReg = 1'b1; //memory to register
-		aluSrc = 1'b1; 
-		regWrite = 1'b1; //writing to reg...  
-=======
         RegDst = 2'b00;
         MemWrite = 1'b0;
 		MemRead = 1'b1; //reading from mem...
 		MemtoReg = 1'b1; //memory to register
 		ALUSrc = 1'b1; 
 		RegWrite = 1'b1; //writing to reg...  
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end	 		 	
 
 		STU:   begin
 		size = 2'b00;
-<<<<<<< HEAD
-		regDst = 2'b10; //I-format 1 
-		memWrite = 1'b1; //writing to mem...
-		aluSrc = 1'b1; 
-		regWrite = 1'b1; //also writing to register  
-=======
 		RegDst = 2'b10; //I-format 1 
 		MemWrite = 1'b1; //writing to mem...
 		ALUSrc = 1'b1;
         //MemtoReg must equal 0 to pass ALUO val through
         MemtoReg = 1'b0;
 		RegWrite = 1'b1; //also writing to register  
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end	 	
 	 		 
 		//R-format Instructions	
 		BTR:   begin
-<<<<<<< HEAD
 //REMOVE --    So yeah I have no fucking idea what this instruction does
-		regDst = 2'b01; //R-format 
-		jump = 1'b0;
-		branch = 1'b0;
-		memRead = 1'b0;
-		memWrite = 1'b0; 
-		aluF = 2'b00; 	  //same
-		memToReg = 1'b0;
-		aluSrc = 1'b0; 
-		regWrite = 1'b1; //writing to reg...  
-		dump = 1'b0; 
-=======
 		RegDst = 2'b01; //R-format 
 		Jump = 1'b0;
 		Branch = 1'b0;
 		MemRead = 1'b0;
 		MemWrite = 1'b0; 
-		ALUF = 2'b00; 
+		ALUF = 2'b00; 	  //same
 		MemtoReg = 1'b0;
 		ALUSrc = 1'b0; 
 		RegWrite = 1'b1; //writing to reg...  
 		Dump = 1'b0; 
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end	 	 	
 
 		ADD_thru_ANDN: begin
-        regDst = regDst_tmp; 
-        aluF = aluF_tmp;
-        regWrite = regWrite_tmp;
+        RegDst = RegDst_tmp; 
+        ALUF = ALUF_tmp;
+        RegWrite = RegWrite_tmp;
         zeroEx = zeroEx_tmp;
         end
 
 	 	ROL_thru_SRL: begin
-        regDst = regDst_tmp2; 
-        aluF = aluF_tmp2;
-        regWrite = regWrite_tmp2;
+        RegDst = RegDst_tmp2; 
+        ALUF = ALUF_tmp2;
+        RegWrite = RegWrite_tmp2;
         end	
 	
 		SEQ: begin
-		regDst = 2'b01; //R-format 
-		regWrite = 1'b1; //writing to reg...  
+		RegDst = 2'b01; //R-format 
+		RegWrite = 1'b1; //writing to reg...  
 		end
 
 		SLT: begin
-		regDst = 2'b01; //R-format 
-		regWrite = 1'b1; //writing to reg...  
+		RegDst = 2'b01; //R-format 
+		RegWrite = 1'b1; //writing to reg...  
 		end
 		
 		SLE: begin
-		regDst = 2'b01; //R-format 
-		regWrite = 1'b1; //writing to reg...  
+		RegDst = 2'b01; //R-format 
+		RegWrite = 1'b1; //writing to reg...  
 		end
 
 		SCO:  begin
-		regDst = 2'b01; //R-format 
-		regWrite = 1'b1; //writing to reg...  
+		RegDst = 2'b01; //R-format 
+		RegWrite = 1'b1; //writing to reg...  
 		end
 		
 		//I-Format 2 Instructions
 		BEQZ: begin
 		size = 2'b01;
-		regDst = 2'b10; //I-format 2 
-		branch = 1'b1; 
+		RegDst = 2'b10; //I-format 2 
+		Branch = 1'b1; 
 		end
 
 		BNEZ:  begin
 		size = 2'b01;
-<<<<<<< HEAD
-		regDst = 2'b10; //I-format 2 
-		branch = 1'b1; //CHANGE
-=======
 		RegDst = 2'b10; //I-format 2 
-		Branch = 1'b1; 
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
+		Branch = 1'b1; //CHANGE
 		end
 
 		BLTZ:  begin
 		size = 2'b01;
-<<<<<<< HEAD
-		regDst = 2'b10; //I-format 2 
-		branch = 1'b1; //CHANGE
-=======
 		RegDst = 2'b10; //I-format 2 
-		Branch = 1'b1; 
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
+		Branch = 1'b1; //CHANGE
 		end
 
 		BGEZ:  begin
 		size = 2'b01;
-<<<<<<< HEAD
-		regDst = 2'b10; //I-format 2 
-		branch = 1'b1; //CHANGE
-=======
 		RegDst = 2'b10; //I-format 2 
-		Branch = 1'b1; 
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
+		Branch = 1'b1; //CHANGE
 		end
 
 		LBI: begin
 		size = 2'b01;
-<<<<<<< HEAD
-		regDst = 2'b10; //I-format 2 
-		aluSrc = 1'bx;	//might have to change 
-		regWrite = 1'b1; //writing to reg...  
-=======
 		RegDst = 2'b10; //I-format 2 
-		ALUSrc = 1'bx;	
+		ALUSrc = 1'bx;	//might have to change 
 		RegWrite = 1'b1; //writing to reg...  
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
 		end
 
 		SLBI:  begin
 		size = 2'b01;
-<<<<<<< HEAD
-		regDst = 2'b10; //I-format 2 
-		aluSrc = 1'b1;	//might have to change 
-		regWrite = 1'b1; //writing to reg... 
-=======
 		RegDst = 2'b10; //I-format 2 
-		ALUSrc = 1'b1;
+		ALUSrc = 1'b1;	//might have to change 
 		RegWrite = 1'b1; //writing to reg... 
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
         zeroEx = 1'b1;
 		end
 
 		//J-Format Instructions
 		J: begin
 		size = 2'b10;
-		jump = 1'b1;  //jumping... 
+		Jump = 1'b1;  //jumping... 
 		end
 
 		JR:  begin
 		size = 2'b01;
-		regDst = 2'b10;	
-		jump = 1'b1;  //jumping...
-		aluSrc = 1'b1; 
+		RegDst = 2'b10;	
+		Jump = 1'b1;  //jumping...
+		ALUSrc = 1'b1; 
 		end
 
 		JAL: begin
 		size = 2'b10;
-		jump = 1'b1;  //jumping... 
-		regWrite = 1'b1; //writing to reg r7... 
-        regDst = 2'b11;
+		Jump = 1'b1;  //jumping... 
+		RegWrite = 1'b1; //writing to reg r7... 
+        RegDst = 2'b11;
 		end
 
 		JALR: begin
 		size = 2'b01;
-		regDst = 2'b11;	
-		jump = 1'b1;  //jumping... 
-		aluSrc = 1'b1;	 
-		regWrite = 1'b1; //writing to reg r7...  
+		RegDst = 2'b11;	
+		Jump = 1'b1;  //jumping... 
+		ALUSrc = 1'b1;	 
+		RegWrite = 1'b1; //writing to reg r7...  
 		end
 
 //EXTRA CREDIT
 		SIIC: begin
 		//SHOULD PRODUCE ILLEGALOP EXCEPTION
 		//DEFAULTED IN THIS IMPLEMENTATION
-		regDst = 2'bxx; //Ignored 
-		jump = 1'b0;  
-		branch = 1'b0; 
-		memRead = 1'bx;
-		memWrite = 1'b0; 
-		memToReg = 1'b0;
-		aluSrc = 1'b0;	 
-		regWrite = 1'b0;  
+		RegDst = 2'bxx; //Ignored 
+		Jump = 1'b0;  
+		Branch = 1'b0; 
+		MemRead = 1'bx;
+		MemWrite = 1'b0; 
+		MemtoReg = 1'b0;
+		ALUSrc = 1'b0;	 
+		RegWrite = 1'b0;  
 		end
 
 		NOP_RTI: begin
 		//PC <- EPC
 		//DEFAULTED IN THIS IMPLEMENTATION
-		regDst = 2'b00; //Ignored 
-		jump = 1'b0;  
-		branch = 1'b0; 
-		memRead = 1'b0;
-		memWrite = 1'b0; 
-		aluF = 2'b00; 	 
-		memToReg = 1'b0;
-		aluSrc = 1'b0;	 
-		regWrite = 1'b0;  
-		dump = 1'b0; 
+		RegDst = 2'b00; //Ignored 
+		Jump = 1'b0;  
+		Branch = 1'b0; 
+		MemRead = 1'b0;
+		MemWrite = 1'b0; 
+		ALUF = 2'b00; 	 
+		MemtoReg = 1'b0;
+		ALUSrc = 1'b0;	 
+		RegWrite = 1'b0;  
+		Dump = 1'b0; 
 		end
 		//defaults
 	endcase

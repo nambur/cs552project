@@ -1,11 +1,11 @@
 //John Vennard and Nick Ambur
 //Write Back Stage
-module writeBack(rdD,writeData,exOut,memToReg);
-input [15:0] rdD,exOut;
-input memToReg;
+module writeBack(RdD,WrD,ALUO,MemtoReg);
+input [15:0] RdD,ALUO;
+input MemtoReg;
 
-output [15:0] writeData;
+output [15:0] WrD;
 
-assign writeData = memToReg ? rdD : exOut;
+assign WrD = MemtoReg ? RdD : ALUO;
 
 endmodule

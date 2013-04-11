@@ -14,7 +14,7 @@ module alu (A, B, Op, invA, invB, sign, Out, Ofl, Z, CO, err);
 
         reg[15:0] Out;
 
-        wire[15:0] shifterOut, adderOut, subAdderOut, Binv;
+        wire[15:0] shifterOut, adderOut, subAdderOut, Ainv, Binv;
         reg[15:0] subAdderA, Ain, Bin;
         wire signOfl, subSignOfl, dummyCO;
 

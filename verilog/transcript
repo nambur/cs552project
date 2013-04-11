@@ -44,10 +44,10 @@
 # Loading __work.shift_right_log
 # Loading __work.aluCtrl
 # Loading __work.memory
-# Loading __work.write_back
+# Loading __work.writeBack
 # Loading __work.control
 run -all
 # Hello world...simulation starting
 # See verilogsim.log and verilogsim.trace for output
 # ** Note: $finish    : proc_hier_bench.v(155)
-#    Time: 215500 ns  Iteration: 0  Instance: /proc_hier_bench
+#    Time: 500 ns  Iteration: 0  Instance: /proc_hier_bench

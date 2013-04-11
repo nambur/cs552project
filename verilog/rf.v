@@ -15,7 +15,6 @@ module rf (read1data, read2data, err,clk, rst, read1regsel, read2regsel, writere
    wire [15:0] regOut0,regOut1,regOut2,regOut3,regOut4,regOut5,regOut6,regOut7;
    wire [7:0] regSel,regS;
    wire [127:0] muxIn;
-
    //Instantiate 16-bit registers
    reg16bit reg0(.clk(clk),.rst(rst),.en(regSel[0]),.in(writedata),.out(regOut0));
    reg16bit reg1(.clk(clk),.rst(rst),.en(regSel[1]),.in(writedata),.out(regOut1));
@@ -44,8 +43,6 @@ module rf (read1data, read2data, err,clk, rst, read1regsel, read2regsel, writere
    b16mux8_1 mux0(.in(muxIn),.s(read1regsel),.out(read1data));
    b16mux8_1 mux1(.in(muxIn),.s(read2regsel),.out(read2data));	
    
-   // tie err to 0, not needed
-   assign err = 1'b0;
 
 endmodule
 // DUMMY LINE FOR REV CONTROL :1:

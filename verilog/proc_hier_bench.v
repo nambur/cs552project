@@ -191,31 +191,24 @@ module proc_hier_bench();
    assign PC = DUT.p0.fetch0.pcCurrent;
    assign Inst = DUT.p0.fetch0.instr;
    
-   assign regWrite = DUT.p0.decode0.regFile0.write;
+   assign RegWrite = DUT.p0.decode0.regFile0.write;
    // Is memory being read, one bit signal (1 means yes, 0 means no)
    
-   assign writeRegister = DUT.p0.decode0.regFile0.writeregsel;
+   assign WriteRegister = DUT.p0.decode0.regFile0.writeregsel;
    // The name of the register being written to. (3 bit signal)
 
-<<<<<<< HEAD
-   assign writeData = DUT.p0.decode0.regFile0.writedata;
-=======
    assign WriteData = DUT.p0.decode0.regFile0.writedata;
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
    // Data being written to the register. (16 bits)
    
-   assign memRead =  DUT.p0.memory0.memRead;
+   assign MemRead =  DUT.p0.memory0.memRead;
    // Is memory being read, one bit signal (1 means yes, 0 means no)
    
-   assign memWrite = DUT.p0.memory0.memWrite;
+   assign MemWrite = DUT.p0.memory0.memWrite;
    // Is memory being written to (1 bit signal)
    
-   assign exOut = DUT.p0.memory0.exOut;
+   assign MemAddress = DUT.p0.memory0.aluResult;
    // Address to access memory with (for both reads and writes to memory, 16 bits)
    
-<<<<<<< HEAD
-   assign dataIn = DUT.p0.memory0.dataIn;
-=======
    //added
    assign size = DUT.p0.size;
    assign Inst1 = DUT.p0.ctrl.Inst;
@@ -226,20 +219,19 @@ module proc_hier_bench();
    assign aluResult = DUT.p0.memory0.aluResult;
    assign MemData = DUT.p0.memory0.writeData;
    assign memDataIn = DUT.p0.memory0.mem.data_in;
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
    // Data to be written to memory for memory writes (16 bits)
    
-   assign halt = DUT.p0.ctrl.halt;
+   assign Halt = DUT.p0.ctrl.halt;
    // Is processor halted (1 bit signal)
    
    /* Add anything else you want here */
    assign WrR = DUT.p0.decode0.WrR;
    assign immpass = DUT.p0.ex.immPass;
    assign doSLBI= DUT.p0.ex.doSLBI;
-   assign imm = DUT.p0.ex.imm;
+   assign Imm = DUT.p0.ex.Imm;
    assign slbiOut = DUT.p0.ex.slbiOut;
-   assign rd1 = DUT.p0.ex.rd1;
-   assign rd2 = DUT.p0.ex.rd2;
+   assign Rd1 = DUT.p0.ex.Rd1;
+   assign Rd2 = DUT.p0.ex.Rd2;
    assign writeregsel = DUT.p0.decode0.regFile0.writeregsel;
    assign write = DUT.p0.decode0.regFile0.write;
    assign invB = DUT.p0.ex.ALUCTRL.invB;
@@ -249,12 +241,7 @@ module proc_hier_bench();
    assign takeBranch = DUT.p0.ex.BRANCHCTRL.takeBranch;
    assign pcNext = DUT.p0.fetch0.pcNext;
    assign memReadorWrite = DUT.p0.memory0.memReadorWrite;
-<<<<<<< HEAD
-   assign memWrite = DUT.p0.memRead;
-   assign memOut = DUT.p0.memory0.rdD;
-=======
    assign memOut = DUT.p0.memory0.RdD;
->>>>>>> 22d92accdabc6edd4b2d3168dfe511ab1bdce9fb
    assign CO = DUT.p0.ex.THEALU.CO;
    assign addA = DUT.p0.ex.THEALU.CLA.A;
    assign addB = DUT.p0.ex.THEALU.CLA.B;
