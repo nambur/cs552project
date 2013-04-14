@@ -5,7 +5,7 @@ module decode(instr_IFID,PC2_IFID,size, zeroEx, writeData,RegDst,RegWrite,
             ,RegDst_IDEX,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX,RegWrite_IDEX
             ,Jump_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX
             ,ALUOp,ALUF,ALUSrc,Branch,Jump,Dump,MemtoReg,MemWrite,MemRead
-            ,Rd2Addr_IDEX,Rd1Addr_IDEX,WrR_IDEX,stallCtrl,Branch_EXMEM);
+            ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,Branch_EXMEM);
 //Inputs
 input [15:0] instr_IFID,writeData,PC2_IFID;
 input [1:0] RegDst,size;
@@ -25,12 +25,13 @@ output [1:0] RegDst_IDEX,ALUF_IDEX;
 output ALUSrc_IDEX,Branch_IDEX,Jump_IDEX
       ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,RegWrite_IDEX;
 //Internal Wires
-wire [2:0] WrR;	//Holds address of register to write to
-wire RegWrIn,MemWrIn,stall;
+reg [2:0] WrR;	//Holds address of register to write to
+wire RegWrIn,MemWrIn;
+reg [15:0] Imm;
+
 //stall mux
-assign stall = (stallCtrl | Branch_EXMEM);
-assign RegWrIn = stall ? 1'b0 : RegWrite;
-assign MemWrIn = stall ? 1'b0 : MemWrite;
+assign RegWrIn = (stallCtrl | Branch_EXMEM) ? 1'b0 : RegWrite;
+assign MemWrIn = (stallCtrl | Branch_EXMEM) ? 1'b0 : MemWrite;
 
 //PC2,Rd1,Rd2,Imm,+control sigs
 reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(PC2_IFID),.out(PC2_IDEX));
@@ -45,16 +46,16 @@ reg16bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
                                                 ,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX
                                                 ,Jump_IDEX,Dump_IDEX,MemtoReg_IDEX
                                                 ,MemWrite_IDEX,MemRead_IDEX}));
-reg16bit reg5(.clk(clk),.rst(rst),.en(1'b1),.in({instr_IFID[7:5],WrR,RegWrin})
-                    ,.out({Rd2Addr_IDEX,WrR_IDEX,RegWrite_IDEX));
+reg16bit reg5(.clk(clk),.rst(rst),.en(1'b1),.in({instr_IFID[7:5],WrR,RegWrin}),
+        .out({Rd2Addr_IDEX,WrR_IDEX,RegWrite_IDEX}));
 
 always @(*) begin
     casex({zeroEx,size})
         3'b000: Imm = {{11{instr_IFID[4]}},instr_IFID[4:0]};
-        3'b100: Imm = {11'b000,instr_IFID[4:0]};
         3'b001: Imm = {{8{instr_IFID[7]}},instr_IFID[7:0]};
-        3'b101: Imm = {8'h00,instr_IFID[7:0]};
         3'b010: Imm = {{5{instr_IFID[10]}},instr_IFID[10:0]};
+        3'b100: Imm = {11'b000,instr_IFID[4:0]};
+        3'b101: Imm = {8'h00,instr_IFID[7:0]};
         3'b110: Imm = {5'h00,instr_IFID[10:0]};
         default: Imm = 16'hxxxx;
     endcase
@@ -71,8 +72,14 @@ wire mux1sel,mux2sel;
 //01 - Inst[4:2] -- Rd for R-format
 //10 - Inst[10:8] -- Rs for I-format 2
 //11 - R7
-assign WrR = RegDst[1] ? (RegDst[0] ? 3'b111 : instr_IFID[10:8]) : 
-		(RegDst[0] ? instr_IFID[4:2] : instr_IFID[7:5]);
+always @(*) begin
+    casex(RegDst)
+        2'b00: WrR = instr_IFID[7:5];
+        2'b01: WrR = instr_IFID[4:2];
+        2'b10: WrR = instr_IFID[10:8];
+        2'b11: WrR = 3'b111;
+    endcase
+end
 
 //Instantiate register file with bypassing
 //8 16bit registers 

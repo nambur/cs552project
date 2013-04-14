@@ -1,6 +1,7 @@
 //John Vennard & Nick Ambur
 //Fetch Module
 module fetch(PCS,Jump,Dump,clk,rst,halt,PC2_IFID,instr_IFID,Branch_EXMEM,stallCtrl,err);
+
 input [15:0] PCS;
 input Jump,clk,halt,rst,Dump,stallCtrl,Branch_EXMEM;
 output [15:0] instr_IFID, PC2_IFID;
@@ -26,9 +27,12 @@ memory2c imem (.data_out(instr), .data_in(dummy), .addr(pcCurrent), .enable(1'b1
     .createdump(Dump), .clk(clk), .rst(rst));
 
 //Instantiate 16bit Adder
-carryLA_16b adder(.A(pcCurrent),.B(16'h0002),.SUM(PC2),.CI(1'b0),.CO(dummy1),.Ofl(err));
+carryLA_16b adder0(.A(pcCurrent),.B(16'h0002),.SUM(PC2),.CI(1'b0),.CO(dummy1),.Ofl(err));
+
 //Jump PC calc result
-carryLA_16b adder(.A(PC2),.B({{5{instr_IFID[10]}},instr_IFID}),.SUM(jumpPC),.CI(1'b0),.CO(dummy1),.Ofl(err));
+carryLA_16b adder1(.A(PC2),.B({{5{instr_IFID[10]}},instr_IFID[10:0]}),.SUM(jumpPC),.CI(1'b0),.CO(dummy1),.Ofl(err));
+
 //PC select mux logic w/ pipeline logic
 assign PC_FF_in = Branch_EXMEM ? PCS : (Jump ?  jumpPC : (stallCtrl ? pcCurrent : PC2));
+
 endmodule

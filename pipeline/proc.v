@@ -63,15 +63,15 @@ module proc (/*AUTOARG*/
     assign err = 1'b0;
 
 	//Fetch Stage 
-	fetch fetch0(.PCS(PCS),.stallCtrl(stallCtrl),.Branch_EXMEM(Branch_EXMEM),.halt(halt),.Jump(Jump),.Branch(Branch),.Dump(dump)
+	fetch fetch0(.PCS(PCS),.stallCtrl(stallCtrl),.Branch_EXMEM(Branch_EXMEM),.halt(halt),.Jump(Jump),.Dump(dump)
     ,.PC2_IFID(PC2_IFID),.instr_IFID(instr_IFID),.err(err_fetch),.clk(clk),.rst(rst));
     //Hazard control -- with fetch for pipeline
     hazardDetect hD(.MemRead_IDEX(MemRead_IDEX),.Rd2Addr_IDEX(Rd2Addr_IDEX),.Rd1_IFID(Rd1_IFID)
-                    ,.Rd2_IFID(Rd2_IFID),.Branch_EXMEM(Branch_EXMEM),.stallCtrl(stallCtrl));
+                    ,.Rd2_IFID(Rd2_IFID),.Branch_EXMEM(Branch_EXMEM),.stallCtrl(stallCtrl), .clk(clk), .rst(rst));
 
 	//Decode Stage
 	decode decode0(.instr_IFID(instr_IFID),.PC2_IFID(PC2_IFID),.size(size),.zeroEx(zeroEx)
-    ,.Imm(Imm),.writeData(WrD),.RegDst(RegDst),.RegWrite(RegWrite),.Rd1(Rd1),.Rd2(Rd2)
+    ,.Imm(Imm),.writeData(WrD),.RegDst(RegDst),.RegWrite(RegWrite),.Rd2(Rd2)
 	,.err(err_decode),.clk(clk),.rst(rst),.ALUOp(ALUOp),.ALUF(ALUF),.ALUSrc(ALUSrc)
     ,.Branch(Branch),.Jump(Jump),.Dump(dump),.MemtoReg(MemtoReg),.MemWrite(MemWrite)
     ,.MemRead(MemRead),.PC2_IDEX(PC2_IDEX),.Rd1_IDEX(Rd1_IDEX),.Rd2_IDEX(Rd2_IDEX)
@@ -95,7 +95,7 @@ module proc (/*AUTOARG*/
     ,.Imm_IDEX(Imm_IDEX),.ALUOp_IDEX(ALUOp_IDEX),.RegDst_IDEX(RegDst_IDEX)
     ,.ALUF_IDEX(ALUF_IDEX),.ALUSrc_IDEX(ALUSrc_IDEX),.Branch_IDEX(Branch_IDEX)
     ,.Jump_IDEX(Jump_IDEX),.Dump_IDEX(Dump_IDEX),.MemtoReg_IDEX(MemtoReg_IDEX)
-    ,.MemRead_IDEX(MemRead_IDEX),.RegWrite_IDEX(RegWrite_IDEX))err(err_execute)
+    ,.MemRead_IDEX(MemRead_IDEX),.RegWrite_IDEX(RegWrite_IDEX)
     ,.PCS_EXMEM(PCS_EXMEM),.Imm_EXMEM(Imm_EXMEM),.ALUO_EXMEM(ALUO_EXMEM)
     ,.Rd2_EXMEM(Rd2_EXMEM),.Branch_EXMEM(Branch_EXMEM),.MemtoReg_EXMEM(MemtoReg_EXMEM)
     ,.MemWrite_EXMEM(MemWrite_EXMEM),.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM)

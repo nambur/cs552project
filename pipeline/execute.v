@@ -1,36 +1,40 @@
-module execute(ALUSrc_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_IDEX,
+module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_IDEX,
               Jump_IDEX,Branch_IDEX,RegDst_IDEX,Dump_IDEX,
               MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,Imm_EXMEM,
               ALUO_EXMEM,Rd2_EXMEM,Branch_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,
-              MemRead_EXMEM,Dump_EXMEM,err,clk,rst);
+              MemRead_EXMEM,Dump_EXMEM,flag,err,clk,rst);
     //Non-Pipelined signals 
     output err;
     input clk,rst;
+
     //input
     input [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
     input [4:0] ALUOp_IDEX;
     input [1:0] RegDst_IDEX,ALUF_IDEX;
     input ALUSrc_IDEX,Branch_IDEX,Jump_IDEX
       ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX;
+
     //output
     output [15:0] PCS_EXMEM, Imm_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
+    output [2:0] flag;
     output Branch_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM;
     output Dump_EXMEM;
+
     //Internal Signals
     wire invB, immPass, doSLE, doSEQ, doSCO, doBTR, doSTU,
     doSLBI, doSLT, takeBranch, CO, ofl, aluerr, dummy, dummy2;
     wire [3:0] opOut;
-    wire [15:0] PCS,ALUO,outALU,stuOut, temp, outCLA, sleOut, seqOut,
+    wire [15:0] PCS,outALU,stuOut, temp, outCLA, sleOut, seqOut,
     scoOut, slbiOut, sltOut, btrOut, claIn, addA, addB, addSum;
-    reg [15:0] bin;
+    reg [15:0] bin,ALUO;
     reg exerr;
 
     //Pipeline Registers
     reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(Rd2_IDEX),.out(Rd2_EXMEM));
-    reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(PCS),.out(PCS_EXMEM));
-    reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(Imm_IDEX),.out(Imm_EXMEM));
-    reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(ALUO),.out(ALUO_EXMEM));
-    reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in({Branch_IDEX,MemtoReg_IDEX
+    reg16bit reg1(.clk(clk),.rst(rst),.en(1'b1),.in(PCS),.out(PCS_EXMEM));
+    reg16bit reg2(.clk(clk),.rst(rst),.en(1'b1),.in(Imm_IDEX),.out(Imm_EXMEM));
+    reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(ALUO),.out(ALUO_EXMEM));
+    reg16bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({Branch_IDEX,MemtoReg_IDEX
                                                     ,MemWrite_IDEX,MemRead_IDEX
                                                     ,Dump_IDEX}),.out({Branch_EXMEM
                                                     ,MemtoReg_EXMEM,MemWrite_EXMEM
