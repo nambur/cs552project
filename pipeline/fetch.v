@@ -1,9 +1,9 @@
 //John Vennard & Nick Ambur
 //Fetch Module
-module fetch(PCS,Jump,Dump,clk,rst,halt,PC2_IFID,instr_IFID,Branch_EXMEM,stallCtrl,err);
+module fetch(PCS,Jump,Dump,clk,rst,halt,PC2_IFID,instr_IFID,takeBranch_EXMEM,stallCtrl,err);
 
 input [15:0] PCS;
-input Jump,clk,halt,rst,Dump,stallCtrl,Branch_EXMEM;
+input Jump,clk,halt,rst,Dump,stallCtrl,takeBranch_EXMEM;
 output [15:0] instr_IFID, PC2_IFID;
 output err;
 wire [15:0] PC_FF_in, pcCurrent, dummy;
@@ -33,6 +33,6 @@ carryLA_16b adder0(.A(pcCurrent),.B(16'h0002),.SUM(PC2),.CI(1'b0),.CO(dummy1),.O
 carryLA_16b adder1(.A(PC2),.B({{5{instr_IFID[10]}},instr_IFID[10:0]}),.SUM(jumpPC),.CI(1'b0),.CO(dummy1),.Ofl(err));
 
 //PC select mux logic w/ pipeline logic
-assign PC_FF_in = Branch_EXMEM ? PCS : (Jump ?  jumpPC : (stallCtrl ? pcCurrent : PC2));
+assign PC_FF_in = takeBranch_EXMEM ? PCS : (Jump ?  jumpPC : (stallCtrl ? pcCurrent : PC2));
 
 endmodule

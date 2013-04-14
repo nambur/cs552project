@@ -1,13 +1,13 @@
-module branchCtrl(Jump, Branch, branchType, flag, takeBranch);
+module branchCtrl(Branch, branchType, flag, takeBranch);
     
-    input Branch, Jump;
+    input Branch; 
     input [2:0] flag;
     input [1:0] branchType;
     output takeBranch;
 
     reg muxOut;
 
-    assign takeBranch = Jump | (muxOut & Branch);
+    assign takeBranch = muxOut & Branch;
 
     always @(*) begin
         casex (branchType)

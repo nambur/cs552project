@@ -1,18 +1,19 @@
 //John Vennard & Nick Ambur
 //552 Project Decode Module
-module decode(instr_IFID,PC2_IFID,size, zeroEx, writeData,RegDst,RegWrite,
-			clk,rst,err,PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUOp_IDEX
+module decode(instr_IFID,PC2_IFID,size, zeroEx, WrR_MEMWB, writeData,RegDst,RegWrite
+			,RegWrite_MEMWB,clk,rst,err,PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUOp_IDEX
             ,RegDst_IDEX,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX,RegWrite_IDEX
-            ,Jump_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX
-            ,ALUOp,ALUF,ALUSrc,Branch,Jump,Dump,MemtoReg,MemWrite,MemRead
-            ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,Branch_EXMEM);
+            ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX
+            ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead
+            ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch_EXMEM);
 //Inputs
 input [15:0] instr_IFID,writeData,PC2_IFID;
 input [1:0] RegDst,size;
-input RegWrite, zeroEx, clk,rst,stallCtrl,Branch_EXMEM;
+input RegWrite, RegWrite_MEMWB, zeroEx, clk,rst,stallCtrl,takeBranch_EXMEM;
 input [4:0] ALUOp;
+input [2:0] WrR_MEMWB;
 input [1:0] ALUF;
-input ALUSrc,Branch,Jump,Dump,MemtoReg,MemWrite,MemRead;
+input ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead;
 //Output
 output err;
 /*
@@ -22,16 +23,17 @@ output [2:0] Rd2Addr_IDEX,WrR_IDEX;
 output [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
 output [4:0] ALUOp_IDEX;
 output [1:0] RegDst_IDEX,ALUF_IDEX;
-output ALUSrc_IDEX,Branch_IDEX,Jump_IDEX
-      ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,RegWrite_IDEX;
+output ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,
+    MemRead_IDEX,RegWrite_IDEX;
 //Internal Wires
 reg [2:0] WrR;	//Holds address of register to write to
 wire RegWrIn,MemWrIn;
 reg [15:0] Imm;
+wire [15:0] Rd1, Rd2;
 
 //stall mux
-assign RegWrIn = (stallCtrl | Branch_EXMEM) ? 1'b0 : RegWrite;
-assign MemWrIn = (stallCtrl | Branch_EXMEM) ? 1'b0 : MemWrite;
+assign RegWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : RegWrite;
+assign MemWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemWrite;
 
 //PC2,Rd1,Rd2,Imm,+control sigs
 reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(PC2_IFID),.out(PC2_IDEX));
@@ -39,14 +41,15 @@ reg16bit reg1(.clk(clk),.rst(rst),.en(1'b1),.in(Rd1),.out(Rd1_IDEX));
 reg16bit reg2(.clk(clk),.rst(rst),.en(1'b1),.in(Rd2),.out(Rd2_IDEX));
 reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(Imm),.out(Imm_IDEX));
 //Control signals -- through a 16bit reg
-reg16bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
-                                                ,Branch,Jump,Dump,MemtoReg
-                                                ,MemWrin,MemRead}),.
-                                             out({ALUOp_IDEX,RegDst_IDEX
+reg15bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
+                                                ,Branch,Dump,MemtoReg
+                                                ,MemWrin,MemRead}),
+                                            .out({ALUOp_IDEX,RegDst_IDEX
                                                 ,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX
-                                                ,Jump_IDEX,Dump_IDEX,MemtoReg_IDEX
+                                                ,Dump_IDEX,MemtoReg_IDEX
                                                 ,MemWrite_IDEX,MemRead_IDEX}));
-reg16bit reg5(.clk(clk),.rst(rst),.en(1'b1),.in({instr_IFID[7:5],WrR,RegWrin}),
+
+reg7bit reg5(.clk(clk),.rst(rst),.en(1'b1),.in({instr_IFID[7:5],WrR,RegWrIn}),
         .out({Rd2Addr_IDEX,WrR_IDEX,RegWrite_IDEX}));
 
 always @(*) begin
@@ -87,7 +90,7 @@ rf regFile0(.read1data(out1data),.read2data(out2data),.err(err)//Outputs
 		
 		,.clk(clk),.rst(rst)			//Inputs
 		,.read1regsel(instr_IFID[10:8]),.read2regsel(instr_IFID[7:5])	
-		,.writeregsel(WrR),.writedata(writeData),.write(RegWrite_MEMWB));
+		,.writeregsel(WrR_MEMWB),.writedata(writeData),.write(RegWrite_MEMWB));
 
 //ADDED BYPASS LOGIC
 //assign mux1sel = (RegWrite&(WrR==Instr[10:8])) ;
@@ -103,6 +106,3 @@ assign Rd2 = out2data;
 //else Rd2 <= out2data;
 //end
 endmodule
-
-
-    

@@ -1,8 +1,8 @@
 module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_IDEX,
-              Jump_IDEX,Branch_IDEX,RegDst_IDEX,Dump_IDEX,
+              Branch_IDEX,takeBranch_EXMEM,Dump_IDEX, WrR_IDEX, WrR_EXMEM, RegWrite_IDEX, RegWrite_EXMEM,
               MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,Imm_EXMEM,
-              ALUO_EXMEM,Rd2_EXMEM,Branch_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,
-              MemRead_EXMEM,Dump_EXMEM,flag,err,clk,rst);
+              ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,
+              MemRead_EXMEM,Dump_EXMEM,err,clk,rst);
     //Non-Pipelined signals 
     output err;
     input clk,rst;
@@ -10,37 +10,46 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     //input
     input [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
     input [4:0] ALUOp_IDEX;
-    input [1:0] RegDst_IDEX,ALUF_IDEX;
-    input ALUSrc_IDEX,Branch_IDEX,Jump_IDEX
-      ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX;
+    input [1:0] ALUF_IDEX;
+    input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX, RegWrite_IDEX;
+    input [2:0] WrR_IDEX;
 
     //output
     output [15:0] PCS_EXMEM, Imm_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
-    output [2:0] flag;
-    output Branch_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM;
-    output Dump_EXMEM;
+    output [2:0] WrR_EXMEM;
+    output MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM,RegWrite_EXMEM;
+    output Dump_EXMEM,takeBranch_EXMEM;
 
     //Internal Signals
-    wire invB, immPass, doSLE, doSEQ, doSCO, doBTR, doSTU,
-    doSLBI, doSLT, takeBranch, CO, ofl, aluerr, dummy, dummy2;
+    wire invB, immPass, doSLE, doSEQ, doSCO, doBTR, doSTU, RegWrIn, MemWrIn,
+        doSLBI, doSLT, takeBranch, CO, ofl, aluerr, dummy, dummy2;
     wire [3:0] opOut;
+    wire [2:0] flag;
     wire [15:0] PCS,outALU,stuOut, temp, outCLA, sleOut, seqOut,
-    scoOut, slbiOut, sltOut, btrOut, claIn, addA, addB, addSum;
+        scoOut, slbiOut, sltOut, btrOut, claIn, addA, addB, addSum;
     reg [15:0] bin,ALUO;
     reg exerr;
+
+    //flush mux
+    assign RegWrIn = (takeBranch) ? 1'b0 : RegWrite_IDEX;
+    assign MemWrIn = (takeBranch) ? 1'b0 : MemWrite_IDEX;
 
     //Pipeline Registers
     reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(Rd2_IDEX),.out(Rd2_EXMEM));
     reg16bit reg1(.clk(clk),.rst(rst),.en(1'b1),.in(PCS),.out(PCS_EXMEM));
     reg16bit reg2(.clk(clk),.rst(rst),.en(1'b1),.in(Imm_IDEX),.out(Imm_EXMEM));
     reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(ALUO),.out(ALUO_EXMEM));
-    reg16bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({Branch_IDEX,MemtoReg_IDEX
-                                                    ,MemWrite_IDEX,MemRead_IDEX
-                                                    ,Dump_IDEX}),.out({Branch_EXMEM
+    reg5bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({takeBranch,MemtoReg_IDEX
+                                                    ,MemWrIn,MemRead_IDEX
+                                                    ,Dump_IDEX}),
+                                               .out({takeBranch_EXMEM
                                                     ,MemtoReg_EXMEM,MemWrite_EXMEM
                                                     ,MemRead_EXMEM,Dump_EXMEM}));
 
-    branchCtrl BRANCHCTRL(.Branch(Branch_IDEX), .Jump(Jump_IDEX),.branchType(ALUOp_IDEX[1:0]), .flag(flag), .takeBranch(takeBranch));
+    dff_en reg5(.in(RegWrIn),.out(RegWrite_EXMEM),.en(en),.clk(clk),.rst(rst));
+    reg3bit reg6(.clk(clk),.rst(rst),.en(1'b1),.in(WrR_IDEX),.out(WrR_EXMEM));
+
+    branchCtrl BRANCHCTRL(.Branch(Branch_IDEX), .branchType(ALUOp_IDEX[1:0]), .flag(flag), .takeBranch(takeBranch));
     carryLA_16b CLA(.A(claIn), .B(Imm_IDEX), .SUM(outCLA), .CI(1'b0), .CO(dummy), .Ofl(ofl));
     assign PCS = (takeBranch) ? outCLA : PC2_IDEX;
     assign claIn = ((ALUOp_IDEX == 5'b00101) | (ALUOp_IDEX == 5'b00111)) ? Rd1_IDEX : PC2_IDEX;
@@ -64,22 +73,21 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
 
      alu THEALU(.A(Rd1_IDEX), .B(bin), .Op(opOut), .invA(1'b0), .invB(invB), .sign(1'b1), 
         .Out(outALU), .Ofl(flag[1]), .Z(flag[0]), .CO(CO), .err(aluerr));
-    aluCtrl ALUCTRL(.ALUOp(ALUOp_IDEX), .ALUF(ALUF), .opOut(opOut), .invB(invB), 
+    aluCtrl ALUCTRL(.ALUOp(ALUOp_IDEX), .ALUF(ALUF_IDEX), .opOut(opOut), .invB(invB), 
         .immPass(immPass), .doSLE(doSLE), .doSEQ(doSEQ), .doSCO(doSCO), .doBTR(doBTR), 
         .doSLBI(doSLBI), .doSLT(doSLT),.doSTU(doSTU));
 
     always @(*) begin
-        casex ({doSTU,doSLE, doSEQ, doSCO, Jump_IDEX, doBTR, doSLT, immPass, doSLBI})
-            9'b000000000: ALUO = outALU;
-            9'b000000001: ALUO = slbiOut;
-            9'b000000010: ALUO = Imm_IDEX;
-            9'b000000100: ALUO = sltOut;
-            9'b000001000: ALUO = btrOut;
-            9'b000010000: ALUO = PC2_IDEX;
-            9'b000100000: ALUO = scoOut;
-            9'b001000000: ALUO = seqOut;
-            9'b010000000: ALUO = sleOut;
-            9'b100000000: ALUO = stuOut;
+        casex ({doSTU,doSLE, doSEQ, doSCO, doBTR, doSLT, immPass, doSLBI})
+            8'b00000000: ALUO = outALU;
+            8'b00000001: ALUO = slbiOut;
+            8'b00000010: ALUO = Imm_IDEX;
+            8'b00000100: ALUO = sltOut;
+            8'b00001000: ALUO = btrOut;
+            8'b00010000: ALUO = scoOut;
+            8'b00100000: ALUO = seqOut;
+            8'b01000000: ALUO = sleOut;
+            8'b10000000: ALUO = stuOut;
             default: ALUO = 16'hxxxx;
         endcase
     end
