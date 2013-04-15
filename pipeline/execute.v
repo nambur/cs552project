@@ -1,8 +1,8 @@
 module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_IDEX,
               Branch_IDEX,takeBranch_EXMEM,Dump_IDEX, WrR_IDEX, WrR_EXMEM, RegWrite_IDEX, RegWrite_EXMEM,
-              MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,Imm_EXMEM,
+              MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,
               ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,
-              MemRead_EXMEM,Dump_EXMEM,err,clk,rst);
+              MemRead_EXMEM,Dump_EXMEM,halt_IDEX,halt_EXMEM,err,clk,rst);
     //Non-Pipelined signals 
     output err;
     input clk,rst;
@@ -11,44 +11,46 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     input [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
     input [4:0] ALUOp_IDEX;
     input [1:0] ALUF_IDEX;
-    input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX, RegWrite_IDEX;
+    input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,
+        MemWrite_IDEX,MemRead_IDEX, RegWrite_IDEX,halt_IDEX;
     input [2:0] WrR_IDEX;
 
     //output
-    output [15:0] PCS_EXMEM, Imm_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
+    output [15:0] PCS_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
     output [2:0] WrR_EXMEM;
     output MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM,RegWrite_EXMEM;
-    output Dump_EXMEM,takeBranch_EXMEM;
+    output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM;
 
     //Internal Signals
     wire invB, immPass, doSLE, doSEQ, doSCO, doBTR, doSTU, RegWrIn, MemWrIn,
-        doSLBI, doSLT, takeBranch, CO, ofl, aluerr, dummy, dummy2;
+        doSLBI, doSLT, takeBranch, CO, ofl, aluerr, dummy, dummy2,MemReadIn;
     wire [3:0] opOut;
     wire [2:0] flag;
     wire [15:0] PCS,outALU,stuOut, temp, outCLA, sleOut, seqOut,
-        scoOut, slbiOut, sltOut, btrOut, claIn, addA, addB, addSum;
+        scoOut, slbiOut, sltOut, btrOut, claIn;
     reg [15:0] bin,ALUO;
     reg exerr;
 
     //flush mux
     assign RegWrIn = (takeBranch) ? 1'b0 : RegWrite_IDEX;
     assign MemWrIn = (takeBranch) ? 1'b0 : MemWrite_IDEX;
+    assign MemReadIn = (takeBranch) ? 1'b0 : MemRead_IDEX;
 
     //Pipeline Registers
     reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(Rd2_IDEX),.out(Rd2_EXMEM));
     reg16bit reg1(.clk(clk),.rst(rst),.en(1'b1),.in(PCS),.out(PCS_EXMEM));
-    reg16bit reg2(.clk(clk),.rst(rst),.en(1'b1),.in(Imm_IDEX),.out(Imm_EXMEM));
     reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(ALUO),.out(ALUO_EXMEM));
     reg5bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({takeBranch,MemtoReg_IDEX
-                                                    ,MemWrIn,MemRead_IDEX
+                                                    ,MemWrIn,MemReadIn
                                                     ,Dump_IDEX}),
                                                .out({takeBranch_EXMEM
                                                     ,MemtoReg_EXMEM,MemWrite_EXMEM
                                                     ,MemRead_EXMEM,Dump_EXMEM}));
 
-    dff_en reg5(.in(RegWrIn),.out(RegWrite_EXMEM),.en(en),.clk(clk),.rst(rst));
+    dff_en reg5(.in(RegWrIn),.out(RegWrite_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
     reg3bit reg6(.clk(clk),.rst(rst),.en(1'b1),.in(WrR_IDEX),.out(WrR_EXMEM));
-
+    dff_en reg7(.in(halt_IDEX),.out(halt_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
+   
     branchCtrl BRANCHCTRL(.Branch(Branch_IDEX), .branchType(ALUOp_IDEX[1:0]), .flag(flag), .takeBranch(takeBranch));
     carryLA_16b CLA(.A(claIn), .B(Imm_IDEX), .SUM(outCLA), .CI(1'b0), .CO(dummy), .Ofl(ofl));
     assign PCS = (takeBranch) ? outCLA : PC2_IDEX;

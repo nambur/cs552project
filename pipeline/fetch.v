@@ -1,20 +1,21 @@
 //John Vennard & Nick Ambur
 //Fetch Module
-module fetch(PCS,Jump,Dump,clk,rst,halt,PC2_IFID,instr_IFID,takeBranch_EXMEM,stallCtrl,err);
+module fetch(PCS,Jump,Dump,clk,rst,PC2_IFID,instr_IFID,takeBranch_EXMEM,stallCtrl,halt_IFID,err);
 
 input [15:0] PCS;
-input Jump,clk,halt,rst,Dump,stallCtrl,takeBranch_EXMEM;
+input Jump,clk,rst,Dump,stallCtrl,takeBranch_EXMEM;
 output [15:0] instr_IFID, PC2_IFID;
-output err;
+output halt_IFID,err;
 wire [15:0] PC_FF_in, pcCurrent, dummy;
-wire first, first_n,dummy1;
+wire dummy1,halt;
 //changed wires for pipelining
 wire [15:0] instr,PC2,jumpPC;
 /*
  * Pipelined register output
 */
-reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(instr),.out(instr_IFID));
+reg16bit reg0(.clk(clk),.rst(rst),.en(~stallCtrl),.in(instr),.out(instr_IFID));
 reg16bit reg1(.clk(clk),.rst(rst),.en(1'b1),.in(PC2),.out(PC2_IFID));
+dff_en reg2(.out(halt_IFID),.in(halt),.en(1'b1),.clk(clk),.rst(rst));
 
 //Create PC FF
 //	--always enabled
@@ -34,5 +35,6 @@ carryLA_16b adder1(.A(PC2),.B({{5{instr_IFID[10]}},instr_IFID[10:0]}),.SUM(jumpP
 
 //PC select mux logic w/ pipeline logic
 assign PC_FF_in = takeBranch_EXMEM ? PCS : (Jump ?  jumpPC : (stallCtrl ? pcCurrent : PC2));
+assign halt = ~(|instr);
 
 endmodule

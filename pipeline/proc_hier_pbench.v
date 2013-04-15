@@ -38,6 +38,11 @@ module proc_hier_pbench();
    integer     ICacheHit_count;
    integer     DCacheReq_count;
    integer     ICacheReq_count;
+
+/* NAA NAA */
+   integer     haltCount;
+/* NAA NAA END */
+
    
    proc_hier DUT();
 
@@ -51,6 +56,10 @@ module proc_hier_pbench();
       ICacheHit_count = 0;
       DCacheReq_count = 0;
       ICacheReq_count = 0;
+
+/* NAA NAA */
+      haltCount = 0;
+/* NAA NAA END */
 
       trace_file = $fopen("verilogsim.ptrace");
       sim_log_file = $fopen("verilogsim.log");
@@ -75,7 +84,7 @@ module proc_hier_pbench();
             ICacheReq_count = ICacheReq_count + 1;	 	
 	     end    
 
-         $fdisplay(sim_log_file, "SIMLOG:: Cycle %d PC: %8x I: %8x R: %d %3d %8x M: %d %d %8x %8x",
+         $fdisplay(sim_log_file, "SIMLOG:: Cycle %d PC: %8x I: %8x RegWrite: %d WriteRegister: %3d WriteData: %8x MemRead: %d MemWrite: %d MemAddress: %8x MemDataIn: %8x",
                   DUT.c0.cycle_count,
                   PC,
                   Inst,
@@ -102,6 +111,13 @@ module proc_hier_pbench();
          end
          if (Halt) begin
             $fdisplay(sim_log_file, "SIMLOG:: Processor halted\n");
+
+            haltCount = haltCount + 1;
+            
+         end 
+
+         if (haltCount == 4) begin
+            $fdisplay(sim_log_file, "SIMLOG:: Processor halted with haltcount == 4\n");
             $fdisplay(sim_log_file, "SIMLOG:: sim_cycles %d\n", DUT.c0.cycle_count);
             $fdisplay(sim_log_file, "SIMLOG:: inst_count %d\n", inst_count);
             $fdisplay(sim_log_file, "SIMLOG:: dcachehit_count %d\n", DCacheHit_count);
@@ -113,7 +129,7 @@ module proc_hier_pbench();
             $fclose(sim_log_file);
 	    #5;
             $finish;
-         end 
+         end
       end
       
    end
@@ -129,13 +145,17 @@ module proc_hier_pbench();
     
    //assign PC = DUT.PC_Out;
    //assign Inst = DUT.Instruction_f;
+   assign Inst = DUT.p0.instr_IFID;
+   assign PC = DUT.p0.fetch0.pcCurrent;
    
    //assign RegWrite = DUT.p0.regWrite;
-   assign RegWrite = DUT.p0.RegWrite;
+   assign RegWrite = DUT.p0.RegWrite_MEMWB;
+   assign RegWrite_IDEX = DUT.p0.RegWrite_IDEX;
+   assign RegWrite_EXMEM = DUT.p0.RegWrite_EXMEM;
    // Is register file being written to, one bit signal (1 means yes, 0 means no)
    //    
    //assign WriteRegister = DUT.p0.DstwithJmout;
-   assign WriteRegister = DUT.p0.decode0.WrR;
+   assign WriteRegister = DUT.p0.decode0.WrR_MEMWB;
    // The name of the register being written to. (3 bit signal)
    
    //assign WriteData = DUT.p0.wData;
@@ -143,11 +163,11 @@ module proc_hier_pbench();
    // Data being written to the register. (16 bits)
    
    //assign MemRead =  (DUT.p0.memRxout & ~DUT.p0.notdonem);
-   assign MemRead =  DUT.p0.memory0.MemRead_EXMEM;
+   assign MemRead =  DUT.p0.MemRead_EXMEM;
    // Is memory being read, one bit signal (1 means yes, 0 means no)
    
    //assign MemWrite = (DUT.p0.memWxout & ~DUT.p0.notdonem);
-   assign MemWrite = DUT.p0.memory0.MemWrite_EXMEM;
+   assign MemWrite = DUT.p0.memory0.MemWrIn;
    // Is memory being written to (1 bit signal)
    
    //assign MemAddress = DUT.p0.data1out;
@@ -182,7 +202,7 @@ module proc_hier_pbench();
    */
    
    //assign Halt = DUT.p0.haltxout;
-   assign Halt = DUT.p0.halt;
+   assign Halt = DUT.p0.halt_MEMWB;
    // Processor halted
    
    

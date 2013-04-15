@@ -20,13 +20,14 @@ entity execute is
         memwrite_idex   : in     vl_logic;
         memread_idex    : in     vl_logic;
         pcs_exmem       : out    vl_logic_vector(15 downto 0);
-        imm_exmem       : out    vl_logic_vector(15 downto 0);
         aluo_exmem      : out    vl_logic_vector(15 downto 0);
         rd2_exmem       : out    vl_logic_vector(15 downto 0);
         memtoreg_exmem  : out    vl_logic;
         memwrite_exmem  : out    vl_logic;
         memread_exmem   : out    vl_logic;
         dump_exmem      : out    vl_logic;
+        halt_idex       : in     vl_logic;
+        halt_exmem      : out    vl_logic;
         err             : out    vl_logic;
         clk             : in     vl_logic;
         rst             : in     vl_logic

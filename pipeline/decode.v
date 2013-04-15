@@ -5,7 +5,7 @@ module decode(instr_IFID,PC2_IFID,size, zeroEx, WrR_MEMWB, writeData,RegDst,RegW
             ,RegDst_IDEX,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX,RegWrite_IDEX
             ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX
             ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead
-            ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch_EXMEM);
+            ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch_EXMEM,halt_IFID,halt_IDEX);
 //Inputs
 input [15:0] instr_IFID,writeData,PC2_IFID;
 input [1:0] RegDst,size;
@@ -13,7 +13,7 @@ input RegWrite, RegWrite_MEMWB, zeroEx, clk,rst,stallCtrl,takeBranch_EXMEM;
 input [4:0] ALUOp;
 input [2:0] WrR_MEMWB;
 input [1:0] ALUF;
-input ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead;
+input ALUSrc,halt_IFID,Branch,Dump,MemtoReg,MemWrite,MemRead;
 //Output
 output err;
 /*
@@ -24,16 +24,17 @@ output [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
 output [4:0] ALUOp_IDEX;
 output [1:0] RegDst_IDEX,ALUF_IDEX;
 output ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,
-    MemRead_IDEX,RegWrite_IDEX;
+    MemRead_IDEX,RegWrite_IDEX,halt_IDEX;
 //Internal Wires
 reg [2:0] WrR;	//Holds address of register to write to
-wire RegWrIn,MemWrIn;
+wire RegWrIn,MemWrIn,MemReadIn;
 reg [15:0] Imm;
 wire [15:0] Rd1, Rd2;
 
 //stall mux
 assign RegWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : RegWrite;
 assign MemWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemWrite;
+assign MemReadIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemRead;
 
 //PC2,Rd1,Rd2,Imm,+control sigs
 reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(PC2_IFID),.out(PC2_IDEX));
@@ -43,7 +44,7 @@ reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(Imm),.out(Imm_IDEX));
 //Control signals -- through a 16bit reg
 reg15bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
                                                 ,Branch,Dump,MemtoReg
-                                                ,MemWrin,MemRead}),
+                                                ,MemWrin,MemReadIn}),
                                             .out({ALUOp_IDEX,RegDst_IDEX
                                                 ,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX
                                                 ,Dump_IDEX,MemtoReg_IDEX
@@ -51,6 +52,7 @@ reg15bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
 
 reg7bit reg5(.clk(clk),.rst(rst),.en(1'b1),.in({instr_IFID[7:5],WrR,RegWrIn}),
         .out({Rd2Addr_IDEX,WrR_IDEX,RegWrite_IDEX}));
+dff_en reg6(.out(halt_IDEX),.in(halt_IFID),.en(1'b1),.clk(clk),.rst(rst));
 
 always @(*) begin
     casex({zeroEx,size})

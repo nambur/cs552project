@@ -1,9 +1,25 @@
-SIMLOG:: Cycle           4 PC:     zzzz I:     zzzz R: 0   0     zzzz M: 0 0     0000     0000
+SIMLOG:: Cycle           4 PC:     0000 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
+SIMLOG:: Cycle           5 PC:     0002 I:     202c RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     xxxx MemDataIn:     0000
+SIMLOG:: Cycle           6 PC:     0002 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: x MemAddress:     xxxx MemDataIn:     0000
+SIMLOG:: Cycle           7 PC:     0002 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: x MemAddress:     xxxx MemDataIn:     0000
+SIMLOG:: Cycle           8 PC:     0002 I:     0000 RegWrite: 0 WriteRegister:   1 WriteData:     xxxx MemRead: 0 MemWrite: x MemAddress:     xxxx MemDataIn:     0000
+SIMLOG:: Cycle           9 PC:     0002 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: x MemAddress:     xxxx MemDataIn:     0000
 SIMLOG:: Processor halted
 
-SIMLOG:: sim_cycles           4
+SIMLOG:: Cycle          10 PC:     0002 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: x MemAddress:     xxxx MemDataIn:     0000
+SIMLOG:: Processor halted
 
-SIMLOG:: inst_count           1
+SIMLOG:: Cycle          11 PC:     0002 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: x MemAddress:     xxxx MemDataIn:     0000
+SIMLOG:: Processor halted
+
+SIMLOG:: Cycle          12 PC:     0002 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: x MemAddress:     xxxx MemDataIn:     0000
+SIMLOG:: Processor halted
+
+SIMLOG:: Processor halted with haltcount == 4
+
+SIMLOG:: sim_cycles          12
+
+SIMLOG:: inst_count           4
 
 SIMLOG:: dcachehit_count           0
 
