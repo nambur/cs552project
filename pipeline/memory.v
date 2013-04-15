@@ -20,13 +20,14 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,
     output [2:0] WrR_MEMWB;
 
     //internal wire
-    wire memReadorWrite,MemReadIn;
+    wire memReadorWrite,MemReadIn,haltTemp;
     wire [15:0] RdD;
-
+   
     //stall mux
     assign RegWrIn = (takeBranch_EXMEM) ? 1'b0 : RegWrite_EXMEM;
     assign MemWrIn = (takeBranch_EXMEM) ? 1'b0 : MemWrite_EXMEM;
     assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemRead_EXMEM;
+    assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_EXMEM;
 
     //Pipeline Register 
     reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(RdD),.out(RdD_MEMWB));
@@ -34,7 +35,7 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,
     dff_en reg2(.clk(clk),.rst(rst),.en(1'b1),.in(RegWrIn),.out(RegWrite_MEMWB));
     reg3bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(WrR_EXMEM),.out(WrR_MEMWB));
     reg16bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in(ALUO_EXMEM),.out(ALUO_MEMWB));
-    dff_en reg5(.clk(clk),.rst(rst),.en(1'b1),.in(halt_EXMEM),.out(halt_MEMWB));
+    dff_en reg5(.clk(clk),.rst(rst),.en(1'b1),.in(haltTemp),.out(halt_MEMWB));
 
     //enable logic  
     assign memReadorWrite = (MemWrIn | MemReadIn);

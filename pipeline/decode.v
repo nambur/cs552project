@@ -5,11 +5,12 @@ module decode(instr_IFID,PC2_IFID,size, zeroEx, WrR_MEMWB, writeData,RegDst,RegW
             ,RegDst_IDEX,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX,RegWrite_IDEX
             ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX
             ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead
-            ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch_EXMEM,halt_IFID,halt_IDEX);
+            ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch_EXMEM,halt_IFID,halt_IDEX
+            ,Jump,Jump_IDEX);
 //Inputs
 input [15:0] instr_IFID,writeData,PC2_IFID;
 input [1:0] RegDst,size;
-input RegWrite, RegWrite_MEMWB, zeroEx, clk,rst,stallCtrl,takeBranch_EXMEM;
+input RegWrite, RegWrite_MEMWB, zeroEx, clk,rst,Jump,stallCtrl,takeBranch_EXMEM;
 input [4:0] ALUOp;
 input [2:0] WrR_MEMWB;
 input [1:0] ALUF;
@@ -24,10 +25,10 @@ output [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
 output [4:0] ALUOp_IDEX;
 output [1:0] RegDst_IDEX,ALUF_IDEX;
 output ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,
-    MemRead_IDEX,RegWrite_IDEX,halt_IDEX;
+    MemRead_IDEX,RegWrite_IDEX,halt_IDEX,Jump_IDEX;
 //Internal Wires
 reg [2:0] WrR;	//Holds address of register to write to
-wire RegWrIn,MemWrIn,MemReadIn;
+wire RegWrIn,MemWrIn,MemReadIn,haltTemp;
 reg [15:0] Imm;
 wire [15:0] Rd1, Rd2;
 
@@ -35,6 +36,7 @@ wire [15:0] Rd1, Rd2;
 assign RegWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : RegWrite;
 assign MemWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemWrite;
 assign MemReadIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemRead;
+assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_IFID;
 
 //PC2,Rd1,Rd2,Imm,+control sigs
 reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(PC2_IFID),.out(PC2_IDEX));
@@ -52,7 +54,8 @@ reg15bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
 
 reg7bit reg5(.clk(clk),.rst(rst),.en(1'b1),.in({instr_IFID[7:5],WrR,RegWrIn}),
         .out({Rd2Addr_IDEX,WrR_IDEX,RegWrite_IDEX}));
-dff_en reg6(.out(halt_IDEX),.in(halt_IFID),.en(1'b1),.clk(clk),.rst(rst));
+dff_en reg6(.out(halt_IDEX),.in(haltTemp),.en(1'b1),.clk(clk),.rst(rst));
+dff_en reg7(.out(Jump_IDEX),.in(Jump),.en(1'b1),.clk(clk),.rst(rst));
 
 always @(*) begin
     casex({zeroEx,size})

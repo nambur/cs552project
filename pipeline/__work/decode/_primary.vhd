@@ -41,6 +41,8 @@ entity decode is
         stallctrl       : in     vl_logic;
         takebranch_exmem: in     vl_logic;
         halt_ifid       : in     vl_logic;
-        halt_idex       : out    vl_logic
+        halt_idex       : out    vl_logic;
+        jump            : in     vl_logic;
+        jump_idex       : out    vl_logic
     );
 end decode;

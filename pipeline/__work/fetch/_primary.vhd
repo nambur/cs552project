@@ -3,7 +3,6 @@ use verilog.vl_types.all;
 entity fetch is
     port(
         pcs             : in     vl_logic_vector(15 downto 0);
-        jump            : in     vl_logic;
         dump            : in     vl_logic;
         clk             : in     vl_logic;
         rst             : in     vl_logic;
