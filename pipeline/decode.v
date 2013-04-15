@@ -44,7 +44,7 @@ reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(Imm),.out(Imm_IDEX));
 //Control signals -- through a 16bit reg
 reg15bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
                                                 ,Branch,Dump,MemtoReg
-                                                ,MemWrin,MemReadIn}),
+                                                ,MemWrIn,MemReadIn}),
                                             .out({ALUOp_IDEX,RegDst_IDEX
                                                 ,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX
                                                 ,Dump_IDEX,MemtoReg_IDEX
