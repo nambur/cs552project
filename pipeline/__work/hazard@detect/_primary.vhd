@@ -12,8 +12,9 @@ entity hazarddetect is
         stallctrl       : out    vl_logic;
         clk             : in     vl_logic;
         rst             : in     vl_logic;
-        jump_idex       : in     vl_logic;
+        jump            : in     vl_logic;
         jumpflush       : out    vl_logic;
+        jump_idex       : in     vl_logic;
         wrr_memwb       : in     vl_logic_vector(2 downto 0);
         regwrite_memwb  : out    vl_logic
     );

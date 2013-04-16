@@ -1,8 +1,8 @@
 module hazardDetect(takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR_IDEX,WrR_EXMEM,Rd1Addr_IFID,Rd2Addr_IFID,
-            stallCtrl,clk,rst,Jump_IDEX,jumpFlush,WrR_MEMWB,RegWrite_MEMWB);
+            stallCtrl,clk,rst,Jump,jumpFlush,Jump_IDEX,WrR_MEMWB,RegWrite_MEMWB);
 
     input [2:0] WrR_IDEX,WrR_EXMEM,WrR_MEMWB,Rd1Addr_IFID,Rd2Addr_IFID;
-    input RegWrite_IDEX,RegWrite_EXMEM,Jump_IDEX;
+    input RegWrite_IDEX,RegWrite_EXMEM,Jump,Jump_IDEX;
     input clk,rst,takeBranch_EXMEM;
     output stallCtrl,jumpFlush,RegWrite_MEMWB;
 
@@ -15,7 +15,7 @@ module hazardDetect(takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR_IDEX,WrR_E
     dff_en ff4(.clk(clk),.rst(rst),.en(1'b1),.in(Jump_IDEX),.out(checkJump));
     
     //TODO added code for clearing data after a jump is detected
-    assign jumpFlush = (Jump_IDEX | checkJump);
+    assign jumpFlush = Jump_IDEX | checkJump;
 
     //stall logic
     assign a = WrR_IDEX == Rd1Addr_IFID;
@@ -29,10 +29,13 @@ module hazardDetect(takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR_IDEX,WrR_E
     assign stall2 = takeBranch_EXMEM ? 1'b0 : ((RegWrite_EXMEM) ? (c|d) : 1'b0);
     assign stall1 = takeBranch_EXMEM ? 1'b0 : ((RegWrite_MEMWB) ? (e|f) : 1'b0);
 
+/*
     assign checkTemp = takeBranch_EXMEM ? 1'b0 : checkSt3Out;
     assign checkTemp1 = takeBranch_EXMEM ? 1'b0 : checkSt2Out;
     assign checkTemp2 = takeBranch_EXMEM ? 1'b0 : checkSt3;
-
     assign stallCtrl = stall3 | checkTemp2 | checkTemp | stall2 | checkTemp1 | stall1;
+*/
+
+    assign stallCtrl = (jumpFlush) ? 1'b0 : (stall3 | checkSt3 | checkSt3Out | stall2 | checkSt2Out | stall1);
 
 endmodule

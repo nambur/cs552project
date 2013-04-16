@@ -5,6 +5,7 @@ entity memory is
         aluo_exmem      : in     vl_logic_vector(15 downto 0);
         aluo_memwb      : out    vl_logic_vector(15 downto 0);
         rd2_exmem       : in     vl_logic_vector(15 downto 0);
+        takebranch      : in     vl_logic;
         takebranch_exmem: in     vl_logic;
         memwrite_exmem  : in     vl_logic;
         regwrite_exmem  : in     vl_logic;

@@ -1,6 +1,6 @@
 //NEW MEMORY MODULE
 //John Vennard and Nick Ambur
-module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,
+module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
               takeBranch_EXMEM,MemWrite_EXMEM,RegWrite_EXMEM,RegWrite_MEMWB,
               MemRead_EXMEM,Dump_EXMEM,RdD_MEMWB,MemtoReg_EXMEM,MemtoReg_MEMWB,
               WrR_EXMEM, WrR_MEMWB, clk,rst,halt_EXMEM,halt_MEMWB, jumpAndLink_EXMEM);
@@ -10,7 +10,7 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,
 
     //Input
     input [15:0] ALUO_EXMEM,Rd2_EXMEM;
-    input takeBranch_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM, RegWrite_EXMEM
+    input takeBranch,takeBranch_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM, RegWrite_EXMEM
         ,MemRead_EXMEM,Dump_EXMEM,jumpAndLink_EXMEM;
     input [2:0] WrR_EXMEM;
 
@@ -24,10 +24,10 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,
     wire [15:0] RdD;
    
     //stall mux
-    assign RegWrIn = (jumpAndLink_EXMEM | RegWrite_EXMEM) ? 1'b1 : ((takeBranch_EXMEM) ? 1'b0 : RegWrite_EXMEM);
+    assign RegWrIn = (jumpAndLink_EXMEM & RegWrite_EXMEM) ? 1'b1 : ((takeBranch_EXMEM) ? 1'b0 : RegWrite_EXMEM);
     assign MemWrIn = (takeBranch_EXMEM) ? 1'b0 : MemWrite_EXMEM;
     assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemRead_EXMEM;
-    assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_EXMEM;
+    assign haltTemp = (takeBranch_EXMEM | takeBranch) ? 1'b0 : halt_EXMEM;
 
     //Pipeline Register 
     reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(RdD),.out(RdD_MEMWB));

@@ -202,7 +202,7 @@ module proc_hier_pbench();
    */
    
    //assign Halt = DUT.p0.haltxout;
-   assign Halt = DUT.p0.halt_MEMWB;
+   assign Halt = DUT.p0.halt_EXMEM;
    // Processor halted
    
    

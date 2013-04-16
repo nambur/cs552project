@@ -1,6 +1,6 @@
 module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_IDEX,
-              Branch_IDEX,takeBranch_EXMEM,Dump_IDEX, WrR_IDEX, WrR_EXMEM, RegWrite_IDEX, RegWrite_EXMEM,
-              MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,jumpAndLink_IDEX,jumpAndLink_EXMEM,
+              Branch_IDEX,takeBranch,takeBranch_EXMEM,Dump_IDEX, WrR_IDEX, WrR_EXMEM, RegWrite_IDEX, RegWrite_EXMEM,
+              MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS,jumpAndLink_IDEX,jumpAndLink_EXMEM,
               ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,PC_IDEX,
               MemRead_EXMEM,Dump_EXMEM,halt_IDEX,halt_EXMEM,Jump_IDEX
               ,err,clk,rst);
@@ -17,18 +17,18 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     input [2:0] WrR_IDEX;
 
     //output
-    output [15:0] PCS_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
+    output [15:0] PCS, ALUO_EXMEM,Rd2_EXMEM;
     output [2:0] WrR_EXMEM;
     output MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM,RegWrite_EXMEM;
-    output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM,jumpAndLink_EXMEM;
+    output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM,jumpAndLink_EXMEM,takeBranch;
 
     //Internal Signals
     wire haltTemp;
     wire invB, immPass, doSLE, doSEQ, doSCO, doBTR, doSTU, RegWrIn, MemWrIn,
-        doSLBI, doSLT, takeBranch, CO, ofl, aluerr, dummy, dummy2,MemReadIn;
+        doSLBI, doSLT, CO, ofl, aluerr, dummy, dummy2,MemReadIn;
     wire [3:0] opOut;
     wire [2:0] flag;
-    wire [15:0] PCS,outALU,stuOut, temp, outCLA, sleOut, seqOut,
+    wire [15:0] outALU,stuOut, temp, outCLA, sleOut, seqOut,
         scoOut, slbiOut, sltOut, btrOut, claIn,PC2Temp;
     reg [15:0] bin,ALUO;
     reg exerr;
@@ -41,7 +41,6 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
 
     //Pipeline Registers
     reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(Rd2_IDEX),.out(Rd2_EXMEM));
-    reg16bit reg1(.clk(clk),.rst(rst),.en(1'b1),.in(PCS),.out(PCS_EXMEM));
     reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(ALUO),.out(ALUO_EXMEM));
     reg5bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({takeBranch,MemtoReg_IDEX
                                                     ,MemWrIn,MemReadIn
@@ -94,7 +93,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
             9'b000100000: ALUO = seqOut;
             9'b001000000: ALUO = sleOut;
             9'b010000000: ALUO = stuOut;
-            9'b100000000: ALUO = PC2_IDEX;
+            9'b100000000: ALUO = PC_IDEX;
             default: ALUO = 16'hxxxx;
         endcase
     end

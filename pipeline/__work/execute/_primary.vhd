@@ -10,6 +10,7 @@ entity execute is
         imm_idex        : in     vl_logic_vector(15 downto 0);
         aluf_idex       : in     vl_logic_vector(1 downto 0);
         branch_idex     : in     vl_logic;
+        takebranch      : out    vl_logic;
         takebranch_exmem: out    vl_logic;
         dump_idex       : in     vl_logic;
         wrr_idex        : in     vl_logic_vector(2 downto 0);
@@ -19,7 +20,7 @@ entity execute is
         memtoreg_idex   : in     vl_logic;
         memwrite_idex   : in     vl_logic;
         memread_idex    : in     vl_logic;
-        pcs_exmem       : out    vl_logic_vector(15 downto 0);
+        pcs             : out    vl_logic_vector(15 downto 0);
         jumpandlink_idex: in     vl_logic;
         jumpandlink_exmem: out    vl_logic;
         aluo_exmem      : out    vl_logic_vector(15 downto 0);

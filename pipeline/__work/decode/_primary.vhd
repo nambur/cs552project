@@ -39,6 +39,7 @@ entity decode is
         rd2addr_idex    : out    vl_logic_vector(2 downto 0);
         wrr_idex        : out    vl_logic_vector(2 downto 0);
         stallctrl       : in     vl_logic;
+        takebranch      : in     vl_logic;
         takebranch_exmem: in     vl_logic;
         halt_ifid       : in     vl_logic;
         halt_idex       : out    vl_logic;
