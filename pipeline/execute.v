@@ -34,7 +34,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     reg exerr;
 
     //flush mux
-    assign RegWrIn = (jumpAndLink_IDEX & RegWrite_IDEX) ? 1'b1 : ((takeBranch_EXMEM) ? 1'b0 : RegWrite_IDEX);
+    assign RegWrIn = (takeBranch_EXMEM) ? 1'b0 : RegWrite_IDEX;
     assign MemWrIn = (takeBranch_EXMEM) ? 1'b0 : MemWrite_IDEX;
     assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemRead_IDEX;
     assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_IDEX;
@@ -58,7 +58,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     carryLA_16b CLA(.A(claIn), .B(Imm_IDEX), .SUM(outCLA), .CI(1'b0), .CO(dummy), .Ofl(ofl));
     assign PCS = (Branch_IDEX | Jump_IDEX) ? outCLA : PC2Temp;
     assign claIn = ((ALUOp_IDEX == 5'b00101) | (ALUOp_IDEX == 5'b00111)) ? Rd1_IDEX : PC2Temp;
-    assign PC2Temp = (Branch_IDEX) ? PC_IDEX : PC2_IDEX;  //TODO working on this
+    assign PC2Temp = (Branch_IDEX) ? PC_IDEX : PC_IDEX;  //TODO working on this
 
     assign slbiOut = (Rd1_IDEX << 4'h8) | Imm_IDEX;
     //neg-to-pos and pos-to-neg detection

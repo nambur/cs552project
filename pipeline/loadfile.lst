@@ -1,17 +1,9 @@
-          // Original test: ./neel/hw4/problem6/jalr_1.asm
-          // Author: neel
+          // Original test: ./jmeyer/hw4/problem6/jal_0.asm
+          // Author: jmeyer
           // Test source code follows
           
           
-          //Tests jalr with negative offset
-          //branches to inst lbi r3,30
-          
-0000 c1ff lbi r1,255
-0002 c206 lbi r2,6
-0004 3a04 jalr r2,4
-0006 c314 lbi r3,20
-0008 0000 halt
-000a c31e lbi r3,30
-000c c20c lbi r2,12
-000e 3afa jalr r2,-6
-0010 0000 halt
+0000 3004 jal 4	//Tests positive jal (PC <- 0x06, R7 <- 0x02)
+0002 3000 jal 0   //Tests jal of 0     (PC <- 0x04, R7 <- 0x04)
+0004 0000 halt
+0006 37fa jal -6  //Tests negative jal (PC <- 0x02, R7 <- 0x08)

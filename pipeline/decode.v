@@ -63,7 +63,7 @@ dff_en reg7(.out(Jump_IDEX),.in(jumpTemp),.en(1'b1),.clk(clk),.rst(rst));
 dff_en reg9(.out(jumpAndLink_IDEX),.in(jumpAndLinkTemp),.en(1'b1),.clk(clk),.rst(rst));
 
 //TODO working on this -- Jump carry through logic
-assign jumpTemp = Jump & (~jumpFlush) & (~takeBranch);
+assign jumpTemp = Jump & (~jumpFlush) & (~takeBranch) & (~stallCtrl);
 //assign jumpTemp = Jump & ~stallCtrl;
 assign jumpAndLinkTemp = (((~instr_IFID[15])&(~instr_IFID[14]))&(((instr_IFID[13])&(instr_IFID[12])&(~instr_IFID[11]))|
                                                              ((instr_IFID[13])&(instr_IFID[12])&(instr_IFID[11]))));

@@ -15,7 +15,7 @@ module hazardDetect(takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR_IDEX,WrR_E
     dff_en ff4(.clk(clk),.rst(rst),.en(1'b1),.in(Jump_IDEX),.out(checkJump));
     
     //TODO added code for clearing data after a jump is detected
-    assign jumpFlush = Jump_IDEX | checkJump;
+    assign jumpFlush = Jump_IDEX;
 
     //stall logic
     assign a = WrR_IDEX == Rd1Addr_IFID;
