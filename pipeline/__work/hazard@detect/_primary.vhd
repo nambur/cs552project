@@ -2,6 +2,7 @@ library verilog;
 use verilog.vl_types.all;
 entity hazarddetect is
     port(
+        takebranch      : in     vl_logic;
         takebranch_exmem: in     vl_logic;
         regwrite_idex   : in     vl_logic;
         regwrite_exmem  : in     vl_logic;

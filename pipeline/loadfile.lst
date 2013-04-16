@@ -1,9 +1,14 @@
-          // Original test: ./jmeyer/hw4/problem6/jal_0.asm
-          // Author: jmeyer
+          // Original test: ./michail/hw4/problem6/jalr_99.asm
+          // Author: michail
           // Test source code follows
           
           
-0000 3004 jal 4	//Tests positive jal (PC <- 0x06, R7 <- 0x02)
-0002 3000 jal 0   //Tests jal of 0     (PC <- 0x04, R7 <- 0x04)
-0004 0000 halt
-0006 37fa jal -6  //Tests negative jal (PC <- 0x02, R7 <- 0x08)
+0000 c105 lbi r1,5      			// expected output on R1 =12
+0002 c204 lbi r2,4     		
+0004 4121 addi r1,r1,1            
+0006 3a06 jalr  r2,6              
+0008 4121 addi r1,r1 ,1
+000a 4122 addi r1,r1 ,2
+000c 4124 addi r1,r1 ,4
+000e 47e0 addi r7,r7 ,0
+0010 0000 halt	

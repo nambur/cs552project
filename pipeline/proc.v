@@ -79,7 +79,7 @@ module proc (/*AUTOARG*/
     hazardDetect hD(.takeBranch_EXMEM(takeBranch_EXMEM),.RegWrite_IDEX(RegWrite_IDEX),.RegWrite_EXMEM(RegWrite_EXMEM),.WrR_IDEX(WrR_IDEX)
                     ,.WrR_EXMEM(WrR_EXMEM),.Rd1Addr_IFID(instr_IFID[10:8]),.Rd2Addr_IFID(instr_IFID[7:5])
                     ,.stallCtrl(stallCtrl), .clk(clk), .rst(rst),.Jump(Jump),.Jump_IDEX(Jump_IDEX),.jumpFlush(jumpFlush)
-                    ,.WrR_MEMWB(WrR_MEMWB),.RegWrite_MEMWB(RegWrite_MEMWB));
+                    ,.takeBranch(takeBranch),.WrR_MEMWB(WrR_MEMWB),.RegWrite_MEMWB(RegWrite_MEMWB));
 
 	//Decode Stage
 	decode decode0(.instr_IFID(instr_IFID),.PC2_IFID(PC2_IFID),.size(size),.zeroEx(zeroEx)
