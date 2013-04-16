@@ -11,6 +11,10 @@ entity hazarddetect is
         rd2addr_ifid    : in     vl_logic_vector(2 downto 0);
         stallctrl       : out    vl_logic;
         clk             : in     vl_logic;
-        rst             : in     vl_logic
+        rst             : in     vl_logic;
+        jump_idex       : in     vl_logic;
+        jumpflush       : out    vl_logic;
+        wrr_memwb       : in     vl_logic_vector(2 downto 0);
+        regwrite_memwb  : out    vl_logic
     );
 end hazarddetect;

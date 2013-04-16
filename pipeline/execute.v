@@ -1,18 +1,18 @@
 module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_IDEX,
               Branch_IDEX,takeBranch_EXMEM,Dump_IDEX, WrR_IDEX, WrR_EXMEM, RegWrite_IDEX, RegWrite_EXMEM,
-              MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,
-              ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,
-              MemRead_EXMEM,Dump_EXMEM,halt_IDEX,halt_EXMEM,Jump_IDEX,Jump_EXMEM
+              MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,jumpAndLink_IDEX,jumpAndLink_EXMEM,
+              ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,PC_IDEX,
+              MemRead_EXMEM,Dump_EXMEM,halt_IDEX,halt_EXMEM,Jump_IDEX
               ,err,clk,rst);
     //Non-Pipelined signals 
     output err;
     input clk,rst;
 
     //input
-    input [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
+    input [15:0] PC2_IDEX,PC_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
     input [4:0] ALUOp_IDEX;
     input [1:0] ALUF_IDEX;
-    input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,
+    input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,jumpAndLink_IDEX,
         MemWrite_IDEX,MemRead_IDEX, RegWrite_IDEX,halt_IDEX,Jump_IDEX;
     input [2:0] WrR_IDEX;
 
@@ -20,7 +20,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     output [15:0] PCS_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
     output [2:0] WrR_EXMEM;
     output MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM,RegWrite_EXMEM;
-    output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM,Jump_EXMEM;
+    output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM,jumpAndLink_EXMEM;
 
     //Internal Signals
     wire haltTemp;
@@ -29,12 +29,12 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     wire [3:0] opOut;
     wire [2:0] flag;
     wire [15:0] PCS,outALU,stuOut, temp, outCLA, sleOut, seqOut,
-        scoOut, slbiOut, sltOut, btrOut, claIn,claTemp;
+        scoOut, slbiOut, sltOut, btrOut, claIn,PC2Temp;
     reg [15:0] bin,ALUO;
     reg exerr;
 
     //flush mux
-    assign RegWrIn = (Jump_IDEX & RegWrite_IDEX) ? 1'b1 : ((takeBranch_EXMEM) ? 1'b0 : RegWrite_IDEX);
+    assign RegWrIn = (jumpAndLink_IDEX & RegWrite_IDEX) ? 1'b1 : ((takeBranch_EXMEM) ? 1'b0 : RegWrite_IDEX);
     assign MemWrIn = (takeBranch_EXMEM) ? 1'b0 : MemWrite_IDEX;
     assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemRead_IDEX;
     assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_IDEX;
@@ -53,13 +53,13 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     dff_en reg5(.in(RegWrIn),.out(RegWrite_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
     reg3bit reg6(.clk(clk),.rst(rst),.en(1'b1),.in(WrR_IDEX),.out(WrR_EXMEM));
     dff_en reg7(.in(haltTemp),.out(halt_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
-    dff_en reg8(.in(Jump_IDEX),.out(Jump_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
+    dff_en reg8(.in(jumpAndLink_IDEX),.out(jumpAndLink_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
    
     branchCtrl BRANCHCTRL(.Jump_IDEX(Jump_IDEX),.Branch(Branch_IDEX), .branchType(ALUOp_IDEX[1:0]), .flag(flag), .takeBranch(takeBranch));
     carryLA_16b CLA(.A(claIn), .B(Imm_IDEX), .SUM(outCLA), .CI(1'b0), .CO(dummy), .Ofl(ofl));
-    assign PCS = (Branch_IDEX | Jump_IDEX) ? claTemp : PC2_IDEX;
-    assign claIn = ((ALUOp_IDEX == 5'b00101) | (ALUOp_IDEX == 5'b00111)) ? Rd1_IDEX : PC2_IDEX;
-    assign claTemp = (Jump_IDEX) ? (outCLA+2) : outCLA;
+    assign PCS = (Branch_IDEX | Jump_IDEX) ? outCLA : PC2Temp;
+    assign claIn = ((ALUOp_IDEX == 5'b00101) | (ALUOp_IDEX == 5'b00111)) ? Rd1_IDEX : PC2Temp;
+    assign PC2Temp = (Branch_IDEX) ? PC_IDEX : PC2_IDEX;  //TODO working on this
 
     assign slbiOut = (Rd1_IDEX << 4'h8) | Imm_IDEX;
     //neg-to-pos and pos-to-neg detection

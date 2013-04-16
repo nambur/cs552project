@@ -27,7 +27,7 @@ module proc (/*AUTOARG*/
    /* your code here */
 
    //fetch wires
-	wire [15:0] instr_IFID,WrD,Rd1,Rd2,PC2_IFID,ALUoutput,RdD,Imm;
+	wire [15:0] instr_IFID,WrD,Rd1,Rd2,PC2_IFID,PC_IFID,ALUoutput,RdD,Imm;
 	wire [10:0] Instr_ex;
 	wire [4:0] ALUOp;
 	wire [2:0] flag;
@@ -39,7 +39,7 @@ module proc (/*AUTOARG*/
 	wire [1:0] RegDst,size;
 
 	//Decode Wires
-    wire [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
+    wire [15:0] PC2_IDEX,PC_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
     wire [4:0] ALUOp_IDEX;
     wire [1:0] RegDst_IDEX,ALUF_IDEX;
     wire ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,
@@ -50,7 +50,7 @@ module proc (/*AUTOARG*/
     wire [15:0] PCS_EXMEM, Imm_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
     wire [2:0] WrR_EXMEM;
     wire MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM;
-    wire Dump_EXMEM,halt_IDEX,Jump_EXMEM;
+    wire Dump_EXMEM,halt_IDEX;
     
     //memory wires
     wire [15:0] RdD_MEMWB;
@@ -62,7 +62,7 @@ module proc (/*AUTOARG*/
     wire RegWrite_MEMWB;
 
     //hazard control wires
-    wire stallCtrl;
+    wire stallCtrl,jumpFlush,jumpAndLink_IDEX,jumpAndLink_EXMEM;
     
 	//error wires
 	wire err_fetch,err_decode,err_execute;
@@ -72,12 +72,13 @@ module proc (/*AUTOARG*/
 
 	//Fetch Stage 
 	fetch fetch0(.PCS(PCS_EXMEM),.stallCtrl(stallCtrl),.takeBranch_EXMEM(takeBranch_EXMEM),.Dump(dump)
-    ,.PC2_IFID(PC2_IFID),.instr_IFID(instr_IFID),.halt_IFID(halt_IFID),.err(err_fetch),.clk(clk),.rst(rst));
+    ,.PC2_IFID(PC2_IFID),.PC_IFID(PC_IFID),.instr_IFID(instr_IFID),.halt_IFID(halt_IFID),.err(err_fetch),.clk(clk),.rst(rst));
 
     //Hazard control -- with fetch for pipeline
     hazardDetect hD(.takeBranch_EXMEM(takeBranch_EXMEM),.RegWrite_IDEX(RegWrite_IDEX),.RegWrite_EXMEM(RegWrite_EXMEM),.WrR_IDEX(WrR_IDEX)
                     ,.WrR_EXMEM(WrR_EXMEM),.Rd1Addr_IFID(instr_IFID[10:8]),.Rd2Addr_IFID(instr_IFID[7:5])
-                    ,.stallCtrl(stallCtrl), .clk(clk), .rst(rst));
+                    ,.stallCtrl(stallCtrl), .clk(clk), .rst(rst),.Jump_IDEX(Jump_IDEX),.jumpFlush(jumpFlush)
+                    ,.WrR_MEMWB(WrR_MEMWB),.RegWrite_MEMWB(RegWrite_MEMWB));
 
 	//Decode Stage
 	decode decode0(.instr_IFID(instr_IFID),.PC2_IFID(PC2_IFID),.size(size),.zeroEx(zeroEx)
@@ -87,10 +88,11 @@ module proc (/*AUTOARG*/
     ,.MemRead(MemRead),.PC2_IDEX(PC2_IDEX),.Rd1_IDEX(Rd1_IDEX),.Rd2_IDEX(Rd2_IDEX)
     ,.Imm_IDEX(Imm_IDEX),.ALUOp_IDEX(ALUOp_IDEX),.RegDst_IDEX(RegDst_IDEX)
     ,.ALUF_IDEX(ALUF_IDEX),.ALUSrc_IDEX(ALUSrc_IDEX),.Branch_IDEX(Branch_IDEX),.takeBranch_EXMEM(takeBranch_EXMEM)
-    ,.Dump_IDEX(Dump_IDEX),.MemtoReg_IDEX(MemtoReg_IDEX)
+    ,.Dump_IDEX(Dump_IDEX),.MemtoReg_IDEX(MemtoReg_IDEX),.PC_IFID(PC_IFID),.PC_IDEX(PC_IDEX)
     ,.MemWrite_IDEX(MemWrite_IDEX),.MemRead_IDEX(MemRead_IDEX),.RegWrite_IDEX(RegWrite_IDEX)
     ,.Rd2Addr_IDEX(Rd2Addr_IDEX),.WrR_IDEX(WrR_IDEX),.stallCtrl(stallCtrl),.halt_IFID(halt_IFID)
-    ,.halt_IDEX(halt_IDEX),.Jump(Jump),.Jump_IDEX(Jump_IDEX));
+    ,.halt_IDEX(halt_IDEX),.Jump(Jump),.Jump_IDEX(Jump_IDEX),.jumpFlush(jumpFlush)
+    ,.jumpAndLink_IDEX(jumpAndLink_IDEX));
 
     //Control Module -- in same place as decode for purpose of pipeline
     control ctrl(.Inst(instr_IFID),.size(size),.halt(halt),.zeroEx(zeroEx)
@@ -106,9 +108,9 @@ module proc (/*AUTOARG*/
     ,.ALUF_IDEX(ALUF_IDEX),.ALUSrc_IDEX(ALUSrc_IDEX),.Branch_IDEX(Branch_IDEX),.takeBranch_EXMEM(takeBranch_EXMEM)
     ,.Dump_IDEX(Dump_IDEX),.MemtoReg_IDEX(MemtoReg_IDEX)
     ,.MemRead_IDEX(MemRead_IDEX),.WrR_IDEX(WrR_IDEX),.WrR_EXMEM(WrR_EXMEM),.RegWrite_IDEX(RegWrite_IDEX), .RegWrite_EXMEM(RegWrite_EXMEM)
-    ,.PCS_EXMEM(PCS_EXMEM),.ALUO_EXMEM(ALUO_EXMEM)
+    ,.PCS_EXMEM(PCS_EXMEM),.ALUO_EXMEM(ALUO_EXMEM),.PC_IDEX(PC_IDEX),.jumpAndLink_IDEX(jumpAndLink_IDEX),.jumpAndLink_EXMEM(jumpAndLink_EXMEM)
     ,.Rd2_EXMEM(Rd2_EXMEM),.MemtoReg_EXMEM(MemtoReg_EXMEM), .MemWrite_IDEX(MemWrite_IDEX)
-    ,.MemWrite_EXMEM(MemWrite_EXMEM),.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM),.Jump_EXMEM(Jump_EXMEM)
+    ,.MemWrite_EXMEM(MemWrite_EXMEM),.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM)
     ,.clk(clk),.rst(rst),.err(err_execute),.halt_IDEX(halt_IDEX),.halt_EXMEM(halt_EXMEM),.Jump_IDEX(Jump_IDEX));
 
 	//Mem Stage
@@ -117,7 +119,7 @@ module proc (/*AUTOARG*/
                     ,.Rd2_EXMEM(Rd2_EXMEM),.takeBranch_EXMEM(takeBranch_EXMEM), .RegWrite_EXMEM(RegWrite_EXMEM)
                     , .RegWrite_MEMWB(RegWrite_MEMWB), .MemtoReg_EXMEM(MemtoReg_EXMEM),.MemWrite_EXMEM(MemWrite_EXMEM)
                     ,.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM),.RdD_MEMWB(RdD_MEMWB)
-                    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.Jump_EXMEM(Jump_EXMEM)
+                    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.jumpAndLink_EXMEM(jumpAndLink_EXMEM)
 	                ,.clk(clk),.rst(rst),.halt_EXMEM(halt_EXMEM),.halt_MEMWB(halt_MEMWB));
 
 	//Write Back Stage

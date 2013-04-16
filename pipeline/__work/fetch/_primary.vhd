@@ -6,6 +6,7 @@ entity fetch is
         dump            : in     vl_logic;
         clk             : in     vl_logic;
         rst             : in     vl_logic;
+        pc_ifid         : out    vl_logic_vector(15 downto 0);
         pc2_ifid        : out    vl_logic_vector(15 downto 0);
         instr_ifid      : out    vl_logic_vector(15 downto 0);
         takebranch_exmem: in     vl_logic;

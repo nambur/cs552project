@@ -43,6 +43,10 @@ entity decode is
         halt_ifid       : in     vl_logic;
         halt_idex       : out    vl_logic;
         jump            : in     vl_logic;
-        jump_idex       : out    vl_logic
+        jump_idex       : out    vl_logic;
+        pc_ifid         : in     vl_logic_vector(15 downto 0);
+        pc_idex         : out    vl_logic_vector(15 downto 0);
+        jumpflush       : in     vl_logic;
+        jumpandlink_idex: out    vl_logic
     );
 end decode;
