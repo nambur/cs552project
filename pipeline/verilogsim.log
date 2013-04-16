@@ -75,25 +75,30 @@ SIMLOG:: Cycle          73 PC:     0032 I:     c000 RegWrite: 0 WriteRegister:  
 SIMLOG:: Cycle          74 PC:     0034 I:     3014 RegWrite: 0 WriteRegister:   6 WriteData:     005e MemRead: 0 MemWrite: 1 MemAddress:     0060 MemDataIn:     aa00
 SIMLOG:: Cycle          75 PC:     0034 I:     3014 RegWrite: 1 WriteRegister:   6 WriteData:     0060 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
 SIMLOG:: Cycle          76 PC:     0034 I:     3014 RegWrite: 1 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0032 MemDataIn:     0000
-SIMLOG:: Cycle          77 PC:     0048 I:     0000 RegWrite: 0 WriteRegister:   7 WriteData:     0032 MemRead: 0 MemWrite: 0 MemAddress:     0034 MemDataIn:     0000
-SIMLOG:: Cycle          78 PC:     004a I:     3f02 RegWrite: 0 WriteRegister:   7 WriteData:     0034 MemRead: 0 MemWrite: 0 MemAddress:     0034 MemDataIn:     0000
-SIMLOG:: Cycle          79 PC:     004a I:     80e0 RegWrite: 0 WriteRegister:   7 WriteData:     0034 MemRead: 0 MemWrite: 0 MemAddress:     0060 MemDataIn:     0000
-SIMLOG:: Cycle          80 PC:     004c I:     80e0 RegWrite: 0 WriteRegister:   0 WriteData:     0060 MemRead: 0 MemWrite: 0 MemAddress:     0048 MemDataIn:     0000
-SIMLOG:: Cycle          81 PC:     aa04 I:     0000 RegWrite: 0 WriteRegister:   7 WriteData:     0048 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     aa00
-SIMLOG:: Cycle          82 PC:     aa04 I:     0000 RegWrite: 0 WriteRegister:   7 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     aa00
-SIMLOG:: Cycle          83 PC:     aa04 I:     0000 RegWrite: 0 WriteRegister:   7 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
-SIMLOG:: Cycle          84 PC:     aa04 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
-SIMLOG:: Cycle          85 PC:     aa04 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
+SIMLOG:: Cycle          77 PC:     0048 I:     0000 RegWrite: 1 WriteRegister:   7 WriteData:     0032 MemRead: 0 MemWrite: 0 MemAddress:     0034 MemDataIn:     0000
+SIMLOG:: Cycle          78 PC:     004a I:     3f02 RegWrite: 1 WriteRegister:   7 WriteData:     0034 MemRead: 0 MemWrite: 0 MemAddress:     0034 MemDataIn:     0000
+SIMLOG:: Cycle          79 PC:     004a I:     80e0 RegWrite: 1 WriteRegister:   7 WriteData:     0034 MemRead: 0 MemWrite: 0 MemAddress:     0060 MemDataIn:     0000
+SIMLOG:: Cycle          80 PC:     004a I:     80e0 RegWrite: 0 WriteRegister:   0 WriteData:     0060 MemRead: 0 MemWrite: 0 MemAddress:     0048 MemDataIn:     0000
+SIMLOG:: Cycle          81 PC:     0036 I:     80e0 RegWrite: 1 WriteRegister:   7 WriteData:     0048 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0034
+SIMLOG:: Cycle          82 PC:     0036 I:     80e0 RegWrite: 0 WriteRegister:   7 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0034
+SIMLOG:: Cycle          83 PC:     0038 I:     3f04 RegWrite: 0 WriteRegister:   7 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0034
+SIMLOG:: Cycle          84 PC:     0038 I:     0000 RegWrite: 0 WriteRegister:   7 WriteData:     0000 MemRead: 0 MemWrite: 1 MemAddress:     0000 MemDataIn:     0048
+SIMLOG:: Cycle          85 PC:     0038 I:     0000 RegWrite: 0 WriteRegister:   7 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0036 MemDataIn:     0000
+SIMLOG:: Cycle          86 PC:     004e I:     0000 RegWrite: 1 WriteRegister:   7 WriteData:     0036 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
+SIMLOG:: Cycle          87 PC:     004e I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
+SIMLOG:: Cycle          88 PC:     004e I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
+SIMLOG:: Cycle          89 PC:     004e I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
+SIMLOG:: Cycle          90 PC:     004e I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
 SIMLOG:: Processor halted
 
-SIMLOG:: Cycle          86 PC:     aa04 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
+SIMLOG:: Cycle          91 PC:     004e I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
 SIMLOG:: Processor halted
 
 SIMLOG:: Processor halted with haltcount == 4
 
-SIMLOG:: sim_cycles          86
+SIMLOG:: sim_cycles          91
 
-SIMLOG:: inst_count          25
+SIMLOG:: inst_count          31
 
 SIMLOG:: dcachehit_count           0
 

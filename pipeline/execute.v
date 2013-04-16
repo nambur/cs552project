@@ -2,7 +2,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
               Branch_IDEX,takeBranch_EXMEM,Dump_IDEX, WrR_IDEX, WrR_EXMEM, RegWrite_IDEX, RegWrite_EXMEM,
               MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,
               ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,
-              MemRead_EXMEM,Dump_EXMEM,halt_IDEX,halt_EXMEM,Jump_IDEX
+              MemRead_EXMEM,Dump_EXMEM,halt_IDEX,halt_EXMEM,Jump_IDEX,Jump_EXMEM
               ,err,clk,rst);
     //Non-Pipelined signals 
     output err;
@@ -20,7 +20,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     output [15:0] PCS_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
     output [2:0] WrR_EXMEM;
     output MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM,RegWrite_EXMEM;
-    output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM;
+    output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM,Jump_EXMEM;
 
     //Internal Signals
     wire haltTemp;
@@ -34,7 +34,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     reg exerr;
 
     //flush mux
-    assign RegWrIn = (takeBranch_EXMEM) ? 1'b0 : RegWrite_IDEX;
+    assign RegWrIn = (Jump_IDEX & RegWrite_IDEX) ? 1'b1 : ((takeBranch_EXMEM) ? 1'b0 : RegWrite_IDEX);
     assign MemWrIn = (takeBranch_EXMEM) ? 1'b0 : MemWrite_IDEX;
     assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemRead_IDEX;
     assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_IDEX;
@@ -53,6 +53,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     dff_en reg5(.in(RegWrIn),.out(RegWrite_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
     reg3bit reg6(.clk(clk),.rst(rst),.en(1'b1),.in(WrR_IDEX),.out(WrR_EXMEM));
     dff_en reg7(.in(haltTemp),.out(halt_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
+    dff_en reg8(.in(Jump_IDEX),.out(Jump_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
    
     branchCtrl BRANCHCTRL(.Jump_IDEX(Jump_IDEX),.Branch(Branch_IDEX), .branchType(ALUOp_IDEX[1:0]), .flag(flag), .takeBranch(takeBranch));
     carryLA_16b CLA(.A(claIn), .B(Imm_IDEX), .SUM(outCLA), .CI(1'b0), .CO(dummy), .Ofl(ofl));

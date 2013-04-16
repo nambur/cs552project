@@ -108,7 +108,7 @@ module proc (/*AUTOARG*/
     ,.MemRead_IDEX(MemRead_IDEX),.WrR_IDEX(WrR_IDEX),.WrR_EXMEM(WrR_EXMEM),.RegWrite_IDEX(RegWrite_IDEX), .RegWrite_EXMEM(RegWrite_EXMEM)
     ,.PCS_EXMEM(PCS_EXMEM),.ALUO_EXMEM(ALUO_EXMEM)
     ,.Rd2_EXMEM(Rd2_EXMEM),.MemtoReg_EXMEM(MemtoReg_EXMEM), .MemWrite_IDEX(MemWrite_IDEX)
-    ,.MemWrite_EXMEM(MemWrite_EXMEM),.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM)
+    ,.MemWrite_EXMEM(MemWrite_EXMEM),.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM),.Jump_EXMEM(Jump_EXMEM)
     ,.clk(clk),.rst(rst),.err(err_execute),.halt_IDEX(halt_IDEX),.halt_EXMEM(halt_EXMEM),.Jump_IDEX(Jump_IDEX));
 
 	//Mem Stage
@@ -117,7 +117,7 @@ module proc (/*AUTOARG*/
                     ,.Rd2_EXMEM(Rd2_EXMEM),.takeBranch_EXMEM(takeBranch_EXMEM), .RegWrite_EXMEM(RegWrite_EXMEM)
                     , .RegWrite_MEMWB(RegWrite_MEMWB), .MemtoReg_EXMEM(MemtoReg_EXMEM),.MemWrite_EXMEM(MemWrite_EXMEM)
                     ,.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM),.RdD_MEMWB(RdD_MEMWB)
-                    ,.MemtoReg_MEMWB(MemtoReg_MEMWB)
+                    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.Jump_EXMEM(Jump_EXMEM)
 	                ,.clk(clk),.rst(rst),.halt_EXMEM(halt_EXMEM),.halt_MEMWB(halt_MEMWB));
 
 	//Write Back Stage

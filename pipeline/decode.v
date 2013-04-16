@@ -33,7 +33,7 @@ reg [15:0] Imm;
 wire [15:0] Rd1, Rd2;
 
 //stall mux
-assign RegWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : RegWrite;
+assign RegWrIn = (Jump & RegWrite) ? 1'b1 : ((stallCtrl | takeBranch_EXMEM) ? 1'b0 : RegWrite);
 assign MemWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemWrite;
 assign MemReadIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemRead;
 assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_IFID;
@@ -53,7 +53,8 @@ reg15bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
                                                 ,MemWrite_IDEX,MemRead_IDEX}));
 
 reg7bit reg5(.clk(clk),.rst(rst),.en(1'b1),.in({instr_IFID[7:5],WrR,RegWrIn}),
-        .out({Rd2Addr_IDEX,WrR_IDEX,RegWrite_IDEX}));
+                                           .out({Rd2Addr_IDEX,WrR_IDEX,RegWrite_IDEX}));
+
 dff_en reg6(.out(halt_IDEX),.in(haltTemp),.en(1'b1),.clk(clk),.rst(rst));
 dff_en reg7(.out(Jump_IDEX),.in(Jump),.en(1'b1),.clk(clk),.rst(rst));
 

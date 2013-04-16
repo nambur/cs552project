@@ -19,6 +19,7 @@ entity memory is
         clk             : in     vl_logic;
         rst             : in     vl_logic;
         halt_exmem      : in     vl_logic;
-        halt_memwb      : out    vl_logic
+        halt_memwb      : out    vl_logic;
+        jump_exmem      : in     vl_logic
     );
 end memory;

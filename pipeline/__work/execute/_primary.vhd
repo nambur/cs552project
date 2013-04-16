@@ -29,6 +29,7 @@ entity execute is
         halt_idex       : in     vl_logic;
         halt_exmem      : out    vl_logic;
         jump_idex       : in     vl_logic;
+        jump_exmem      : out    vl_logic;
         err             : out    vl_logic;
         clk             : in     vl_logic;
         rst             : in     vl_logic
