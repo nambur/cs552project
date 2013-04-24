@@ -24,10 +24,14 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     wire [15:0] RdD;
    
     //stall mux
-    assign RegWrIn = (jumpAndLink_EXMEM & RegWrite_EXMEM) ? 1'b1 : ((takeBranch_EXMEM) ? 1'b0 : RegWrite_EXMEM);
+    assign RegWrIn = (jumpAndLink_EXMEM & RegWrite_EXMEM) ? 1'b1 :
+    ((takeBranch_EXMEM) ? 1'b0 : RegWrite_EXMEM);
     assign MemWrIn = (takeBranch_EXMEM) ? 1'b0 : MemWrite_EXMEM;
     assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemRead_EXMEM;
-    assign haltTemp = (takeBranch_EXMEM | takeBranch) ? 1'b0 : halt_EXMEM;
+
+    //TODO modified Fri 19 Apr 2013 09:07:23 PM CDT
+    assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_EXMEM;
+    //assign haltTemp = halt_EXMEM;
 
     //Pipeline Register 
     reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(RdD),.out(RdD_MEMWB));

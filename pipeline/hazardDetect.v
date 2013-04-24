@@ -1,10 +1,10 @@
 module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR_IDEX,WrR_EXMEM,Rd1Addr_IFID,Rd2Addr_IFID,
-            stallCtrl,clk,rst,Jump,jumpFlush,Jump_IDEX,WrR_MEMWB,RegWrite_MEMWB);
+            stallCtrl,clk,rst,Jump,jumpFlush,Jump_IDEX,WrR_MEMWB,RegWrite_MEMWB,startStall);
 
     input [2:0] WrR_IDEX,WrR_EXMEM,WrR_MEMWB,Rd1Addr_IFID,Rd2Addr_IFID;
     input RegWrite_IDEX,RegWrite_EXMEM,Jump,Jump_IDEX;
     input clk,rst,takeBranch_EXMEM,takeBranch;
-    output stallCtrl,jumpFlush,RegWrite_MEMWB;
+    output stallCtrl,jumpFlush,RegWrite_MEMWB,startStall;
 
     wire stall2,stall3,a,b,c,d,e,f,stall1,checkSt3,checkSt3Out,checkJump,checkTemp,checkSt2Out,checkTemp1,checkTemp2;
 
@@ -35,6 +35,8 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
     assign checkTemp2 = takeBranch_EXMEM ? 1'b0 : checkSt3;
     assign stallCtrl = stall3 | checkTemp2 | checkTemp | stall2 | checkTemp1 | stall1;
 */
+
+    assign startStall = (stall3 | (stall2 & (~checkSt3)) | (stall1 & ((~checkSt2Out)&(~checkSt3Out))));
 
     assign stallCtrl = (jumpFlush) ? 1'b0 : (stall3 | checkSt3 | checkSt3Out | stall2 | checkSt2Out | stall1);
 

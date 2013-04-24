@@ -28,6 +28,7 @@ entity decode is
         memtoreg_idex   : out    vl_logic;
         memwrite_idex   : out    vl_logic;
         memread_idex    : out    vl_logic;
+        memtoreg_memwb  : in     vl_logic;
         aluop           : in     vl_logic_vector(4 downto 0);
         aluf            : in     vl_logic_vector(1 downto 0);
         alusrc          : in     vl_logic;

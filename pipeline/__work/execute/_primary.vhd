@@ -20,7 +20,7 @@ entity execute is
         memtoreg_idex   : in     vl_logic;
         memwrite_idex   : in     vl_logic;
         memread_idex    : in     vl_logic;
-        pcs             : out    vl_logic_vector(15 downto 0);
+        pcs_exmem       : out    vl_logic_vector(15 downto 0);
         jumpandlink_idex: in     vl_logic;
         jumpandlink_exmem: out    vl_logic;
         aluo_exmem      : out    vl_logic_vector(15 downto 0);

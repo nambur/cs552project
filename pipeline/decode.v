@@ -3,7 +3,7 @@
 module decode(instr_IFID,PC2_IFID,size, zeroEx, WrR_MEMWB, writeData,RegDst,RegWrite
 			,RegWrite_MEMWB,clk,rst,err,PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUOp_IDEX
             ,RegDst_IDEX,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX,RegWrite_IDEX
-            ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX
+            ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,MemtoReg_MEMWB
             ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead
             ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch,takeBranch_EXMEM,halt_IFID,halt_IDEX
             ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,jumpFlush,jumpAndLink_IDEX);
@@ -14,7 +14,7 @@ input RegWrite, RegWrite_MEMWB,Branch,zeroEx,clk,rst,Jump,jumpFlush,stallCtrl,ta
 input [4:0] ALUOp;
 input [2:0] WrR_MEMWB;
 input [1:0] ALUF;
-input ALUSrc,halt_IFID,Dump,MemtoReg,MemWrite,MemRead;
+input ALUSrc,halt_IFID,Dump,MemtoReg,MemWrite,MemRead,MemtoReg_MEMWB;
 //Output
 output err;
 /*
@@ -28,17 +28,19 @@ output ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,
     MemRead_IDEX,RegWrite_IDEX,halt_IDEX,Jump_IDEX,jumpAndLink_IDEX;
 //Internal Wires
 reg [2:0] WrR;	//Holds address of register to write to
-wire RegWrIn,MemWrIn,MemReadIn,haltTemp,jumpTemp,jumpAndLinkTemp,BranchTemp;
+wire RegWrIn,MemWrIn,MemReadIn,haltTemp,jumpTemp,jumpAndLinkTemp,BranchTemp,MemtoRegTemp;
 reg [15:0] Imm;
 wire [15:0] Rd1, Rd2;
 
-//stall mux
-assign RegWrIn = jumpFlush ? 1'b0 : ((stallCtrl | takeBranch | takeBranch_EXMEM) ? 1'b0 : ((Jump & RegWrite) ? 1'b1 : RegWrite));
-assign MemWrIn = jumpFlush ? 1'b0 : ((stallCtrl | takeBranch | takeBranch_EXMEM) ? 1'b0 : ((Jump & MemWrite) ? 1'b1 : MemWrite));
+//stall mux --TODO changin regwrin currently
+assign RegWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : RegWrite;
+assign MemWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemWrite;
+//assign RegWrIn = jumpFlush ? 1'b0 : ((stallCtrl | takeBranch | takeBranch_EXMEM) ? 1'b0 : ((Jump & RegWrite) ? 1'b1 : RegWrite));
 //assign MemWrIn = jumpFlush ? 1'b0 : ((stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemWrite);
 assign MemReadIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemRead;
 assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_IFID;
 assign BranchTemp = (stallCtrl) ? 1'b0 : Branch;
+assign MemtoRegTemp = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemtoReg;
 
 //PC2,Rd1,Rd2,Imm,+control sigs
 reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(PC2_IFID),.out(PC2_IDEX));
@@ -48,7 +50,7 @@ reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(Imm),.out(Imm_IDEX));
 reg16bit reg8(.clk(clk),.rst(rst),.en(1'b1),.in(PC_IFID),.out(PC_IDEX));
 //Control signals -- through a 16bit reg
 reg15bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
-                                                ,BranchTemp,Dump,MemtoReg
+                                                ,BranchTemp,Dump,MemtoRegTemp
                                                 ,MemWrIn,MemReadIn}),
                                             .out({ALUOp_IDEX,RegDst_IDEX
                                                 ,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX
@@ -108,17 +110,11 @@ rf regFile0(.read1data(out1data),.read2data(out2data),.err(err)//Outputs
 		,.read1regsel(instr_IFID[10:8]),.read2regsel(instr_IFID[7:5])	
 		,.writeregsel(WrR_MEMWB),.writedata(writeData),.write(RegWrite_MEMWB));
 
-//ADDED BYPASS LOGIC
-//assign mux1sel = (RegWrite&(WrR==Instr[10:8])) ;
-//assign mux2sel = (RegWrite&(WrR==Instr[7:5])) ;
-assign Rd1 = out1data;
-assign Rd2 = out2data;
-//always @(posedge clk or posedge rst) begin
-//if(mux1sel) Rd1 <= writeData;
-//else Rd1 <= out1data;
-//end
-//always @(posedge clk or posedge rst) begin
-//if(mux2sel) Rd2 <= writeData;
-//else Rd2 <= out2data;
-//end
+//ADDED BYPASS LOGIC - TODO Fri 19 Apr 2013 09:14:23 PM CDT
+assign mux1sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[10:8]))) ;
+assign mux2sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[7:5]))) ;
+//assign Rd1 = out1data;
+//assign Rd2 = out2data;
+assign Rd1 = mux1sel ? writeData : out1data;
+assign Rd2 = mux2sel ? writeData : out2data;
 endmodule
