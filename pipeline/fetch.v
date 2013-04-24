@@ -49,6 +49,7 @@ carryLA_16b adder1(.A(PC_FF_in),.B(16'h0002),.SUM(PC2_out),.CI(1'b0),.CO(dummy1)
 
 //PC select mux logic w/ pipeline logic
 assign PC_FF_in = (takeBranch_EXMEM) ? PCS : (stallCtrl ? pcCurrTemp : PC2);
-assign halt = ~(|instr);
+//changed to reflect instruction actually passed through
+assign halt = ~(|instr_IFID);
 
 endmodule

@@ -11,14 +11,32 @@ add wave -noupdate -format Literal -radix hexadecimal /proc_hier_pbench/DUT/p0/w
 add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/memory0/RegWrite_MEMWB
 add wave -noupdate -format Literal -radix hexadecimal /proc_hier_pbench/DUT/p0/fetch0/pcCurrent
 add wave -noupdate -format Literal -radix hexadecimal /proc_hier_pbench/DUT/p0/fetch0/PCS
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/halt
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/halt_IFID
 add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/ex/halt_IDEX
 add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/memory0/halt_EXMEM
 add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/memory0/halt_MEMWB
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/err
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/dummy1
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/haltTemp
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/haltTemp2
+add wave -noupdate -format Literal -radix hexadecimal /proc_hier_pbench/DUT/p0/fetch0/pcCurrTemp
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/startStall
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/halt_IFID
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/err
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/dummy1
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/halt
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/haltTemp
+add wave -noupdate -format Logic /proc_hier_pbench/DUT/p0/fetch0/haltTemp2
+add wave -noupdate -format Literal -radix hexadecimal /proc_hier_pbench/DUT/p0/fetch0/pcCurrTemp
+add wave -noupdate -format Literal -radix hexadecimal /proc_hier_pbench/DUT/p0/fetch0/PC_IDEX
+add wave -noupdate -format Literal -radix hexadecimal /proc_hier_pbench/DUT/p0/fetch0/pcCurrent
+add wave -noupdate -format Literal -radix hexadecimal /proc_hier_pbench/DUT/p0/decode0/instr_IFID
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {23554 ns} 0}
-WaveRestoreZoom {21673 ns} {23702 ns}
+WaveRestoreCursors {{Cursor 1} {23059 ns} 0}
+WaveRestoreZoom {21648 ns} {23704 ns}
 configure wave -namecolwidth 358
-configure wave -valuecolwidth 38
+configure wave -valuecolwidth 40
 configure wave -justifyvalue left
 configure wave -signalnamewidth 0
 configure wave -snapdistance 10
