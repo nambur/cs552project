@@ -17,6 +17,7 @@ entity hazarddetect is
         jumpflush       : out    vl_logic;
         jump_idex       : in     vl_logic;
         wrr_memwb       : in     vl_logic_vector(2 downto 0);
-        regwrite_memwb  : out    vl_logic
+        regwrite_memwb  : out    vl_logic;
+        startstall      : out    vl_logic
     );
 end hazarddetect;
