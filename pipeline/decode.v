@@ -6,7 +6,7 @@ module decode(instr_IFID,PC2_IFID,size, zeroEx, WrR_MEMWB, writeData,RegDst,RegW
             ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,MemtoReg_MEMWB
             ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead
             ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch,takeBranch_EXMEM,halt_IFID,halt_IDEX
-            ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,jumpFlush,jumpAndLink_IDEX);
+            ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,jumpFlush);
 //Inputs
 input [15:0] instr_IFID,writeData,PC2_IFID,PC_IFID;
 input [1:0] RegDst,size;
@@ -25,10 +25,10 @@ output [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,PC_IDEX;
 output [4:0] ALUOp_IDEX;
 output [1:0] RegDst_IDEX,ALUF_IDEX;
 output ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,
-    MemRead_IDEX,RegWrite_IDEX,halt_IDEX,Jump_IDEX,jumpAndLink_IDEX;
+    MemRead_IDEX,RegWrite_IDEX,halt_IDEX,Jump_IDEX;
 //Internal Wires
 reg [2:0] WrR;	//Holds address of register to write to
-wire RegWrIn,MemWrIn,MemReadIn,haltTemp,jumpTemp,jumpAndLinkTemp,BranchTemp,MemtoRegTemp;
+wire RegWrIn,MemWrIn,MemReadIn,haltTemp,jumpTemp,BranchTemp,MemtoRegTemp;
 reg [15:0] Imm;
 wire [15:0] Rd1, Rd2;
 
@@ -62,12 +62,9 @@ reg7bit reg5(.clk(clk),.rst(rst),.en(1'b1),.in({instr_IFID[7:5],WrR,RegWrIn}),
 
 dff_en reg6(.out(halt_IDEX),.in(haltTemp),.en(1'b1),.clk(clk),.rst(rst));
 dff_en reg7(.out(Jump_IDEX),.in(jumpTemp),.en(1'b1),.clk(clk),.rst(rst));
-dff_en reg9(.out(jumpAndLink_IDEX),.in(jumpAndLinkTemp),.en(1'b1),.clk(clk),.rst(rst));
 
 //TODO working on this -- Jump carry through logic
 assign jumpTemp = Jump & (~Jump_IDEX) & (~takeBranch) & (~stallCtrl);
-assign jumpAndLinkTemp = (((~instr_IFID[15])&(~instr_IFID[14]))&(((instr_IFID[13])&(instr_IFID[12])&(~instr_IFID[11]))|
-                                                             ((instr_IFID[13])&(instr_IFID[12])&(instr_IFID[11]))));
 
 always @(*) begin
     casex({zeroEx,size})

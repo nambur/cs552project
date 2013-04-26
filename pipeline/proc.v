@@ -62,7 +62,7 @@ module proc (/*AUTOARG*/
     wire RegWrite_MEMWB;
 
     //hazard control wires
-    wire stallCtrl,jumpFlush,jumpAndLink_IDEX,jumpAndLink_EXMEM,startStall;
+    wire stallCtrl,startStall;
     
 	//error wires
 	wire err_fetch,err_decode,err_execute;
@@ -94,7 +94,7 @@ module proc (/*AUTOARG*/
     ,.MemWrite_IDEX(MemWrite_IDEX),.MemRead_IDEX(MemRead_IDEX),.RegWrite_IDEX(RegWrite_IDEX)
     ,.Rd2Addr_IDEX(Rd2Addr_IDEX),.WrR_IDEX(WrR_IDEX),.stallCtrl(stallCtrl),.halt_IFID(halt_IFID)
     ,.halt_IDEX(halt_IDEX),.Jump(Jump),.Jump_IDEX(Jump_IDEX),.jumpFlush(jumpFlush)
-    ,.jumpAndLink_IDEX(jumpAndLink_IDEX),.MemtoReg_MEMWB(MemtoReg_MEMWB));
+    ,.MemtoReg_MEMWB(MemtoReg_MEMWB));
 
     //Control Module -- in same place as decode for purpose of pipeline
     control ctrl(.Inst(instr_IFID),.size(size),.halt(halt),.zeroEx(zeroEx)
@@ -110,7 +110,7 @@ module proc (/*AUTOARG*/
     ,.ALUF_IDEX(ALUF_IDEX),.ALUSrc_IDEX(ALUSrc_IDEX),.Branch_IDEX(Branch_IDEX),.takeBranch_EXMEM(takeBranch_EXMEM)
     ,.Dump_IDEX(Dump_IDEX),.MemtoReg_IDEX(MemtoReg_IDEX),.takeBranch(takeBranch)
     ,.MemRead_IDEX(MemRead_IDEX),.WrR_IDEX(WrR_IDEX),.WrR_EXMEM(WrR_EXMEM),.RegWrite_IDEX(RegWrite_IDEX), .RegWrite_EXMEM(RegWrite_EXMEM)
-    ,.PCS_EXMEM(PCS_EXMEM),.ALUO_EXMEM(ALUO_EXMEM),.PC_IDEX(PC_IDEX),.jumpAndLink_IDEX(jumpAndLink_IDEX),.jumpAndLink_EXMEM(jumpAndLink_EXMEM)
+    ,.PCS_EXMEM(PCS_EXMEM),.ALUO_EXMEM(ALUO_EXMEM),.PC_IDEX(PC_IDEX)
     ,.Rd2_EXMEM(Rd2_EXMEM),.MemtoReg_EXMEM(MemtoReg_EXMEM), .MemWrite_IDEX(MemWrite_IDEX)
     ,.MemWrite_EXMEM(MemWrite_EXMEM),.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM)
     ,.clk(clk),.rst(rst),.err(err_execute),.halt_IDEX(halt_IDEX),.halt_EXMEM(halt_EXMEM),.Jump_IDEX(Jump_IDEX));
@@ -121,7 +121,7 @@ module proc (/*AUTOARG*/
                     ,.Rd2_EXMEM(Rd2_EXMEM),.takeBranch(takeBranch),.takeBranch_EXMEM(takeBranch_EXMEM), .RegWrite_EXMEM(RegWrite_EXMEM)
                     , .RegWrite_MEMWB(RegWrite_MEMWB), .MemtoReg_EXMEM(MemtoReg_EXMEM),.MemWrite_EXMEM(MemWrite_EXMEM)
                     ,.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM),.RdD_MEMWB(RdD_MEMWB)
-                    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.jumpAndLink_EXMEM(jumpAndLink_EXMEM)
+                    ,.MemtoReg_MEMWB(MemtoReg_MEMWB)
 	                ,.clk(clk),.rst(rst),.halt_EXMEM(halt_EXMEM));
 
 	//Write Back Stage
