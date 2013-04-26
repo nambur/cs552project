@@ -1,4 +1,3 @@
-# vsim -lib __work -c proc_hier_pbench 
 # //  ModelSim SE 5.8b Jan 01 2004 Linux 2.6.32-358.0.1.el6.x86_64
 # //
 # //  Copyright Model Technology, a Mentor Graphics Corporation company, 2004
@@ -7,52 +6,9 @@
 # //         CONFIDENTIAL AND PROPRIETARY INFORMATION WHICH IS THE
 # //        PROPERTY OF MENTOR GRAPHICS CORPORATION OR ITS LICENSORS.
 # //
-# Loading __work.proc_hier_pbench
-# Loading __work.proc_hier
-# Loading __work.clkrst
-# Loading __work.proc
-# Loading __work.fetch
-# Loading __work.reg16bit
-# Loading __work.dff_en
-# Loading __work.mux2_1
-# Loading __work.not1
-# Loading __work.nand2
-# Loading __work.dff
-# Loading __work.memory2c
-# Loading __work.carryLA_16b
-# Loading __work.carryLA_4b
-# Loading __work.generateLA
-# Loading __work.propagateLA
-# Loading __work.carryLA
-# Loading __work.fulladd_1b
-# Loading __work.xor2
-# Loading __work.nor2
-# Loading __work.hazardDetect
-# Loading __work.decode
-# Loading __work.reg15bit
-# Loading __work.reg7bit
-# Loading __work.rf
-# Loading __work.decode3to8
-# Loading __work.nor3
-# Loading __work.b16mux8_1
-# Loading __work.b16mux2_1
-# Loading __work.quadmux2_1
-# Loading __work.control
-# Loading __work.execute
-# Loading __work.reg5bit
-# Loading __work.reg3bit
-# Loading __work.branchCtrl
-# Loading __work.alu
-# Loading __work.shifter
-# Loading __work.rotate_left
-# Loading __work.shift_left
-# Loading __work.rotate_right
-# Loading __work.shift_right_log
-# Loading __work.aluCtrl
-# Loading __work.memory
-# Loading __work.writeBack
-run -all
-# Hello world...simulation starting
-# See verilogsim.log and verilogsim.ptrace for output
-# ** Note: $finish    : proc_hier_pbench.v(131)
-#    Time: 9405 ns  Iteration: 0  Instance: /proc_hier_pbench
+# vsim -view dataset=dump.wlf 
+# dump.wlf opened as dataset "dataset"
+view wave
+# .wave
+do /afs/cs.wisc.edu/u/v/e/vennard/ECE552/cs552project/verilog/cs552project/pipeline/wave.do
+write format wave -window .wave /afs/cs.wisc.edu/u/v/e/vennard/ECE552/cs552project/verilog/cs552project/pipeline/wave.do

@@ -8,7 +8,7 @@ input clk,rst,Dump,stallCtrl,takeBranch_EXMEM,halt_MEMWB,takeBranch,startStall;
 output [15:0] instr_IFID, PC2_IFID,PC_IFID;
 output halt_IFID,err;
 wire [15:0] PC_FF_in,addr, pcCurrent,dummy,instrTemp ;
-wire dummy1,halt,haltTemp,haltTemp2;
+wire dummy1,halt,haltTemp,haltTemp2,stBit;
 //changed wires for pipelining
 wire [15:0] instr,PC2,PC2_out,instrTempIn,pcCurrTemp;
 /*
@@ -19,8 +19,11 @@ reg16bit reg1(.clk(clk),.rst(rst),.en(1'b1),.in(PC2_out),.out(PC2_IFID));
 dff_en reg2(.out(halt_IFID),.in(haltTemp),.en(1'b1),.clk(clk),.rst(rst));
 reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(PC_FF_in),.out(PC_IFID));
 
+//Status bit register - - for halt control
+dff_en streg(.clk(clk),.rst(1'b0),.en(1'b1),.in(rst),.out(stBit));
+
 //convoluted clear for halt TODO Fri 19 Apr 2013 09:21:19 PM CDT
-assign haltTemp = takeBranch_EXMEM ? 1'b0 : halt;
+assign haltTemp = stBit ? 1'b0 : (takeBranch_EXMEM ? 1'b0 : halt);
 assign haltTemp2 = takeBranch_EXMEM ? 1'b0 : halt_MEMWB;
 //INSERT NOP IF YOU BRANCH TODO current Fri 19 Apr 2013 06:01:08 PM CDT OR
 //STALL TODO Fri 19 Apr 2013 10:01:33 PM CDT

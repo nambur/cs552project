@@ -35,9 +35,10 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
     assign checkTemp2 = takeBranch_EXMEM ? 1'b0 : checkSt3;
     assign stallCtrl = stall3 | checkTemp2 | checkTemp | stall2 | checkTemp1 | stall1;
 */
-
+    //Wed 24 Apr 2013 11:05:16 AM CDT TODO changing stallCtrl to not include
+    //memory
     assign startStall = (stall3 | (stall2 & (~checkSt3)) | (stall1 & ((~checkSt2Out)&(~checkSt3Out))));
 
-    assign stallCtrl = (jumpFlush) ? 1'b0 : (stall3 | checkSt3 | checkSt3Out | stall2 | checkSt2Out | stall1);
+    assign stallCtrl =  (stall3 | stall2 |  stall1);
 
 endmodule

@@ -111,12 +111,6 @@ module proc_hier_pbench();
          end
          if (Halt) begin
             $fdisplay(sim_log_file, "SIMLOG:: Processor halted\n");
-
-            haltCount = haltCount + 1;
-            
-         end 
-
-         if (haltCount == 4) begin
             $fdisplay(sim_log_file, "SIMLOG:: Processor halted with haltcount == 4\n");
             $fdisplay(sim_log_file, "SIMLOG:: sim_cycles %d\n", DUT.c0.cycle_count);
             $fdisplay(sim_log_file, "SIMLOG:: inst_count %d\n", inst_count);
@@ -129,7 +123,8 @@ module proc_hier_pbench();
             $fclose(sim_log_file);
 	    #5;
             $finish;
-         end
+         end 
+
       end
       
    end
