@@ -26,7 +26,7 @@ output ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,
     MemRead_IDEX,RegWrite_IDEX,halt_IDEX,Jump_IDEX;
 //Internal Wires
 reg [2:0] WrR;	//Holds address of register to write to
-wire RegWrIn,MemWrIn,MemReadIn,haltTemp,jumpTemp,BranchTemp,MemtoRegTemp;
+wire RegWrIn,MemWrIn,MemReadIn,haltTemp,jumpTemp,BranchTemp,MemtoRegTemp,RegWriteActual;
 reg [15:0] Imm;
 wire [15:0] Rd1, Rd2;
 
@@ -94,13 +94,16 @@ always @(*) begin
     endcase
 end
 
+//Freeze stop regwrite signal
+assign RegWriteActual = (RegWrite_MEMWB & freeze);
+
 //Instantiate register file with bypassing
 //8 16bit registers 
 rf regFile0(.read1data(out1data),.read2data(out2data),.err(err)//Outputs
 		
 		,.clk(clk),.rst(rst)			//Inputs
 		,.read1regsel(instr_IFID[10:8]),.read2regsel(instr_IFID[7:5])	
-		,.writeregsel(WrR_MEMWB),.writedata(writeData),.write(RegWrite_MEMWB));
+		,.writeregsel(WrR_MEMWB),.writedata(writeData),.write(RegWriteActual));
 
 //ADDED BYPASS LOGIC - TODO Fri 19 Apr 2013 09:14:23 PM CDT
 assign mux1sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[10:8]))) ;

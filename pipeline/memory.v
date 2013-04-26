@@ -20,15 +20,18 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     output [2:0] WrR_MEMWB;
 
     //internal wire
-    wire memReadorWrite,MemReadIn;
+    wire memReadorWrite,MemReadIn,MemWriteActual,MemReadActual;
     wire [15:0] RdD;
    
     //stall mux
     assign RegWrIn = (RegWrite_EXMEM) ? 1'b1 :
     ((takeBranch_EXMEM) ? 1'b0 : RegWrite_EXMEM);
-    assign MemWrIn = (takeBranch_EXMEM | halt_EXMEM) ? 1'b0 : MemWrite_EXMEM;
-    assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemRead_EXMEM;
+    assign MemWrIn = (takeBranch_EXMEM | halt_EXMEM) ? 1'b0 : MemWriteActual;
+    assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemReadActual;
 
+    //Logic to stall mem read&load for freezes
+    assign MemReadActual = (MemRead_EXMEM & freeze);
+    assign MemWriteActual = (MemWrite_EXMEM & freeze);
     //Pipeline Register 
     reg16bit reg0(.clk(clk),.rst(rst),.en(freeze),.in(RdD),.out(RdD_MEMWB));
     dff_en reg1(.clk(clk),.rst(rst),.en(freeze),.in(MemtoReg_EXMEM),.out(MemtoReg_MEMWB));

@@ -32,7 +32,7 @@ module proc (/*AUTOARG*/
 	wire [4:0] ALUOp;
 	wire [2:0] flag;
 	wire [1:0] ALUF;
-    wire halt_IFID,takeBranch,mStallInstr;
+    wire halt_IFID,takeBranch;
 
 	//control wires
 	wire MemWrite,MemRead,zeroEx,dump,halt,MemtoReg,Jump,Branch,ALUSrc,RegWrite;
@@ -81,6 +81,8 @@ module proc (/*AUTOARG*/
                     ,.stallCtrl(stallCtrl), .clk(clk), .rst(rst)
                     ,.takeBranch(takeBranch),.WrR_MEMWB(WrR_MEMWB),.RegWrite_MEMWB(RegWrite_MEMWB)
                     ,.startStall(startStall),.freeze(freeze),.mStallData(mStallData),.mStallInstr(mStallInstr));
+
+    assign mStallData = 1'b0;
 
 	//Decode Stage
 	decode decode0(.instr_IFID(instr_IFID),.PC2_IFID(PC2_IFID),.size(size),.zeroEx(zeroEx)
