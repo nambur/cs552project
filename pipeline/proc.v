@@ -32,7 +32,7 @@ module proc (/*AUTOARG*/
 	wire [4:0] ALUOp;
 	wire [2:0] flag;
 	wire [1:0] ALUF;
-    wire halt_IFID,takeBranch;
+    wire halt_IFID,takeBranch,mStallInstr;
 
 	//control wires
 	wire MemWrite,MemRead,zeroEx,dump,halt,MemtoReg,Jump,Branch,ALUSrc,RegWrite;
@@ -68,12 +68,12 @@ module proc (/*AUTOARG*/
 	wire err_fetch,err_decode,err_execute;
 
     //assign err = err_fetch | err_decode | err_execute;
-    assign err = 1'b0;
+    assign err = err_fetch | err_decode;
 
 	//Fetch Stage 
 	fetch fetch0(.PCS(PCS_EXMEM),.stallCtrl(stallCtrl),.takeBranch(takeBranch),.takeBranch_EXMEM(takeBranch_EXMEM),.Dump(dump)
     ,.PC2_IFID(PC2_IFID),.PC_IFID(PC_IFID),.instr_IFID(instr_IFID),.halt_IFID(halt_IFID),.err(err_fetch),
-    .clk(clk),.rst(rst),.PC_IDEX(PC_IDEX),.startStall(startStall),.freeze(freeze));
+    .clk(clk),.rst(rst),.PC_IDEX(PC_IDEX),.startStall(startStall),.mStallInstr(mStallInstr),.freeze(freeze));
 
     //Hazard control -- with fetch for pipeline
     hazardDetect hD(.takeBranch_EXMEM(takeBranch_EXMEM),.RegWrite_IDEX(RegWrite_IDEX),.RegWrite_EXMEM(RegWrite_EXMEM),.WrR_IDEX(WrR_IDEX)
