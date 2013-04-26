@@ -39,10 +39,13 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     //enable logic  
     assign memReadorWrite = (MemWrIn | MemReadIn);
 
-    //Instantiate GIVEN MEMORY BLOCK --- NO CHANGES
+    //Instantiate MEMORY
     memory2c mem(.data_out(RdD),.data_in(Rd2_EXMEM),
     .addr(ALUO_EXMEM), .enable(memReadorWrite), .wr(MemWrIn),
     .createdump(Dump_EXMEM), 
     .clk(clk), .rst(rst));
+
+    mem_system mem(.DataOut(RdD), .Done(Done), .Stall(dMemStall), .err(dMemErr),
+        .Addr(ALUO_EXMEM), .DataIn(Rd2_EXMEM), .Rd(MemReadIn & freeze
 
 endmodule
