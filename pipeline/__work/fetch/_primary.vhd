@@ -14,7 +14,6 @@ entity fetch is
         takebranch_exmem: in     vl_logic;
         stallctrl       : in     vl_logic;
         halt_ifid       : out    vl_logic;
-        halt_memwb      : in     vl_logic;
         err             : out    vl_logic;
         startstall      : in     vl_logic
     );

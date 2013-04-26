@@ -1,10 +1,10 @@
 //John Vennard & Nick Ambur
 //Fetch Module
 module fetch(PCS,PC_IDEX,Dump,clk,rst,PC_IFID,PC2_IFID,instr_IFID,takeBranch
-            ,takeBranch_EXMEM,stallCtrl,halt_IFID,halt_MEMWB,err,startStall);
+            ,takeBranch_EXMEM,stallCtrl,halt_IFID,err,startStall);
 
 input [15:0] PCS,PC_IDEX;
-input clk,rst,Dump,stallCtrl,takeBranch_EXMEM,halt_MEMWB,takeBranch,startStall;
+input clk,rst,Dump,stallCtrl,takeBranch_EXMEM,takeBranch,startStall;
 output [15:0] instr_IFID, PC2_IFID,PC_IFID;
 output halt_IFID,err;
 wire [15:0] PC_FF_in,addr, pcCurrent,dummy,instrTemp ;
@@ -24,7 +24,7 @@ dff_en streg(.clk(clk),.rst(1'b0),.en(1'b1),.in(rst),.out(stBit));
 
 //convoluted clear for halt TODO Fri 19 Apr 2013 09:21:19 PM CDT
 assign haltTemp = stBit ? 1'b0 : (takeBranch_EXMEM ? 1'b0 : halt);
-assign haltTemp2 = takeBranch_EXMEM ? 1'b0 : halt_MEMWB;
+assign haltTemp2 = takeBranch_EXMEM ? 1'b0 : 1'b0;
 //INSERT NOP IF YOU BRANCH TODO current Fri 19 Apr 2013 06:01:08 PM CDT OR
 //STALL TODO Fri 19 Apr 2013 10:01:33 PM CDT
 assign instrTempIn = (takeBranch_EXMEM | stallCtrl) ? (16'b00001_00000000000) : instr;
@@ -32,7 +32,7 @@ assign instr_IFID = (takeBranch_EXMEM) ? (16'b00001_00000000000) : instrTemp;
 
 //Create PC FF
 //	--always enabled
-reg16bit pcReg0(.clk(clk),.rst(rst),.en((~halt_MEMWB)|(~stallCtrl)),.in(PC_FF_in),.out(pcCurrTemp));
+reg16bit pcReg0(.clk(clk),.rst(rst),.en(~stallCtrl),.in(PC_FF_in),.out(pcCurrTemp));
 
 //TODO working on pcCurrent Fri 19 Apr 2013 06:39:29 PM CDT
 assign pcCurrent = startStall ? PC_IDEX : pcCurrTemp;
