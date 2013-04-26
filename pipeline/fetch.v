@@ -7,7 +7,7 @@ output [15:0] instr_IFID, PC2_IFID,PC_IFID;
 output halt_IFID,err,mStallInstr;
 wire [15:0] PC_FF_in,addr, pcCurrent,dummy,instrTemp ;
 wire dummy1,halt,haltTemp,stBit,iMemStall,Done,iMemErr,add0Err,add1Err,dummy2;
-wire [15:0] instr,PC2,PC2_out,instrTempIn,pcCurrTemp,dummy3;
+wire [15:0] instr,PC2,PC2_out,instrTempIn,pcCurrTemp,dummy3,memDataOut;
 
 assign err = iMemErr | add0Err | add1Err;
 
@@ -34,9 +34,11 @@ reg16bit pcReg0(.clk(clk),.rst(rst),.en((~stallCtrl)&(freeze)),.in(PC_FF_in),.ou
 assign pcCurrent = startStall ? PC_IDEX : pcCurrTemp;
 
 //Instantiate Fetch Memory
-assign mStallInstr = iMemStall | ~Done;
-mem_system (0) Imem(.DataOut(instr), .Done(Done), .Stall(iMemStall), .err(iMemErr), .Addr(pcCurrent),
-    .Rd(~Done), .Wr(1'b0), .CacheHit(dummy2), .DataIn(dummy3), .createdump(Dump), .clk(clk), .rst(rst));
+assign mStallInstr = (iMemStall | (~Done & freeze));
+reg16bit reg4(.clk(~clk),.rst(rst),.en(Done),.in(memDataOut),.out(instr));
+
+mem_system #(0) Imem(.DataOut(memDataOut), .Done(Done), .Stall(iMemStall), .err(iMemErr), .Addr(pcCurrent),
+    .Rd(~Done & freeze), .Wr(1'b0), .CacheHit(dummy2), .DataIn(dummy3), .createdump(Dump), .clk(clk), .rst(rst));
 
 //Instantiate 16bit Adder
 carryLA_16b adder0(.A(pcCurrent),.B(16'h0002),.SUM(PC2),.CI(1'b0),.CO(dummy1),.Ofl(add0Err));

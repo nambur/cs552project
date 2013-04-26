@@ -20,8 +20,8 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     output [2:0] WrR_MEMWB;
 
     //internal wire
-    wire memReadorWrite,MemReadIn,Done,dMemStall,dMemErr,MemWriteActual,MemReadActual;
-    wire [15:0] RdD;
+    wire memReadorWrite,MemReadIn,Done,dMemStall,dMemErr,MemWriteActual,MemReadActual,dummy;
+    wire [15:0] RdD,memDataOut;
    
     //stall mux
     assign RegWrIn = (RegWrite_EXMEM) ? 1'b1 :
@@ -44,8 +44,11 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
 
     //Instantiate MEMORY
     assign mStallData = (MemReadIn & freeze & ~Done) | (MemWrIn & freeze & ~Done) | dMemStall;
-    mem_system (1) mem(.DataOut(RdD), .Done(Done), .Stall(dMemStall), .err(dMemErr),
-        .Addr(ALUO_EXMEM), .DataIn(Rd2_EXMEM), .Rd(MemReadIn & freeze & ~Done),
+    //Mem Register flop 
+    reg16bit reg5(.clk(~clk),.rst(rst),.en(Done),.in(memDataOut),.out(RdD));
+
+    mem_system #(1) mem(.DataOut(memDataOut), .Done(Done), .Stall(dMemStall), .err(dMemErr),
+        .Addr(ALUO_EXMEM), .DataIn(Rd2_EXMEM), .Rd(MemReadIn & freeze & ~Done), .CacheHit(dummy),
         .Wr(MemWrIn & freeze & ~Done), .createdump(Dump_EXMEM), .clk(clk), .rst(rst));
 
 endmodule
