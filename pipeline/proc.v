@@ -122,7 +122,7 @@ module proc (/*AUTOARG*/
                     ,.Rd2_EXMEM(Rd2_EXMEM),.takeBranch(takeBranch),.takeBranch_EXMEM(takeBranch_EXMEM), .RegWrite_EXMEM(RegWrite_EXMEM)
                     , .RegWrite_MEMWB(RegWrite_MEMWB), .MemtoReg_EXMEM(MemtoReg_EXMEM),.MemWrite_EXMEM(MemWrite_EXMEM)
                     ,.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM),.RdD_MEMWB(RdD_MEMWB)
-                    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.freeze(freeze)
+                    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.freeze(freeze),.mStallData(mStallData)
 	                ,.clk(clk),.rst(rst),.halt_EXMEM(halt_EXMEM));
 
 	//Write Back Stage
