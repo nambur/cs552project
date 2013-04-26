@@ -26,7 +26,7 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     //stall mux
     assign RegWrIn = (jumpAndLink_EXMEM & RegWrite_EXMEM) ? 1'b1 :
     ((takeBranch_EXMEM) ? 1'b0 : RegWrite_EXMEM);
-    assign MemWrIn = (takeBranch_EXMEM) ? 1'b0 : MemWrite_EXMEM;
+    assign MemWrIn = (takeBranch_EXMEM | halt_EXMEM) ? 1'b0 : MemWrite_EXMEM;
     assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemRead_EXMEM;
 
     //TODO modified Fri 19 Apr 2013 09:07:23 PM CDT
