@@ -113,8 +113,9 @@ rf regFile0(.read1data(out1data),.read2data(out2data),.err(err)//Outputs
 //ADDED BYPASS LOGIC - TODO Fri 19 Apr 2013 09:14:23 PM CDT
 assign mux1sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[10:8]))) ;
 assign mux2sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[7:5]))) ;
-//assign Rd1 = out1data;
-//assign Rd2 = out2data;
-assign Rd1 = mux1sel ? writeData : out1data;
-assign Rd2 = mux2sel ? writeData : out2data;
+assign Rd1 = out1data;
+assign Rd2 = out2data;
+//assign Rd1 = mux1sel ? writeData : out1data;
+//assign Rd2 = mux2sel ? writeData : out2data;
+
 endmodule
