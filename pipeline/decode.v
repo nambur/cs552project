@@ -6,20 +6,18 @@ module decode(instr_IFID,PC2_IFID,size, zeroEx, WrR_MEMWB, writeData,RegDst,RegW
             ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,MemtoReg_MEMWB
             ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead
             ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch,takeBranch_EXMEM,halt_IFID,halt_IDEX
-            ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,jumpFlush);
+            ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,freeze);
 //Inputs
 input [15:0] instr_IFID,writeData,PC2_IFID,PC_IFID;
 input [1:0] RegDst,size;
-input RegWrite, RegWrite_MEMWB,Branch,zeroEx,clk,rst,Jump,jumpFlush,stallCtrl,takeBranch,takeBranch_EXMEM;
+input RegWrite, RegWrite_MEMWB,Branch,zeroEx,clk,rst,Jump,stallCtrl,takeBranch,takeBranch_EXMEM;
 input [4:0] ALUOp;
 input [2:0] WrR_MEMWB;
 input [1:0] ALUF;
-input ALUSrc,halt_IFID,Dump,MemtoReg,MemWrite,MemRead,MemtoReg_MEMWB;
+input ALUSrc,halt_IFID,Dump,MemtoReg,MemWrite,MemRead,MemtoReg_MEMWB,freeze;
 //Output
 output err;
-/*
- * Signals to Pipeline
- */
+//Pipeline signals
 output [2:0] Rd2Addr_IDEX,WrR_IDEX;
 output [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,PC_IDEX;
 output [4:0] ALUOp_IDEX;
@@ -32,24 +30,22 @@ wire RegWrIn,MemWrIn,MemReadIn,haltTemp,jumpTemp,BranchTemp,MemtoRegTemp;
 reg [15:0] Imm;
 wire [15:0] Rd1, Rd2;
 
-//stall mux --TODO changin regwrin currently
+//Stall Controls
 assign RegWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : RegWrite;
 assign MemWrIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemWrite;
-//assign RegWrIn = jumpFlush ? 1'b0 : ((stallCtrl | takeBranch | takeBranch_EXMEM) ? 1'b0 : ((Jump & RegWrite) ? 1'b1 : RegWrite));
-//assign MemWrIn = jumpFlush ? 1'b0 : ((stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemWrite);
 assign MemReadIn = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemRead;
 assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_IFID;
 assign BranchTemp = (stallCtrl) ? 1'b0 : Branch;
 assign MemtoRegTemp = (stallCtrl | takeBranch_EXMEM) ? 1'b0 : MemtoReg;
 
 //PC2,Rd1,Rd2,Imm,+control sigs
-reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(PC2_IFID),.out(PC2_IDEX));
-reg16bit reg1(.clk(clk),.rst(rst),.en(1'b1),.in(Rd1),.out(Rd1_IDEX));
-reg16bit reg2(.clk(clk),.rst(rst),.en(1'b1),.in(Rd2),.out(Rd2_IDEX));
-reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(Imm),.out(Imm_IDEX));
-reg16bit reg8(.clk(clk),.rst(rst),.en(1'b1),.in(PC_IFID),.out(PC_IDEX));
+reg16bit reg0(.clk(clk),.rst(rst),.en(freeze),.in(PC2_IFID),.out(PC2_IDEX));
+reg16bit reg1(.clk(clk),.rst(rst),.en(freeze),.in(Rd1),.out(Rd1_IDEX));
+reg16bit reg2(.clk(clk),.rst(rst),.en(freeze),.in(Rd2),.out(Rd2_IDEX));
+reg16bit reg3(.clk(clk),.rst(rst),.en(freeze),.in(Imm),.out(Imm_IDEX));
+reg16bit reg8(.clk(clk),.rst(rst),.en(freeze),.in(PC_IFID),.out(PC_IDEX));
 //Control signals -- through a 16bit reg
-reg15bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
+reg15bit reg4(.clk(clk),.rst(rst),.en(freeze),.in({ALUOp,RegDst,ALUF,ALUSrc
                                                 ,BranchTemp,Dump,MemtoRegTemp
                                                 ,MemWrIn,MemReadIn}),
                                             .out({ALUOp_IDEX,RegDst_IDEX
@@ -57,11 +53,11 @@ reg15bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({ALUOp,RegDst,ALUF,ALUSrc
                                                 ,Dump_IDEX,MemtoReg_IDEX
                                                 ,MemWrite_IDEX,MemRead_IDEX}));
 
-reg7bit reg5(.clk(clk),.rst(rst),.en(1'b1),.in({instr_IFID[7:5],WrR,RegWrIn}),
+reg7bit reg5(.clk(clk),.rst(rst),.en(freeze),.in({instr_IFID[7:5],WrR,RegWrIn}),
                                            .out({Rd2Addr_IDEX,WrR_IDEX,RegWrite_IDEX}));
 
-dff_en reg6(.out(halt_IDEX),.in(haltTemp),.en(1'b1),.clk(clk),.rst(rst));
-dff_en reg7(.out(Jump_IDEX),.in(jumpTemp),.en(1'b1),.clk(clk),.rst(rst));
+dff_en reg6(.out(halt_IDEX),.in(haltTemp),.en(freeze),.clk(clk),.rst(rst));
+dff_en reg7(.out(Jump_IDEX),.in(jumpTemp),.en(freeze),.clk(clk),.rst(rst));
 
 //TODO working on this -- Jump carry through logic
 assign jumpTemp = Jump & (~Jump_IDEX) & (~takeBranch) & (~stallCtrl);

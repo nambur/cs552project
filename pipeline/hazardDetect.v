@@ -1,10 +1,10 @@
 module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR_IDEX,WrR_EXMEM,Rd1Addr_IFID,Rd2Addr_IFID,
-            stallCtrl,clk,rst,WrR_MEMWB,RegWrite_MEMWB,startStall);
+            stallCtrl,clk,rst,WrR_MEMWB,RegWrite_MEMWB,startStall,mStallInstr,mStallData,freeze);
 
     input [2:0] WrR_IDEX,WrR_EXMEM,WrR_MEMWB,Rd1Addr_IFID,Rd2Addr_IFID;
-    input RegWrite_IDEX,RegWrite_EXMEM;
+    input RegWrite_IDEX,RegWrite_EXMEM,mStallInstr,mStallData;
     input clk,rst,takeBranch_EXMEM,takeBranch;
-    output stallCtrl,RegWrite_MEMWB,startStall;
+    output stallCtrl,RegWrite_MEMWB,startStall,freeze;
     wire stall2,stall3,a,b,c,d,e,f,stall1,checkSt3,checkSt3Out,checkSt2Out;
 
     //flag that allows stall to run twice
@@ -26,5 +26,7 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
     
     assign startStall = (stall3 | (stall2 & (~checkSt3)) | (stall1 & ((~checkSt2Out)&(~checkSt3Out))));
     assign stallCtrl =  (stall3 | stall2 |  stall1);
-    
+   
+    //freeze logic
+    assign freeze = ~(mStallInstr | mStallData);
 endmodule
