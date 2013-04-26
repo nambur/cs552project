@@ -72,7 +72,7 @@ module proc (/*AUTOARG*/
 
 	//Fetch Stage 
 	fetch fetch0(.PCS(PCS_EXMEM),.stallCtrl(stallCtrl),.takeBranch(takeBranch),.takeBranch_EXMEM(takeBranch_EXMEM),.Dump(dump)
-    ,.PC2_IFID(PC2_IFID),.PC_IFID(PC_IFID),.instr_IFID(instr_IFID),.halt_IFID(halt_IFID),.halt_MEMWB(halt_MEMWB),.err(err_fetch),
+    ,.PC2_IFID(PC2_IFID),.PC_IFID(PC_IFID),.instr_IFID(instr_IFID),.halt_IFID(halt_IFID),.err(err_fetch),
     .clk(clk),.rst(rst),.PC_IDEX(PC_IDEX),.startStall(startStall));
 
     //Hazard control -- with fetch for pipeline
@@ -122,7 +122,7 @@ module proc (/*AUTOARG*/
                     , .RegWrite_MEMWB(RegWrite_MEMWB), .MemtoReg_EXMEM(MemtoReg_EXMEM),.MemWrite_EXMEM(MemWrite_EXMEM)
                     ,.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM),.RdD_MEMWB(RdD_MEMWB)
                     ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.jumpAndLink_EXMEM(jumpAndLink_EXMEM)
-	                ,.clk(clk),.rst(rst),.halt_EXMEM(halt_EXMEM),.halt_MEMWB(halt_MEMWB));
+	                ,.clk(clk),.rst(rst),.halt_EXMEM(halt_EXMEM));
 
 	//Write Back Stage
 	writeBack wb(.RdD_MEMWB(RdD_MEMWB),.WrD(WrD),.ALUO_MEMWB(ALUO_MEMWB)
