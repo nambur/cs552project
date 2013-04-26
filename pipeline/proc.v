@@ -78,7 +78,7 @@ module proc (/*AUTOARG*/
     //Hazard control -- with fetch for pipeline
     hazardDetect hD(.takeBranch_EXMEM(takeBranch_EXMEM),.RegWrite_IDEX(RegWrite_IDEX),.RegWrite_EXMEM(RegWrite_EXMEM),.WrR_IDEX(WrR_IDEX)
                     ,.WrR_EXMEM(WrR_EXMEM),.Rd1Addr_IFID(instr_IFID[10:8]),.Rd2Addr_IFID(instr_IFID[7:5])
-                    ,.stallCtrl(stallCtrl), .clk(clk), .rst(rst),.Jump(Jump),.Jump_IDEX(Jump_IDEX),.jumpFlush(jumpFlush)
+                    ,.stallCtrl(stallCtrl), .clk(clk), .rst(rst)
                     ,.takeBranch(takeBranch),.WrR_MEMWB(WrR_MEMWB),.RegWrite_MEMWB(RegWrite_MEMWB)
                     ,.startStall(startStall));
 
