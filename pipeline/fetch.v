@@ -1,8 +1,8 @@
 module fetch(PCS,PC_IDEX,Dump,clk,rst,PC_IFID,PC2_IFID,instr_IFID,takeBranch
-            ,takeBranch_EXMEM,stallCtrl,halt_IFID,err,startStall);
+            ,takeBranch_EXMEM,stallCtrl,halt_IFID,err,startStall,freeze);
 
 input [15:0] PCS,PC_IDEX;
-input clk,rst,Dump,stallCtrl,takeBranch_EXMEM,takeBranch,startStall;
+input clk,rst,Dump,stallCtrl,takeBranch_EXMEM,takeBranch,startStall,freeze;
 output [15:0] instr_IFID, PC2_IFID,PC_IFID;
 output halt_IFID,err;
 wire [15:0] PC_FF_in,addr, pcCurrent,dummy,instrTemp ;
@@ -11,13 +11,13 @@ wire [15:0] instr,PC2,PC2_out,instrTempIn,pcCurrTemp;
 /*
  * Pipelined register output
 */
-reg16bit reg0(.clk(clk),.rst(rst),.en(~stallCtrl),.in(instrTempIn),.out(instrTemp));
-reg16bit reg1(.clk(clk),.rst(rst),.en(1'b1),.in(PC2_out),.out(PC2_IFID));
-dff_en reg2(.out(halt_IFID),.in(haltTemp),.en(1'b1),.clk(clk),.rst(rst));
-reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(PC_FF_in),.out(PC_IFID));
+reg16bit reg0(.clk(clk),.rst(rst),.en((~stallCtrl)&(freeze)),.in(instrTempIn),.out(instrTemp));
+reg16bit reg1(.clk(clk),.rst(rst),.en(freeze),.in(PC2_out),.out(PC2_IFID));
+dff_en reg2(.out(halt_IFID),.in(haltTemp),.en(freeze),.clk(clk),.rst(rst));
+reg16bit reg3(.clk(clk),.rst(rst),.en(freeze),.in(PC_FF_in),.out(PC_IFID));
 
 //Status bit register - - for halt control
-dff_en streg(.clk(clk),.rst(1'b0),.en(1'b1),.in(rst),.out(stBit));
+dff_en streg(.clk(clk),.rst(1'b0),.en(freeze),.in(rst),.out(stBit));
 
 //Clear for halt signal
 assign haltTemp = stBit ? 1'b0 : (takeBranch_EXMEM ? 1'b0 : halt);
@@ -26,7 +26,7 @@ assign instrTempIn = (takeBranch_EXMEM | stallCtrl) ? (16'b00001_00000000000) : 
 assign instr_IFID = (takeBranch_EXMEM) ? (16'b00001_00000000000) : instrTemp;
 
 //Create PC FF
-reg16bit pcReg0(.clk(clk),.rst(rst),.en(~stallCtrl),.in(PC_FF_in),.out(pcCurrTemp));
+reg16bit pcReg0(.clk(clk),.rst(rst),.en((~stallCtrl)&(freeze)),.in(PC_FF_in),.out(pcCurrTemp));
 
 //Current PC recycle when you see start stall
 assign pcCurrent = startStall ? PC_IDEX : pcCurrTemp;

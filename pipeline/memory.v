@@ -3,10 +3,10 @@
 module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
               takeBranch_EXMEM,MemWrite_EXMEM,RegWrite_EXMEM,RegWrite_MEMWB,
               MemRead_EXMEM,Dump_EXMEM,RdD_MEMWB,MemtoReg_EXMEM,MemtoReg_MEMWB,
-              WrR_EXMEM, WrR_MEMWB, clk,rst,halt_EXMEM);
+              WrR_EXMEM, WrR_MEMWB, clk,rst,halt_EXMEM,freeze);
 
     //Non-Pipelined in/out
-    input clk,rst,halt_EXMEM;
+    input clk,rst,halt_EXMEM,freeze;
 
     //Input
     input [15:0] ALUO_EXMEM,Rd2_EXMEM;
@@ -30,11 +30,11 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemRead_EXMEM;
 
     //Pipeline Register 
-    reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(RdD),.out(RdD_MEMWB));
-    dff_en reg1(.clk(clk),.rst(rst),.en(1'b1),.in(MemtoReg_EXMEM),.out(MemtoReg_MEMWB));
-    dff_en reg2(.clk(clk),.rst(rst),.en(1'b1),.in(RegWrIn),.out(RegWrite_MEMWB));
-    reg3bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(WrR_EXMEM),.out(WrR_MEMWB));
-    reg16bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in(ALUO_EXMEM),.out(ALUO_MEMWB));
+    reg16bit reg0(.clk(clk),.rst(rst),.en(freeze),.in(RdD),.out(RdD_MEMWB));
+    dff_en reg1(.clk(clk),.rst(rst),.en(freeze),.in(MemtoReg_EXMEM),.out(MemtoReg_MEMWB));
+    dff_en reg2(.clk(clk),.rst(rst),.en(freeze),.in(RegWrIn),.out(RegWrite_MEMWB));
+    reg3bit reg3(.clk(clk),.rst(rst),.en(freeze),.in(WrR_EXMEM),.out(WrR_MEMWB));
+    reg16bit reg4(.clk(clk),.rst(rst),.en(freeze),.in(ALUO_EXMEM),.out(ALUO_MEMWB));
 
     //enable logic  
     assign memReadorWrite = (MemWrIn | MemReadIn);

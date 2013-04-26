@@ -3,7 +3,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
               MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,
               ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,PC_IDEX,
               MemRead_EXMEM,Dump_EXMEM,halt_IDEX,halt_EXMEM,Jump_IDEX
-              ,err,clk,rst);
+              ,err,clk,rst,freeze);
 
     //Non-Pipelined signals 
     output err;
@@ -13,7 +13,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     input [15:0] PC2_IDEX,PC_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX;
     input [4:0] ALUOp_IDEX;
     input [1:0] ALUF_IDEX;
-    input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,
+    input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,freeze,
         MemWrite_IDEX,MemRead_IDEX, RegWrite_IDEX,halt_IDEX,Jump_IDEX;
     input [2:0] WrR_IDEX;
 
@@ -41,19 +41,19 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     assign haltTemp = (takeBranch_EXMEM) ? 1'b0 : halt_IDEX;
 
     //Pipeline Registers
-    reg16bit reg2(.clk(clk),.rst(rst),.en(1'b1),.in(PCS),.out(PCS_EXMEM));
-    reg16bit reg0(.clk(clk),.rst(rst),.en(1'b1),.in(Rd2_IDEX),.out(Rd2_EXMEM));
-    reg16bit reg3(.clk(clk),.rst(rst),.en(1'b1),.in(ALUO),.out(ALUO_EXMEM));
-    reg5bit reg4(.clk(clk),.rst(rst),.en(1'b1),.in({takeBranch,MemtoReg_IDEX
+    reg16bit reg2(.clk(clk),.rst(rst),.en(freeze),.in(PCS),.out(PCS_EXMEM));
+    reg16bit reg0(.clk(clk),.rst(rst),.en(freeze),.in(Rd2_IDEX),.out(Rd2_EXMEM));
+    reg16bit reg3(.clk(clk),.rst(rst),.en(freeze),.in(ALUO),.out(ALUO_EXMEM));
+    reg5bit reg4(.clk(clk),.rst(rst),.en(freeze),.in({takeBranch,MemtoReg_IDEX
                                                     ,MemWrIn,MemReadIn
                                                     ,Dump_IDEX}),
                                                .out({takeBranch_EXMEM
                                                     ,MemtoReg_EXMEM,MemWrite_EXMEM
                                                     ,MemRead_EXMEM,Dump_EXMEM}));
 
-    dff_en reg5(.in(RegWrIn),.out(RegWrite_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
-    reg3bit reg6(.clk(clk),.rst(rst),.en(1'b1),.in(WrR_IDEX),.out(WrR_EXMEM));
-    dff_en reg7(.in(haltTemp),.out(halt_EXMEM),.en(1'b1),.clk(clk),.rst(rst));
+    dff_en reg5(.in(RegWrIn),.out(RegWrite_EXMEM),.en(freeze),.clk(clk),.rst(rst));
+    reg3bit reg6(.clk(clk),.rst(rst),.en(freeze),.in(WrR_IDEX),.out(WrR_EXMEM));
+    dff_en reg7(.in(haltTemp),.out(halt_EXMEM),.en(freeze),.clk(clk),.rst(rst));
    
     branchCtrl BRANCHCTRL(.Jump_IDEX(Jump_IDEX),.Branch(Branch_IDEX), .branchType(ALUOp_IDEX[1:0]),
     .flag(flag), .takeBranch(takeBranch));
