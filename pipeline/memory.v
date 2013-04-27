@@ -3,7 +3,7 @@
 module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
               takeBranch_EXMEM,MemWrite_EXMEM,RegWrite_EXMEM,RegWrite_MEMWB,
               MemRead_EXMEM,Dump_EXMEM,RdD_MEMWB,MemtoReg_EXMEM,MemtoReg_MEMWB,
-              WrR_EXMEM, WrR_MEMWB, clk,rst,halt_EXMEM,freeze,mStallData);
+              WrR_EXMEM, WrR_MEMWB, clk,rst,halt_EXMEM,freeze,mStallData,mStallInstr);
 
     //Non-Pipelined in/out
     input clk,rst,halt_EXMEM,freeze;
@@ -11,7 +11,7 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     //Input
     input [15:0] ALUO_EXMEM,Rd2_EXMEM;
     input takeBranch,takeBranch_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM, RegWrite_EXMEM
-        ,MemRead_EXMEM,Dump_EXMEM;
+        ,MemRead_EXMEM,Dump_EXMEM,mStallInstr;
     input [2:0] WrR_EXMEM;
 
     //output
@@ -30,8 +30,8 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     assign MemReadIn = (takeBranch_EXMEM) ? 1'b0 : MemReadActual;
 
     //Logic to stall mem read&load for freezes
-    assign MemReadActual = (MemRead_EXMEM & freeze);
-    assign MemWriteActual = (MemWrite_EXMEM & freeze);
+    assign MemReadActual = (MemRead_EXMEM & ~mStallInstr & ~Done);
+    assign MemWriteActual = (MemWrite_EXMEM & ~mStallInstr & ~Done);
     //Pipeline Register 
     reg16bit reg0(.clk(clk),.rst(rst),.en(freeze),.in(RdD),.out(RdD_MEMWB));
     dff_en reg1(.clk(clk),.rst(rst),.en(freeze),.in(MemtoReg_EXMEM),.out(MemtoReg_MEMWB));
@@ -42,13 +42,15 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     //enable logic  
     assign memReadorWrite = (MemWrIn | MemReadIn);
 
-    //Instantiate MEMORY
-    assign mStallData = (MemReadIn & freeze & ~Done) | (MemWrIn & freeze & ~Done) | dMemStall;
-    //Mem Register flop 
-    reg16bit reg5(.clk(clk),.rst(rst),.en(Done),.in(memDataOut),.out(RdD));
+    //Freeze Logic
+    //assign mStallData = (MemReadIn & ~Done) | (MemWrIn & ~Done) | dMemStall;
+    assign mStallData = dMemStall; 
 
-    mem_system #(1) mem(.DataOut(memDataOut), .Done(Done), .Stall(dMemStall), .err(dMemErr),
-        .Addr(ALUO_EXMEM), .DataIn(Rd2_EXMEM), .Rd(MemReadIn & freeze & ~Done), .CacheHit(dummy),
-        .Wr(MemWrIn & freeze & ~Done), .createdump(Dump_EXMEM), .clk(clk), .rst(rst));
+    //Mem Register flop 
+    //reg16bit reg5(.clk(clk),.rst(rst),.en(Done),.in(memDataOut),.out(RdD));
+
+    mem_system #(1) mem(.DataOut(RdD), .Done(Done), .Stall(dMemStall), .err(dMemErr),
+        .Addr(ALUO_EXMEM), .DataIn(Rd2_EXMEM), .Rd(MemReadIn), .CacheHit(dummy),
+        .Wr(MemWrIn), .createdump(Dump_EXMEM), .clk(clk), .rst(rst));
 
 endmodule

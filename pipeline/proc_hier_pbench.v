@@ -58,7 +58,7 @@ module proc_hier_pbench();
       ICacheReq_count = 0;
 
 /* NAA NAA */
-      haltCount = 0;
+      //haltCount = 0;
 /* NAA NAA END */
 
       trace_file = $fopen("verilogsim.ptrace");
@@ -97,9 +97,9 @@ module proc_hier_pbench();
                   MemDataIn);
 
 /* NAA NAA */
-        if (DUT.c0.cycle_count == 210) begin
-            $stop;
-        end
+    //    if (DUT.c0.cycle_count == 200) begin
+     //       $stop;
+      //  end
 /* NAA NAA END */
 
          if (RegWrite) begin
@@ -165,7 +165,7 @@ module proc_hier_pbench();
    // Data being written to the register. (16 bits)
    
    //assign MemRead =  (DUT.p0.memRxout & ~DUT.p0.notdonem);
-   assign MemRead =  DUT.p0.memory0.MemReadActual;
+   assign MemRead =  DUT.p0.memory0.MemReadIn;
    // Is memory being read, one bit signal (1 means yes, 0 means no)
    
    //assign MemWrite = (DUT.p0.memWxout & ~DUT.p0.notdonem);

@@ -37,6 +37,7 @@ assign pcCurrent = startStall ? PC_IDEX : pcCurrTemp;
 assign mStallInstr = (iMemStall | (~Done));
 //reg16bit reg4(.clk(clk),.rst(rst),.en(Done),.in(memDataOut),.out(instr));
 
+//TODO added ~mStallData to .Rd input signal
 mem_system #(0) Imem(.DataOut(instr), .Done(Done), .Stall(iMemStall), .err(iMemErr), .Addr(pcCurrent),
     .Rd(~Done), .Wr(1'b0), .CacheHit(dummy2), .DataIn(dummy3), .createdump(Dump), .clk(clk), .rst(rst));
 
