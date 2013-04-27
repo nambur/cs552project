@@ -3,7 +3,7 @@
 module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
               takeBranch_EXMEM,MemWrite_EXMEM,RegWrite_EXMEM,RegWrite_MEMWB,
               MemRead_EXMEM,Dump_EXMEM,RdD_MEMWB,MemtoReg_EXMEM,MemtoReg_MEMWB,
-              WrR_EXMEM, WrR_MEMWB, clk,rst,halt_EXMEM,freeze);
+              WrR_EXMEM, WrR_MEMWB, clk,rst,halt_EXMEM,freeze,mStallData);
 
     //Non-Pipelined in/out
     input clk,rst,halt_EXMEM,freeze;
@@ -16,12 +16,12 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
 
     //output
     output [15:0] RdD_MEMWB,ALUO_MEMWB;
-    output MemtoReg_MEMWB, RegWrite_MEMWB;
+    output MemtoReg_MEMWB, RegWrite_MEMWB,mStallData;
     output [2:0] WrR_MEMWB;
 
     //internal wire
-    wire memReadorWrite,MemReadIn,MemWriteActual,MemReadActual;
-    wire [15:0] RdD;
+    wire memReadorWrite,MemReadIn,Done,dMemStall,dMemErr,MemWriteActual,MemReadActual,dummy;
+    wire [15:0] RdD,memDataOut;
    
     //stall mux
     assign RegWrIn = (RegWrite_EXMEM) ? 1'b1 :
@@ -42,10 +42,13 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     //enable logic  
     assign memReadorWrite = (MemWrIn | MemReadIn);
 
-    //Instantiate GIVEN MEMORY BLOCK --- NO CHANGES
-    memory2c mem(.data_out(RdD),.data_in(Rd2_EXMEM),
-    .addr(ALUO_EXMEM), .enable(memReadorWrite), .wr(MemWrIn),
-    .createdump(Dump_EXMEM), 
-    .clk(clk), .rst(rst));
+    //Instantiate MEMORY
+    assign mStallData = (MemReadIn & freeze & ~Done) | (MemWrIn & freeze & ~Done) | dMemStall;
+    //Mem Register flop 
+    reg16bit reg5(.clk(clk),.rst(rst),.en(Done),.in(memDataOut),.out(RdD));
+
+    mem_system #(1) mem(.DataOut(memDataOut), .Done(Done), .Stall(dMemStall), .err(dMemErr),
+        .Addr(ALUO_EXMEM), .DataIn(Rd2_EXMEM), .Rd(MemReadIn & freeze & ~Done), .CacheHit(dummy),
+        .Wr(MemWrIn & freeze & ~Done), .createdump(Dump_EXMEM), .clk(clk), .rst(rst));
 
 endmodule
