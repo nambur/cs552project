@@ -73,7 +73,7 @@ module proc (/*AUTOARG*/
 	//Fetch Stage 
 	fetch fetch0(.PCS(PCS_EXMEM),.stallCtrl(stallCtrl),.takeBranch(takeBranch),.takeBranch_EXMEM(takeBranch_EXMEM),.Dump(dump)
     ,.PC2_IFID(PC2_IFID),.PC_IFID(PC_IFID),.instr_IFID(instr_IFID),.halt_IFID(halt_IFID),.err(err_fetch),
-    .clk(clk),.rst(rst),.PC_IDEX(PC_IDEX),.startStall(startStall),.mStallInstr(mStallInstr),.freeze(freeze));
+    .clk(clk),.rst(rst),.PC_IDEX(PC_IDEX),.startStall(startStall),.mStallInstr(mStallInstr),.freeze(freeze),.mStallData(mStallData));
 
     //Hazard control -- with fetch for pipeline
     hazardDetect hD(.takeBranch_EXMEM(takeBranch_EXMEM),.RegWrite_IDEX(RegWrite_IDEX),.RegWrite_EXMEM(RegWrite_EXMEM),.WrR_IDEX(WrR_IDEX)
@@ -81,8 +81,6 @@ module proc (/*AUTOARG*/
                     ,.stallCtrl(stallCtrl), .clk(clk), .rst(rst)
                     ,.takeBranch(takeBranch),.WrR_MEMWB(WrR_MEMWB),.RegWrite_MEMWB(RegWrite_MEMWB)
                     ,.startStall(startStall),.freeze(freeze),.mStallData(mStallData),.mStallInstr(mStallInstr));
-
-    assign mStallData = 1'b0;
 
 	//Decode Stage
 	decode decode0(.instr_IFID(instr_IFID),.PC2_IFID(PC2_IFID),.size(size),.zeroEx(zeroEx)

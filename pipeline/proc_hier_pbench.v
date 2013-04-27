@@ -95,6 +95,13 @@ module proc_hier_pbench();
                   MemWrite,
                   MemAddress,
                   MemDataIn);
+
+/* NAA NAA */
+        if (DUT.c0.cycle_count == 210) begin
+            $stop;
+        end
+/* NAA NAA END */
+
          if (RegWrite) begin
             $fdisplay(trace_file,"REG: %d VALUE: 0x%04x",
                       WriteRegister,

@@ -45,7 +45,7 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     //Instantiate MEMORY
     assign mStallData = (MemReadIn & freeze & ~Done) | (MemWrIn & freeze & ~Done) | dMemStall;
     //Mem Register flop 
-    reg16bit reg5(.clk(~clk),.rst(rst),.en(Done),.in(memDataOut),.out(RdD));
+    reg16bit reg5(.clk(clk),.rst(rst),.en(Done),.in(memDataOut),.out(RdD));
 
     mem_system #(1) mem(.DataOut(memDataOut), .Done(Done), .Stall(dMemStall), .err(dMemErr),
         .Addr(ALUO_EXMEM), .DataIn(Rd2_EXMEM), .Rd(MemReadIn & freeze & ~Done), .CacheHit(dummy),
