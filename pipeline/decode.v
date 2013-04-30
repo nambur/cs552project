@@ -6,7 +6,7 @@ module decode(instr_IFID,PC2_IFID,size, zeroEx, WrR_MEMWB, writeData,RegDst,RegW
             ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,MemtoReg_MEMWB
             ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead
             ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch,takeBranch_EXMEM,halt_IFID,halt_IDEX
-            ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,freeze);
+            ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,freeze,Rd1Addr_IDEX);
 //Inputs
 input [15:0] instr_IFID,writeData,PC2_IFID,PC_IFID;
 input [1:0] RegDst,size;
@@ -18,7 +18,7 @@ input ALUSrc,halt_IFID,Dump,MemtoReg,MemWrite,MemRead,MemtoReg_MEMWB,freeze;
 //Output
 output err;
 //Pipeline signals
-output [2:0] Rd2Addr_IDEX,WrR_IDEX;
+output [2:0] Rd2Addr_IDEX,Rd1Addr_IDEX,WrR_IDEX;
 output [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,PC_IDEX;
 output [4:0] ALUOp_IDEX;
 output [1:0] RegDst_IDEX,ALUF_IDEX;
@@ -55,6 +55,7 @@ reg15bit reg4(.clk(clk),.rst(rst),.en(freeze),.in({ALUOp,RegDst,ALUF,ALUSrc
 
 reg7bit reg5(.clk(clk),.rst(rst),.en(freeze),.in({instr_IFID[7:5],WrR,RegWrIn}),
                                            .out({Rd2Addr_IDEX,WrR_IDEX,RegWrite_IDEX}));
+reg3bit reg9(.clk(clk),.rst(rst),.en(freeze),.in(instr_IFID[10:8]),.out(Rd1Addr_IDEX)); //TODO added for forwarding
 
 dff_en reg6(.out(halt_IDEX),.in(haltTemp),.en(freeze),.clk(clk),.rst(rst));
 dff_en reg7(.out(Jump_IDEX),.in(jumpTemp),.en(freeze),.clk(clk),.rst(rst));

@@ -12,13 +12,18 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
     dff_en ff2(.clk(clk),.rst(rst),.en(1'b1),.in(checkSt3),.out(checkSt3Out));
     dff_en ff3(.clk(clk),.rst(rst),.en(1'b1),.in(stall2),.out(checkSt2Out));
     
-    //stall logic
-    assign a = WrR_IDEX == Rd1Addr_IFID;
-    assign b = WrR_IDEX == Rd2Addr_IFID;
-    assign c = WrR_EXMEM == Rd1Addr_IFID;
-    assign d = WrR_EXMEM == Rd2Addr_IFID;
+    //stall logic -- TODO changed for forwarding
+    //assign a = WrR_IDEX == Rd1Addr_IFID;
+    //assign b = WrR_IDEX == Rd2Addr_IFID;
+    //assign c = WrR_EXMEM == Rd1Addr_IFID;
+    //assign d = WrR_EXMEM == Rd2Addr_IFID;
+    assign a = 1'b0;
+    assign b = 1'b0;
+    assign c = 1'b0;
+    assign d = 1'b0;
     assign e = WrR_MEMWB == Rd1Addr_IFID;
     assign f = WrR_MEMWB == Rd2Addr_IFID;
+    
 
     assign stall3 = (takeBranch_EXMEM | takeBranch) ? 1'b0 :((RegWrite_IDEX) ? (a|b) : 1'b0);
     assign stall2 = (takeBranch_EXMEM | takeBranch) ? 1'b0 : ((RegWrite_EXMEM) ? (c|d) : 1'b0);

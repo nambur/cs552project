@@ -64,6 +64,10 @@ module proc (/*AUTOARG*/
     //hazard control wires
     wire stallCtrl,startStall,mStallInstr,mStallData,freeze;
     
+    //fowarding control wires
+    wire [1:0] forwardA,forwardB;
+    wire [2:0] Rd1Addr_IDEX;
+
 	//error wires
 	wire err_fetch,err_decode,err_execute;
 
@@ -94,7 +98,7 @@ module proc (/*AUTOARG*/
     ,.MemWrite_IDEX(MemWrite_IDEX),.MemRead_IDEX(MemRead_IDEX),.RegWrite_IDEX(RegWrite_IDEX)
     ,.Rd2Addr_IDEX(Rd2Addr_IDEX),.WrR_IDEX(WrR_IDEX),.stallCtrl(stallCtrl),.halt_IFID(halt_IFID)
     ,.halt_IDEX(halt_IDEX),.Jump(Jump),.Jump_IDEX(Jump_IDEX)
-    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.freeze(freeze));
+    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.freeze(freeze),.Rd1Addr_IDEX(Rd1Addr_IDEX));
 
     //Control Module -- in same place as decode for purpose of pipeline
     control ctrl(.Inst(instr_IFID),.size(size),.halt(halt),.zeroEx(zeroEx)
@@ -113,7 +117,13 @@ module proc (/*AUTOARG*/
     ,.PCS_EXMEM(PCS_EXMEM),.ALUO_EXMEM(ALUO_EXMEM),.PC_IDEX(PC_IDEX),.freeze(freeze)
     ,.Rd2_EXMEM(Rd2_EXMEM),.MemtoReg_EXMEM(MemtoReg_EXMEM), .MemWrite_IDEX(MemWrite_IDEX)
     ,.MemWrite_EXMEM(MemWrite_EXMEM),.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM)
-    ,.clk(clk),.rst(rst),.err(err_execute),.halt_IDEX(halt_IDEX),.halt_EXMEM(halt_EXMEM),.Jump_IDEX(Jump_IDEX));
+    ,.clk(clk),.rst(rst),.err(err_execute),.halt_IDEX(halt_IDEX),.halt_EXMEM(halt_EXMEM),.Jump_IDEX(Jump_IDEX)
+    ,.WrD(WrD),.forwardA(forwardA),.forwardB(forwardB));
+
+    //Forwarding Control Unit
+    forwarding unit(.Rd1Addr_IDEX(Rd1Addr_IDEX),.Rd2Addr_IDEX(Rd2Addr_IDEX),.WrR_MEMWB(WrR_MEMWB),.WrR_EXMEM(WrR_EXMEM)
+                    ,.forwardA(forwardA),.forwardB(forwardB),.RegWrite_EXMEM(RegWrite_EXMEM)
+                    ,.RegWrite_MEMWB(RegWrite_MEMWB),.takeBranch_EXMEM(takeBranch_EXMEM),.takeBranch(takeBranch));
 
 	//Mem Stage
 	memory memory0(.ALUO_EXMEM(ALUO_EXMEM),.ALUO_MEMWB(ALUO_MEMWB),.WrR_EXMEM(WrR_EXMEM),.WrR_MEMWB(WrR_MEMWB)
