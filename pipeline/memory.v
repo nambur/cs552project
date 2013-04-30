@@ -21,6 +21,7 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
 
     //internal wire
     wire memReadorWrite,MemReadIn,Done,dMemStall,dMemErr,MemWriteActual,MemReadActual,dummy;
+    wire testBenchRead, testBenchWrite;
     wire [15:0] RdD,memDataOut;
    
     //stall mux
@@ -32,7 +33,7 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     //Logic to stall mem read&load for freezes
     //assign MemReadActual = (MemRead_EXMEM & ~mStallInstr);
     //assign MemWriteActual = (MemWrite_EXMEM & ~mStallInstr);
-    assign MemReadActual = (MemRead_EXMEM & ~mStallInstr & Done);
+    assign MemReadActual = (MemRead_EXMEM & ~mStallInstr & ~Done);
     assign MemWriteActual = (MemWrite_EXMEM & ~mStallInstr & ~Done);
     //Pipeline Register 
     reg16bit reg0(.clk(clk),.rst(rst),.en(freeze|Done),.in(RdD),.out(RdD_MEMWB));
@@ -43,10 +44,12 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
 
     //enable logic  
     assign memReadorWrite = (MemWrIn | MemReadIn);
+    assign testBenchRead = (MemRead_EXMEM & Done & freeze);
+    assign testBenchWrite = (MemWrite_EXMEM & Done & freeze);
 
     //Freeze Logic
-    //assign mStallData = (MemReadIn & ~Done) | (MemWrIn & ~Done) | dMemStall;
-    assign mStallData = dMemStall; 
+    assign mStallData = (MemReadIn & ~Done) | (MemWrIn & ~Done) | dMemStall;
+    //assign mStallData = dMemStall; 
     //  assign mStallData = 1'b0;
     //Mem Register flop 
     //reg16bit reg5(.clk(clk),.rst(rst),.en(Done),.in(memDataOut),.out(RdD));

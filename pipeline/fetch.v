@@ -34,12 +34,19 @@ reg16bit pcReg0(.clk(clk),.rst(rst),.en((~stallCtrl)&(freeze)),.in(PC_FF_in),.ou
 assign pcCurrent = startStall ? PC_IDEX : pcCurrTemp;
 
 //Instantiate Fetch Memory
-assign mStallInstr = (iMemStall | (~Done));
+//assign mStallInstr = (iMemStall | (~Done));
+assign mStallInstr = 1'b0;
 //reg16bit reg4(.clk(clk),.rst(rst),.en(Done),.in(memDataOut),.out(instr));
 
 //TODO added ~mStallData to .Rd input signal
+//TODO testing perfect mem with mem_system in datamemory
+memory2c imem (.data_out(instr), .data_in(dummy), .addr(pcCurrent), .enable(1'b1), .wr(1'b0),
+    .createdump(Dump), .clk(clk), .rst(rst));
+
+/*
 mem_system #(0) Imem(.DataOut(instr), .Done(Done), .Stall(iMemStall), .err(iMemErr), .Addr(pcCurrent),
     .Rd(~Done), .Wr(1'b0), .CacheHit(dummy2), .DataIn(dummy3), .createdump(Dump), .clk(clk), .rst(rst));
+*/
 
 //Instantiate 16bit Adder
 carryLA_16b adder0(.A(pcCurrent),.B(16'h0002),.SUM(PC2),.CI(1'b0),.CO(dummy1),.Ofl(add0Err));
