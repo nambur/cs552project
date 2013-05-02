@@ -6,7 +6,8 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
     input RegWrite_IDEX,RegWrite_EXMEM,mStallInstr,mStallData,MemRead_EXMEM,MemWrite_EXMEM;
     input clk,rst,takeBranch_EXMEM,takeBranch;
     output stallCtrl,RegWrite_MEMWB,startStall,freeze;
-    wire stall2,stall3,a,b,c,d,e,f,stall1,checkSt3,checkSt3Out,checkSt2Out;
+    wire stall2,stall3,a,b,c,d,e,f,checkSt3,checkSt3Out,checkSt2Out;
+    reg stall1;
 
     //flag that allows stall to run twice
     dff_en ff(.clk(clk),.rst(rst),.en(1'b1),.in(stall3),.out(checkSt3));
@@ -26,7 +27,7 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
 
     //assign stall1 = (takeBranch_EXMEM | takeBranch) ? 1'b0 : ((RegWrite_MEMWB) ? (e|f) : 1'b0);
     always @(*) begin
-        casex({takeBranch_EXMEM | takeBranch),RegWrite_MEMWB,(MemRead_EXMEM | MemWrite_EXMEM)})
+        casex({(takeBranch_EXMEM | takeBranch),RegWrite_MEMWB,(MemRead_EXMEM | MemWrite_EXMEM)})
             3'b1xx: stall1 = 1'b0;
             3'b01x: stall1 = (e|f);
             3'b001: stall1 = 1'b1;
