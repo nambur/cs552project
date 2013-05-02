@@ -1,15 +1,18 @@
-module fetch(PCS,PC_IDEX,Dump,clk,rst,PC_IFID,PC2_IFID,instr_IFID,takeBranch
+module fetch(PCS,PC_IDEX,Dump,clk,rst,PC_IFID,PC2_IFID,instr_IFID,takeBranch,loadDetect
             ,takeBranch_EXMEM,stallCtrl,halt_IFID,err,startStall,freeze,mStallInstr,mStallData);
 
 input [15:0] PCS,PC_IDEX;
 input clk,rst,Dump,stallCtrl,takeBranch_EXMEM,takeBranch,startStall,freeze,mStallData;
 output [15:0] instr_IFID, PC2_IFID,PC_IFID;
-output halt_IFID,err,mStallInstr;
+output halt_IFID,err,mStallInstr,loadDetect;
 wire [15:0] PC_FF_in,addr, pcCurrent,dummy,instrTemp ;
 wire dummy1,halt,haltTemp,stBit,iMemStall,Done,iMemErr,add0Err,add1Err,dummy2;
 wire [15:0] instr,PC2,PC2_out,instrTempIn,pcCurrTemp,dummy3,memDataOut;
 
 assign err = iMemErr | add0Err | add1Err;
+
+//TODO added for forwarding
+assign loadDetect = ((instr_IFID[15])&(~(|(instr_IFID[14:12])))&(instr_IFID[11])); //load instr = 10001
 
 //Pipelined register output
 reg16bit reg0(.clk(clk),.rst(rst),.en((~stallCtrl)&(freeze)),.in(instrTempIn),.out(instrTemp));

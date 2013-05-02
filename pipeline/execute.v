@@ -1,6 +1,6 @@
 module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_IDEX,
               Branch_IDEX,takeBranch,takeBranch_EXMEM,Dump_IDEX, WrR_IDEX, WrR_EXMEM, RegWrite_IDEX, RegWrite_EXMEM,
-              MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,
+              MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,loadDetect_IDEX,loadDetect_EXMEM,
               ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,PC_IDEX,
               MemRead_EXMEM,Dump_EXMEM,halt_IDEX,halt_EXMEM,Jump_IDEX
               ,err,clk,rst,freeze,WrD,forwardA,forwardB);
@@ -13,7 +13,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     input [15:0] PC2_IDEX,PC_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,WrD;
     input [4:0] ALUOp_IDEX;
     input [1:0] ALUF_IDEX,forwardA,forwardB;
-    input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,freeze,
+    input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,freeze,loadDetect_IDEX,
         MemWrite_IDEX,MemRead_IDEX, RegWrite_IDEX,halt_IDEX,Jump_IDEX;
     input [2:0] WrR_IDEX;
 
@@ -21,7 +21,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     output [15:0] PCS_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
     output [2:0] WrR_EXMEM;
     output MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM,RegWrite_EXMEM;
-    output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM,takeBranch;
+    output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM,takeBranch,loadDetect_EXMEM;
 
     //Internal Signals
     wire haltTemp;
@@ -64,6 +64,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     dff_en reg5(.in(RegWrIn),.out(RegWrite_EXMEM),.en(freeze),.clk(clk),.rst(rst));
     reg3bit reg6(.clk(clk),.rst(rst),.en(freeze),.in(WrR_IDEX),.out(WrR_EXMEM));
     dff_en reg7(.in(haltTemp),.out(halt_EXMEM),.en(freeze),.clk(clk),.rst(rst));
+    dff_en reg8(.in(loadDetect_IDEX),.out(loadDetect_EXMEM),.en(freeze),.clk(clk),.rst(rst));
    
     branchCtrl BRANCHCTRL(.Jump_IDEX(Jump_IDEX),.Branch(Branch_IDEX), .branchType(ALUOp_IDEX[1:0]),
     .flag(flag), .takeBranch(takeBranch));

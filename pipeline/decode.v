@@ -6,7 +6,7 @@ module decode(instr_IFID,PC2_IFID,size, zeroEx, WrR_MEMWB, writeData,RegDst,RegW
             ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,MemtoReg_MEMWB
             ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead
             ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch,takeBranch_EXMEM,halt_IFID,halt_IDEX
-            ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,freeze,Rd1Addr_IDEX);
+            ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,freeze,Rd1Addr_IDEX,loadDetect,loadDetect_IDEX);
 //Inputs
 input [15:0] instr_IFID,writeData,PC2_IFID,PC_IFID;
 input [1:0] RegDst,size;
@@ -14,9 +14,9 @@ input RegWrite, RegWrite_MEMWB,Branch,zeroEx,clk,rst,Jump,stallCtrl,takeBranch,t
 input [4:0] ALUOp;
 input [2:0] WrR_MEMWB;
 input [1:0] ALUF;
-input ALUSrc,halt_IFID,Dump,MemtoReg,MemWrite,MemRead,MemtoReg_MEMWB,freeze;
+input ALUSrc,halt_IFID,Dump,MemtoReg,MemWrite,MemRead,MemtoReg_MEMWB,freeze,loadDetect;
 //Output
-output err;
+output err,loadDetect_IDEX;
 //Pipeline signals
 output [2:0] Rd2Addr_IDEX,Rd1Addr_IDEX,WrR_IDEX;
 output [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,PC_IDEX;
@@ -59,6 +59,7 @@ reg3bit reg9(.clk(clk),.rst(rst),.en(freeze),.in(instr_IFID[10:8]),.out(Rd1Addr_
 
 dff_en reg6(.out(halt_IDEX),.in(haltTemp),.en(freeze),.clk(clk),.rst(rst));
 dff_en reg7(.out(Jump_IDEX),.in(jumpTemp),.en(freeze),.clk(clk),.rst(rst));
+dff_en reg10(.out(loadDetect_IDEX),.in(loadDetect),.en(freeze),.clk(clk),.rst(rst));
 
 //TODO working on this -- Jump carry through logic
 assign jumpTemp = Jump & (~Jump_IDEX) & (~takeBranch) & (~stallCtrl);
