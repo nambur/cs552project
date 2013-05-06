@@ -62,8 +62,13 @@ module proc (/*AUTOARG*/
     wire RegWrite_MEMWB;
 
     //hazard control wires
-    wire stallCtrl,startStall,mStallInstr,mStallData,freeze;
+    wire stallCtrl,startStall,mStallInstr,mStallData,freeze,loadDetect,loadDetect_IDEX,loadDetect_EXMEM;
+    wire storeDetect,storeDetect_IDEX,storeDetect_EXMEM;
     
+    //fowarding control wires
+    wire [1:0] forwardA,forwardB;
+    wire [2:0] Rd1Addr_IDEX;
+
 	//error wires
 	wire err_fetch,err_decode,err_execute;
 
@@ -72,14 +77,15 @@ module proc (/*AUTOARG*/
 
 	//Fetch Stage 
 	fetch fetch0(.PCS(PCS_EXMEM),.stallCtrl(stallCtrl),.takeBranch(takeBranch),.takeBranch_EXMEM(takeBranch_EXMEM),.Dump(dump)
-    ,.PC2_IFID(PC2_IFID),.PC_IFID(PC_IFID),.instr_IFID(instr_IFID),.halt_IFID(halt_IFID),.err(err_fetch),
-    .clk(clk),.rst(rst),.PC_IDEX(PC_IDEX),.startStall(startStall),.mStallInstr(mStallInstr),.freeze(freeze),.mStallData(mStallData));
+    ,.PC2_IFID(PC2_IFID),.PC_IFID(PC_IFID),.instr_IFID(instr_IFID),.halt_IFID(halt_IFID),.err(err_fetch),.loadDetect(loadDetect),.storeDetect(storeDetect)
+    ,.clk(clk),.rst(rst),.PC_IDEX(PC_IDEX),.startStall(startStall),.mStallInstr(mStallInstr),.freeze(freeze),.mStallData(mStallData));
 
     //Hazard control -- with fetch for pipeline
     hazardDetect hD(.takeBranch_EXMEM(takeBranch_EXMEM),.RegWrite_IDEX(RegWrite_IDEX),.RegWrite_EXMEM(RegWrite_EXMEM),.WrR_IDEX(WrR_IDEX)
                     ,.WrR_EXMEM(WrR_EXMEM),.Rd1Addr_IFID(instr_IFID[10:8]),.Rd2Addr_IFID(instr_IFID[7:5])
-                    ,.stallCtrl(stallCtrl), .clk(clk), .rst(rst),.MemRead_EXMEM(MemRead_EXMEM),.MemWrite_EXMEM(MemWrite_EXMEM)
-                    ,.takeBranch(takeBranch),.WrR_MEMWB(WrR_MEMWB),.RegWrite_MEMWB(RegWrite_MEMWB)
+                    ,.stallCtrl(stallCtrl), .clk(clk), .rst(rst),.loadDetect_IDEX(loadDetect_IDEX),.loadDetect_EXMEM(loadDetect_EXMEM)
+                    ,.takeBranch(takeBranch),.WrR_MEMWB(WrR_MEMWB),.RegWrite_MEMWB(RegWrite_MEMWB),.loadDetect(loadDetect)
+					,.MemRead_EXMEM(MemRead_EXMEM),.MemWrite_EXMEM(MemWrite_EXMEM)
                     ,.startStall(startStall),.freeze(freeze),.mStallData(mStallData),.mStallInstr(mStallInstr));
 
 	//Decode Stage
@@ -91,10 +97,10 @@ module proc (/*AUTOARG*/
     ,.Imm_IDEX(Imm_IDEX),.ALUOp_IDEX(ALUOp_IDEX),.RegDst_IDEX(RegDst_IDEX)
     ,.ALUF_IDEX(ALUF_IDEX),.ALUSrc_IDEX(ALUSrc_IDEX),.Branch_IDEX(Branch_IDEX),.takeBranch(takeBranch),.takeBranch_EXMEM(takeBranch_EXMEM)
     ,.Dump_IDEX(Dump_IDEX),.MemtoReg_IDEX(MemtoReg_IDEX),.PC_IFID(PC_IFID),.PC_IDEX(PC_IDEX)
-    ,.MemWrite_IDEX(MemWrite_IDEX),.MemRead_IDEX(MemRead_IDEX),.RegWrite_IDEX(RegWrite_IDEX)
+    ,.MemWrite_IDEX(MemWrite_IDEX),.MemRead_IDEX(MemRead_IDEX),.RegWrite_IDEX(RegWrite_IDEX),.storeDetect(storeDetect),.storeDetect_IDEX(storeDetect_IDEX)
     ,.Rd2Addr_IDEX(Rd2Addr_IDEX),.WrR_IDEX(WrR_IDEX),.stallCtrl(stallCtrl),.halt_IFID(halt_IFID)
-    ,.halt_IDEX(halt_IDEX),.Jump(Jump),.Jump_IDEX(Jump_IDEX)
-    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.freeze(freeze));
+    ,.halt_IDEX(halt_IDEX),.Jump(Jump),.Jump_IDEX(Jump_IDEX),.loadDetect(loadDetect),.loadDetect_IDEX(loadDetect_IDEX)
+    ,.MemtoReg_MEMWB(MemtoReg_MEMWB),.freeze(freeze),.Rd1Addr_IDEX(Rd1Addr_IDEX));
 
     //Control Module -- in same place as decode for purpose of pipeline
     control ctrl(.Inst(instr_IFID),.size(size),.halt(halt),.zeroEx(zeroEx)
@@ -110,10 +116,17 @@ module proc (/*AUTOARG*/
     ,.ALUF_IDEX(ALUF_IDEX),.ALUSrc_IDEX(ALUSrc_IDEX),.Branch_IDEX(Branch_IDEX),.takeBranch_EXMEM(takeBranch_EXMEM)
     ,.Dump_IDEX(Dump_IDEX),.MemtoReg_IDEX(MemtoReg_IDEX),.takeBranch(takeBranch)
     ,.MemRead_IDEX(MemRead_IDEX),.WrR_IDEX(WrR_IDEX),.WrR_EXMEM(WrR_EXMEM),.RegWrite_IDEX(RegWrite_IDEX), .RegWrite_EXMEM(RegWrite_EXMEM)
-    ,.PCS_EXMEM(PCS_EXMEM),.ALUO_EXMEM(ALUO_EXMEM),.PC_IDEX(PC_IDEX),.freeze(freeze)
+    ,.PCS_EXMEM(PCS_EXMEM),.ALUO_EXMEM(ALUO_EXMEM),.PC_IDEX(PC_IDEX),.freeze(freeze),.storeDetect_IDEX(storeDetect_IDEX),.storeDetect_EXMEM(storeDetect_EXMEM)
     ,.Rd2_EXMEM(Rd2_EXMEM),.MemtoReg_EXMEM(MemtoReg_EXMEM), .MemWrite_IDEX(MemWrite_IDEX)
     ,.MemWrite_EXMEM(MemWrite_EXMEM),.MemRead_EXMEM(MemRead_EXMEM),.Dump_EXMEM(Dump_EXMEM)
-    ,.clk(clk),.rst(rst),.err(err_execute),.halt_IDEX(halt_IDEX),.halt_EXMEM(halt_EXMEM),.Jump_IDEX(Jump_IDEX));
+    ,.clk(clk),.rst(rst),.err(err_execute),.halt_IDEX(halt_IDEX),.halt_EXMEM(halt_EXMEM),.Jump_IDEX(Jump_IDEX)
+    ,.WrD(WrD),.forwardA(forwardA),.forwardB(forwardB),.loadDetect_IDEX(loadDetect_IDEX),.loadDetect_EXMEM(loadDetect_EXMEM));
+
+    //Forwarding Control Unit
+    forwarding unit(.Rd1Addr_IDEX(Rd1Addr_IDEX),.Rd2Addr_IDEX(Rd2Addr_IDEX),.WrR_MEMWB(WrR_MEMWB),.WrR_EXMEM(WrR_EXMEM)
+                    ,.forwardA(forwardA),.forwardB(forwardB),.RegWrite_EXMEM(RegWrite_EXMEM),.loadDetect_EXMEM(loadDetect_EXMEM)
+                    ,.RegWrite_MEMWB(RegWrite_MEMWB),.takeBranch_EXMEM(takeBranch_EXMEM),.takeBranch(takeBranch)
+                    ,.halt_IFID(halt_IFID),.halt_IDEX(halt_IDEX),.storeDetect_IDEX(storeDetect_IDEX));
 
 	//Mem Stage
 	memory memory0(.ALUO_EXMEM(ALUO_EXMEM),.ALUO_MEMWB(ALUO_MEMWB),.WrR_EXMEM(WrR_EXMEM),.WrR_MEMWB(WrR_MEMWB)

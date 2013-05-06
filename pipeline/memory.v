@@ -46,6 +46,10 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     assign testBenchRead = (MemRead_EXMEM & Done);
     assign testBenchWrite = (MemWrite_EXMEM & Done);
 
+	TODO merge code
+	assign testBenchWrite = (MemWrite_EXMEM&(~halt_EXMEM));
+	TODO endmerge
+
     //Freeze Logic
     assign mStallData = (MemReadIn & ~Done) | (MemWrIn & ~Done) | dMemStall;
 

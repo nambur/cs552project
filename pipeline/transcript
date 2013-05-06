@@ -31,6 +31,7 @@
 # Loading __work.decode
 # Loading __work.reg15bit
 # Loading __work.reg7bit
+# Loading __work.reg3bit
 # Loading __work.rf
 # Loading __work.decode3to8
 # Loading __work.nor3
@@ -40,7 +41,6 @@
 # Loading __work.control
 # Loading __work.execute
 # Loading __work.reg5bit
-# Loading __work.reg3bit
 # Loading __work.branchCtrl
 # Loading __work.alu
 # Loading __work.shifter
@@ -49,10 +49,11 @@
 # Loading __work.rotate_right
 # Loading __work.shift_right_log
 # Loading __work.aluCtrl
+# Loading __work.forwarding
 # Loading __work.memory
 # Loading __work.writeBack
 run -all
 # Hello world...simulation starting
 # See verilogsim.log and verilogsim.ptrace for output
-# ** Note: $finish    : proc_hier_pbench.v(125)
-#    Time: 2205 ns  Iteration: 0  Instance: /proc_hier_pbench
+# ** Note: $finish    : proc_hier_pbench.v(132)
+#    Time: 1505 ns  Iteration: 0  Instance: /proc_hier_pbench
