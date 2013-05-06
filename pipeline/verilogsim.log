@@ -1,30 +1,23 @@
 SIMLOG:: Cycle           4 PC:     0000 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
-SIMLOG:: Cycle           5 PC:     0002 I:     c105 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     xxxx MemDataIn:     0000
-SIMLOG:: Cycle           6 PC:     0004 I:     c204 RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: 0 MemAddress:     xxxx MemDataIn:     0000
-SIMLOG:: Cycle           7 PC:     0004 I:     4121 RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: 0 MemAddress:     0005 MemDataIn:     0000
-SIMLOG:: Cycle           8 PC:     0006 I:     4121 RegWrite: 1 WriteRegister:   1 WriteData:     0005 MemRead: 0 MemWrite: 0 MemAddress:     0004 MemDataIn:     0000
-SIMLOG:: Cycle           9 PC:     0006 I:     4121 RegWrite: 1 WriteRegister:   2 WriteData:     0004 MemRead: 0 MemWrite: 0 MemAddress:     0001 MemDataIn:     0000
-SIMLOG:: Cycle          10 PC:     0008 I:     3a06 RegWrite: 0 WriteRegister:   1 WriteData:     0001 MemRead: 0 MemWrite: 0 MemAddress:     0001 MemDataIn:     0000
-SIMLOG:: Cycle          11 PC:     000a I:     4121 RegWrite: 0 WriteRegister:   1 WriteData:     0001 MemRead: 0 MemWrite: 0 MemAddress:     0006 MemDataIn:     0005
-SIMLOG:: Cycle          12 PC:     000c I:     0800 RegWrite: 1 WriteRegister:   1 WriteData:     0006 MemRead: 0 MemWrite: 0 MemAddress:     0008 MemDataIn:     0000
-SIMLOG:: Cycle          13 PC:     000a I:     0800 RegWrite: 1 WriteRegister:   7 WriteData:     0008 MemRead: 0 MemWrite: 0 MemAddress:     0006 MemDataIn:     0005
-SIMLOG:: Cycle          14 PC:     000c I:     4122 RegWrite: 0 WriteRegister:   1 WriteData:     0006 MemRead: 0 MemWrite: 0 MemAddress:     0006 MemDataIn:     0000
-SIMLOG:: Cycle          15 PC:     000c I:     4124 RegWrite: 0 WriteRegister:   0 WriteData:     0006 MemRead: 0 MemWrite: 0 MemAddress:     0006 MemDataIn:     0000
-SIMLOG:: Cycle          16 PC:     000e I:     4124 RegWrite: 0 WriteRegister:   0 WriteData:     0006 MemRead: 0 MemWrite: 0 MemAddress:     0008 MemDataIn:     0006
-SIMLOG:: Cycle          17 PC:     000e I:     4124 RegWrite: 1 WriteRegister:   1 WriteData:     0008 MemRead: 0 MemWrite: 0 MemAddress:     000a MemDataIn:     0006
-SIMLOG:: Cycle          18 PC:     000e I:     4124 RegWrite: 0 WriteRegister:   1 WriteData:     000a MemRead: 0 MemWrite: 0 MemAddress:     000a MemDataIn:     0006
-SIMLOG:: Cycle          19 PC:     0010 I:     47e0 RegWrite: 0 WriteRegister:   1 WriteData:     000a MemRead: 0 MemWrite: 0 MemAddress:     000a MemDataIn:     0006
-SIMLOG:: Cycle          20 PC:     0012 I:     0000 RegWrite: 0 WriteRegister:   1 WriteData:     000a MemRead: 0 MemWrite: 0 MemAddress:     000c MemDataIn:     0008
-SIMLOG:: Cycle          21 PC:     0014 I:     0000 RegWrite: 1 WriteRegister:   1 WriteData:     000c MemRead: 0 MemWrite: 0 MemAddress:     0008 MemDataIn:     0008
-SIMLOG:: Cycle          22 PC:     0016 I:     0000 RegWrite: 1 WriteRegister:   7 WriteData:     0008 MemRead: 0 MemWrite: 0 MemAddress:     0008 MemDataIn:     0000
-SIMLOG:: Cycle          23 PC:     0018 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     0008 MemRead: 0 MemWrite: 0 MemAddress:     0008 MemDataIn:     0000
+SIMLOG:: Cycle           5 PC:     0002 I:     c000 RegWrite: 0 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     xxxx MemDataIn:     0000
+SIMLOG:: Cycle           6 PC:     0004 I:     901a RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: 0 MemAddress:     xxxx MemDataIn:     0000
+SIMLOG:: Cycle           7 PC:     0006 I:     c100 RegWrite: 0 WriteRegister:   0 WriteData:     xxxx MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     0000
+SIMLOG:: Cycle           8 PC:     0006 I:     8020 RegWrite: 1 WriteRegister:   0 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     001a MemDataIn:     0000
+SIMLOG:: Cycle           9 PC:     0008 I:     8020 RegWrite: 1 WriteRegister:   0 WriteData:     001a MemRead: 0 MemWrite: 0 MemAddress:     0000 MemDataIn:     001a
+SIMLOG:: Cycle          10 PC:     0008 I:     8020 RegWrite: 1 WriteRegister:   1 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     001a MemDataIn:     0000
+SIMLOG:: Cycle          11 PC:     0008 I:     8020 RegWrite: 0 WriteRegister:   1 WriteData:     001a MemRead: 0 MemWrite: 0 MemAddress:     001a MemDataIn:     0000
+SIMLOG:: Cycle          12 PC:     000a I:     8840 RegWrite: 0 WriteRegister:   1 WriteData:     001a MemRead: 0 MemWrite: 0 MemAddress:     001a MemDataIn:     0000
+SIMLOG:: Cycle          13 PC:     000c I:     0000 RegWrite: 0 WriteRegister:   1 WriteData:     001a MemRead: 0 MemWrite: 1 MemAddress:     001a MemDataIn:     0000
+SIMLOG:: Cycle          14 PC:     000e I:     0000 RegWrite: 0 WriteRegister:   1 WriteData:     001a MemRead: 1 MemWrite: 0 MemAddress:     001a MemDataIn:     0000
+SIMLOG:: Cycle          15 PC:     0010 I:     0000 RegWrite: 1 WriteRegister:   2 WriteData:     0000 MemRead: 0 MemWrite: 0 MemAddress:     001a MemDataIn:     001a
+SIMLOG:: Cycle          16 PC:     0012 I:     0000 RegWrite: 0 WriteRegister:   0 WriteData:     001a MemRead: 0 MemWrite: 0 MemAddress:     001a MemDataIn:     001a
 SIMLOG:: Processor halted
 
 SIMLOG:: Processor halted with haltcount == 4
 
-SIMLOG:: sim_cycles          23
+SIMLOG:: sim_cycles          16
 
-SIMLOG:: inst_count           8
+SIMLOG:: inst_count           6
 
 SIMLOG:: dcachehit_count           0
 

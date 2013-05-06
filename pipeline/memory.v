@@ -33,10 +33,15 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     //Logic to stall mem read&load for freezes
     //assign MemReadActual = (MemRead_EXMEM & ~mStallInstr);
     //assign MemWriteActual = (MemWrite_EXMEM & ~mStallInstr);
-    assign MemReadActual = (MemRead_EXMEM & ~mStallInstr & ~Done);
-    assign MemWriteActual = (MemWrite_EXMEM & ~mStallInstr & ~Done);
-    //Pipeline Register 
-    reg16bit reg0(.clk(clk),.rst(rst),.en(freeze|Done),.in(RdD),.out(RdD_MEMWB));
+    //assign MemReadActual = (MemRead_EXMEM & ~mStallInstr & ~Done);
+    //assign MemWriteActual = (MemWrite_EXMEM & ~mStallInstr & ~Done);
+    assign MemWriteActual = (MemWrite_EXMEM);
+    assign MemReadActual = (MemRead_EXMEM);
+
+
+    //Pipeline Register -- TODO swapped out for perfect mem use
+    //reg16bit reg0(.clk(clk),.rst(rst),.en(freeze|Done),.in(RdD),.out(RdD_MEMWB));
+    reg16bit reg0(.clk(clk),.rst(rst),.en(freeze),.in(RdD),.out(RdD_MEMWB));
     dff_en reg1(.clk(clk),.rst(rst),.en(freeze),.in(MemtoReg_EXMEM),.out(MemtoReg_MEMWB));
     dff_en reg2(.clk(clk),.rst(rst),.en(freeze),.in(RegWrIn),.out(RegWrite_MEMWB));
     reg3bit reg3(.clk(clk),.rst(rst),.en(freeze),.in(WrR_EXMEM),.out(WrR_MEMWB));
@@ -44,20 +49,24 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
 
     //enable logic  
     assign memReadorWrite = (MemWrIn | MemReadIn);
-    assign testBenchRead = (MemRead_EXMEM & Done & freeze);
-    assign testBenchWrite = (MemWrite_EXMEM & Done & freeze);
+    //assign testBenchRead = (MemRead_EXMEM & Done & freeze); //TODO swapped
+    //assign testBenchWrite = (MemWrite_EXMEM & Done & freeze);
+    assign testBenchRead = (MemRead_EXMEM);
+    assign testBenchWrite = (MemWrite_EXMEM&(~halt_EXMEM));
+    
 
     //Freeze Logic
-    assign mStallData = (MemReadIn & ~Done) | (MemWrIn & ~Done) | dMemStall;
+    //assign mStallData = (MemReadIn & ~Done) | (MemWrIn & ~Done) | dMemStall;
     //assign mStallData = dMemStall; 
-    //  assign mStallData = 1'b0;
+      assign mStallData = 1'b0;
     //Mem Register flop 
     //reg16bit reg5(.clk(clk),.rst(rst),.en(Done),.in(memDataOut),.out(RdD));
 
+/*
     mem_system #(1) mem(.DataOut(RdD), .Done(Done), .Stall(dMemStall), .err(dMemErr),
         .Addr(ALUO_EXMEM), .DataIn(Rd2_EXMEM), .Rd(MemReadIn), .CacheHit(dummy),
         .Wr(MemWrIn), .createdump(Dump_EXMEM), .clk(clk), .rst(rst));
-    
-   // memory2c testmem(.data_out(RdD),.data_in(Rd2_EXMEM),.addr(ALUO_EXMEM),.enable(memReadorWrite)
-    //                ,.wr(MemWrIn),.createdump(Dump_EXMEM),.clk(clk),.rst(rst));
+  */  
+    memory2c testmem(.data_out(RdD),.data_in(Rd2_EXMEM),.addr(ALUO_EXMEM),.enable(memReadorWrite)
+                    ,.wr(MemWrIn),.createdump(Dump_EXMEM),.clk(clk),.rst(rst));
 endmodule

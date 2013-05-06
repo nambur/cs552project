@@ -1,14 +1,20 @@
-          // Original test: ./michail/hw4/problem6/jalr_99.asm
-          // Author: michail
+          // Original test: ./english/hw4/problem6/st_0.asm
+          // Author: english
           // Test source code follows
           
           
-0000 c105 lbi r1,5      			// expected output on R1 =12
-0002 c204 lbi r2,4     		
-0004 4121 addi r1,r1,1            
-0006 3a06 jalr  r2,6              
-0008 4121 addi r1,r1 ,1
-000a 4122 addi r1,r1 ,2
-000c 4124 addi r1,r1 ,4
-000e 47e0 addi r7,r7 ,0
-0010 0000 halt	
+0000 c000 lbi r0, U.Here
+0002 901a slbi r0, L.Here   // r0 contains address of ".Here"
+0004 c100 lbi r1, 0
+0006 8020 st r1, r0, 0      // .Here should have the value 0
+0008 8840 ld r2, r0, 0      // r2 = 0
+000a 0000 halt
+000c 0000 halt
+000e 0000 halt
+0010 0000 halt
+0012 0000 halt
+0014 0000 halt
+0016 0000 halt
+0018 0000 halt
+001a      .Here:
+001a 0000 halt
