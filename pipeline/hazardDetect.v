@@ -26,9 +26,6 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
     assign stall3 = (takeBranch_EXMEM | takeBranch) ? 1'b0 :((RegWrite_IDEX) ? (a|b) : 1'b0);
     assign stall2 = (takeBranch_EXMEM | takeBranch) ? 1'b0 : ((RegWrite_EXMEM) ? (c|d) : 1'b0);
 
-	TODO merge code
-	assign stall1 = (takeBranch_EXMEM | takeBranch) ? 1'b0 : ((RegWrite_MEMWB) ? (e|f) : 1'b0);
-
     always @(*) begin
         casex({(takeBranch_EXMEM | takeBranch),(MemRead_EXMEM | MemWrite_EXMEM), RegWrite_MEMWB})
             3'b1xx: stall1 = 1'b0;
@@ -39,11 +36,12 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
         endcase
     end
     
-	TODO merge forwarding code
+	//TODO merge forwarding code
 	 assign stall2temp = 1'b0;
     //assign stall2temp = loadDetect_IDEX ? stall2 : 1'b0;
     assign stall3temp =  loadDetect_IDEX ? stall3 : 1'b0;
-    assign stall1temp = loadDetect_EXMEM ? 1'b0 : stall1;
+    //assign stall1temp = loadDetect_EXMEM ? 1'b0 : stall1;
+    assign stall1temp = stall1;
 
     //TODO added logic for start stall
     dff_en reg0(.clk(clk),.rst(rst),.en(freeze),.in(stallCtrl),.out(strtCheck));
@@ -52,7 +50,7 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
     //assign startStall = (stall3 | (stall2 & (~checkSt3)) | (stall1 & ((~checkSt2Out)&(~checkSt3Out))));
     assign stallCtrl =  (stall3temp | stall2temp | stall1temp );
     //assign stallCtrl =  (stall3temp | stall2temp |  stall1);
-   TODO end on merge code
+   //TODO end on merge code
 
     //freeze logic
     assign freeze = ~(mStallInstr | mStallData);

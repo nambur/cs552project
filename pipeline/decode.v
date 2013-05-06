@@ -108,13 +108,8 @@ rf regFile0(.read1data(out1data),.read2data(out2data),.err(err)//Outputs
 		,.writeregsel(WrR_MEMWB),.writedata(writeData),.write(RegWriteActual));
 
 //ADDED BYPASS LOGIC
-//TODO need to add in read signal to this as well --- not always reading
-//assign mux1sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[10:8]))) ;
 assign mux1sel = (RegWriteActual&(WrR_MEMWB==instr_IFID[10:8])) ;
 assign mux2sel = (RegWriteActual&(WrR_MEMWB==instr_IFID[7:5])) ;
-//assign mux2sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[7:5]))) ;
-//assign Rd1 = out1data;
-//assign Rd2 = out2data;
 assign Rd1 = mux1sel ? writeData : out1data;
 assign Rd2 = mux2sel ? writeData : out2data;
 

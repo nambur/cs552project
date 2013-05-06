@@ -44,11 +44,11 @@ module memory(ALUO_EXMEM,ALUO_MEMWB,Rd2_EXMEM,takeBranch,
     //enable logic  
     assign memReadorWrite = (MemWrIn | MemReadIn);
     assign testBenchRead = (MemRead_EXMEM & Done);
-    assign testBenchWrite = (MemWrite_EXMEM & Done);
+    assign testBenchWrite = (MemWrite_EXMEM & Done & (~halt_EXMEM));
 
-	TODO merge code
-	assign testBenchWrite = (MemWrite_EXMEM&(~halt_EXMEM));
-	TODO endmerge
+	//TODO merge code
+	//assign testBenchWrite = (MemWrite_EXMEM&(~halt_EXMEM));
+	//TODO endmerge
 
     //Freeze Logic
     assign mStallData = (MemReadIn & ~Done) | (MemWrIn & ~Done) | dMemStall;
