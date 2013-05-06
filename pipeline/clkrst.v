@@ -42,11 +42,5 @@ module clkrst (clk, rst, err);
 	end
     end
 
-/* NAA NAA */
-//change the cycle count test back to 100000
-/* NAA NAA END */
-
-
-
 endmodule
 // DUMMY LINE FOR REV CONTROL :0:

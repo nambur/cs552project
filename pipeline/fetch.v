@@ -12,7 +12,7 @@ wire [15:0] instr,PC2,PC2_out,instrTempIn,pcCurrTemp,dummy3,memDataOut;
 assign err = iMemErr | add0Err | add1Err;
 
 //Pipelined register output
-reg16bit reg0(.clk(clk),.rst(rst),.en((~stallCtrl)&(Done)),.in(instr),.out(instrTemp));
+reg16bit reg0(.clk(clk),.rst(rst),.en(Done),.in(instrTempIn),.out(instrTemp));
 reg16bit reg1(.clk(clk),.rst(rst),.en(freeze),.in(PC2_out),.out(PC2_IFID));
 dff_en reg2(.out(halt_IFID),.in(haltTemp),.en(freeze),.clk(clk),.rst(rst));
 reg16bit reg3(.clk(clk),.rst(rst),.en(freeze),.in(PC_FF_in),.out(PC_IFID));

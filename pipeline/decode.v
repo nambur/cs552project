@@ -100,7 +100,6 @@ assign RegWriteActual = (RegWrite_MEMWB & freeze);
 //Instantiate register file with bypassing
 //8 16bit registers 
 rf regFile0(.read1data(out1data),.read2data(out2data),.err(err)//Outputs
-		
 		,.clk(clk),.rst(rst)			//Inputs
 		,.read1regsel(instr_IFID[10:8]),.read2regsel(instr_IFID[7:5])	
 		,.writeregsel(WrR_MEMWB),.writedata(writeData),.write(RegWriteActual));

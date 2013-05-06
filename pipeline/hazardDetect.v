@@ -25,12 +25,11 @@ module hazardDetect(takeBranch,takeBranch_EXMEM,RegWrite_IDEX,RegWrite_EXMEM,WrR
     assign stall3 = (takeBranch_EXMEM | takeBranch) ? 1'b0 :((RegWrite_IDEX) ? (a|b) : 1'b0);
     assign stall2 = (takeBranch_EXMEM | takeBranch) ? 1'b0 : ((RegWrite_EXMEM) ? (c|d) : 1'b0);
 
-    //assign stall1 = (takeBranch_EXMEM | takeBranch) ? 1'b0 : ((RegWrite_MEMWB) ? (e|f) : 1'b0);
     always @(*) begin
-        casex({(takeBranch_EXMEM | takeBranch),RegWrite_MEMWB,(MemRead_EXMEM | MemWrite_EXMEM)})
+        casex({(takeBranch_EXMEM | takeBranch),(MemRead_EXMEM | MemWrite_EXMEM), RegWrite_MEMWB})
             3'b1xx: stall1 = 1'b0;
-            3'b01x: stall1 = (e|f);
-            3'b001: stall1 = 1'b1;
+            3'b01x: stall1 = 1'b1;
+            3'b001: stall1 = (e|f);
             3'b000: stall1 = 1'b0;
             default: stall1 = 1'b0;
         endcase
