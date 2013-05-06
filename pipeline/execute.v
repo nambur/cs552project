@@ -1,7 +1,7 @@
 module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_IDEX,
               Branch_IDEX,takeBranch,takeBranch_EXMEM,Dump_IDEX, WrR_IDEX, WrR_EXMEM, RegWrite_IDEX, RegWrite_EXMEM,
               MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,PCS_EXMEM,loadDetect_IDEX,loadDetect_EXMEM,
-              ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,PC_IDEX,
+              ALUO_EXMEM,Rd2_EXMEM,MemtoReg_EXMEM,MemWrite_EXMEM,PC_IDEX,storeDetect_IDEX,storeDetect_EXMEM,
               MemRead_EXMEM,Dump_EXMEM,halt_IDEX,halt_EXMEM,Jump_IDEX
               ,err,clk,rst,freeze,WrD,forwardA,forwardB);
 
@@ -14,13 +14,13 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     input [4:0] ALUOp_IDEX;
     input [1:0] ALUF_IDEX,forwardA,forwardB;
     input ALUSrc_IDEX,Branch_IDEX,Dump_IDEX,MemtoReg_IDEX,freeze,loadDetect_IDEX,
-        MemWrite_IDEX,MemRead_IDEX, RegWrite_IDEX,halt_IDEX,Jump_IDEX;
+        MemWrite_IDEX,MemRead_IDEX, RegWrite_IDEX,halt_IDEX,Jump_IDEX,storeDetect_IDEX;
     input [2:0] WrR_IDEX;
 
     //output
     output [15:0] PCS_EXMEM, ALUO_EXMEM,Rd2_EXMEM;
     output [2:0] WrR_EXMEM;
-    output MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM,RegWrite_EXMEM;
+    output MemtoReg_EXMEM,MemWrite_EXMEM,MemRead_EXMEM,RegWrite_EXMEM,storeDetect_EXMEM;
     output Dump_EXMEM,takeBranch_EXMEM,halt_EXMEM,takeBranch,loadDetect_EXMEM;
 
     //Internal Signals
@@ -35,6 +35,7 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     reg exerr;
 
     wire [15:0] Rd1in,Rd2in;
+
     //TODO added for forwarding -- select muxes
     assign Rd1in = (forwardA==2'b00) ? Rd1_IDEX : 
                    ((forwardA==2'b01) ? WrD :
@@ -65,7 +66,9 @@ module execute(ALUSrc_IDEX,PC2_IDEX,ALUOp_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUF_I
     reg3bit reg6(.clk(clk),.rst(rst),.en(freeze),.in(WrR_IDEX),.out(WrR_EXMEM));
     dff_en reg7(.in(haltTemp),.out(halt_EXMEM),.en(freeze),.clk(clk),.rst(rst));
     dff_en reg8(.in(loadDetect_IDEX),.out(loadDetect_EXMEM),.en(freeze),.clk(clk),.rst(rst));
-   
+    dff_en reg9(.in(storeDetect_IDEX),.out(storeDetect_EXMEM),.en(freeze),.clk(clk),.rst(rst));
+  
+
     branchCtrl BRANCHCTRL(.Jump_IDEX(Jump_IDEX),.Branch(Branch_IDEX), .branchType(ALUOp_IDEX[1:0]),
     .flag(flag), .takeBranch(takeBranch));
     carryLA_16b CLA(.A(claIn), .B(Imm_IDEX), .SUM(outCLA), .CI(1'b0), .CO(dummy), .Ofl(ofl));

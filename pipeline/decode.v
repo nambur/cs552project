@@ -4,19 +4,19 @@ module decode(instr_IFID,PC2_IFID,size, zeroEx, WrR_MEMWB, writeData,RegDst,RegW
 			,RegWrite_MEMWB,clk,rst,err,PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,ALUOp_IDEX
             ,RegDst_IDEX,ALUF_IDEX,ALUSrc_IDEX,Branch_IDEX,RegWrite_IDEX
             ,Dump_IDEX,MemtoReg_IDEX,MemWrite_IDEX,MemRead_IDEX,MemtoReg_MEMWB
-            ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead
+            ,ALUOp,ALUF,ALUSrc,Branch,Dump,MemtoReg,MemWrite,MemRead,storeDetect,storeDetect_IDEX
             ,Rd2Addr_IDEX,WrR_IDEX,stallCtrl,takeBranch,takeBranch_EXMEM,halt_IFID,halt_IDEX
             ,Jump,Jump_IDEX,PC_IFID,PC_IDEX,freeze,Rd1Addr_IDEX,loadDetect,loadDetect_IDEX);
 //Inputs
 input [15:0] instr_IFID,writeData,PC2_IFID,PC_IFID;
 input [1:0] RegDst,size;
-input RegWrite, RegWrite_MEMWB,Branch,zeroEx,clk,rst,Jump,stallCtrl,takeBranch,takeBranch_EXMEM;
+input RegWrite, RegWrite_MEMWB,Branch,zeroEx,clk,rst,Jump,stallCtrl,takeBranch,storeDetect,takeBranch_EXMEM;
 input [4:0] ALUOp;
 input [2:0] WrR_MEMWB;
 input [1:0] ALUF;
 input ALUSrc,halt_IFID,Dump,MemtoReg,MemWrite,MemRead,MemtoReg_MEMWB,freeze,loadDetect;
 //Output
-output err,loadDetect_IDEX;
+output err,loadDetect_IDEX,storeDetect_IDEX;
 //Pipeline signals
 output [2:0] Rd2Addr_IDEX,Rd1Addr_IDEX,WrR_IDEX;
 output [15:0] PC2_IDEX,Rd1_IDEX,Rd2_IDEX,Imm_IDEX,PC_IDEX;
@@ -60,6 +60,7 @@ reg3bit reg9(.clk(clk),.rst(rst),.en(freeze),.in(instr_IFID[10:8]),.out(Rd1Addr_
 dff_en reg6(.out(halt_IDEX),.in(haltTemp),.en(freeze),.clk(clk),.rst(rst));
 dff_en reg7(.out(Jump_IDEX),.in(jumpTemp),.en(freeze),.clk(clk),.rst(rst));
 dff_en reg10(.out(loadDetect_IDEX),.in(loadDetect),.en(freeze),.clk(clk),.rst(rst));
+dff_en reg11(.out(storeDetect_IDEX),.in(storeDetect),.en(freeze),.clk(clk),.rst(rst));
 
 //TODO working on this -- Jump carry through logic
 assign jumpTemp = Jump & (~Jump_IDEX) & (~takeBranch) & (~stallCtrl);
@@ -107,12 +108,15 @@ rf regFile0(.read1data(out1data),.read2data(out2data),.err(err)//Outputs
 		,.read1regsel(instr_IFID[10:8]),.read2regsel(instr_IFID[7:5])	
 		,.writeregsel(WrR_MEMWB),.writedata(writeData),.write(RegWriteActual));
 
-//ADDED BYPASS LOGIC - TODO Fri 19 Apr 2013 09:14:23 PM CDT
-assign mux1sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[10:8]))) ;
-assign mux2sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[7:5]))) ;
-assign Rd1 = out1data;
-assign Rd2 = out2data;
-//assign Rd1 = mux1sel ? writeData : out1data;
-//assign Rd2 = mux2sel ? writeData : out2data;
+//ADDED BYPASS LOGIC
+//TODO need to add in read signal to this as well --- not always reading
+//assign mux1sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[10:8]))) ;
+assign mux1sel = (RegWriteActual&(WrR_MEMWB==instr_IFID[10:8])) ;
+assign mux2sel = (RegWriteActual&(WrR_MEMWB==instr_IFID[7:5])) ;
+//assign mux2sel = (MemtoReg_MEMWB & (RegWrite&(WrR==instr_IFID[7:5]))) ;
+//assign Rd1 = out1data;
+//assign Rd2 = out2data;
+assign Rd1 = mux1sel ? writeData : out1data;
+assign Rd2 = mux2sel ? writeData : out2data;
 
 endmodule
